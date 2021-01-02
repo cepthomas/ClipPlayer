@@ -11,10 +11,6 @@ namespace ClipPlayer
 {
     public partial class WavePlayer : IPlayer
     {
-        string _wavOutDevice = "";
-        int _latency = 200;
-        float _volume = 0.8f;
-
         #region Fields
         /// <summary>Wave output play device.</summary>
         WaveOut _waveOut = null;
@@ -24,13 +20,19 @@ namespace ClipPlayer
 
         /// <summary>Stream read chunk.</summary>
         const int READ_BUFF_SIZE = 1000000;
-        #endregion
 
-        TimeSpan _current = TimeSpan.Zero;
+        /// <summary>Total length.</summary>
         TimeSpan _length = TimeSpan.Zero;
+
+        /// <summary>First valid point.</summary>
         TimeSpan _start = TimeSpan.Zero;
+
+        /// <summary>Last valid point.</summary>
         TimeSpan _end = TimeSpan.Zero;
 
+        /// <summary>Current.</summary>
+        TimeSpan _current = TimeSpan.Zero;
+        #endregion
 
         #region Events
         /// <inheritdoc />
@@ -46,7 +48,6 @@ namespace ClipPlayer
         /// </summary>
         public WavePlayer()
         {
-
         }
 
         /// <summary>
@@ -73,12 +74,12 @@ namespace ClipPlayer
             for (int id = -1; id < WaveOut.DeviceCount; id++)
             {
                 var cap = WaveOut.GetCapabilities(id);
-                if (_wavOutDevice == cap.ProductName)
+                if (Common.WavOutDevice == cap.ProductName)
                 {
                     _waveOut = new WaveOut
                     {
                         DeviceNumber = id,
-                        DesiredLatency = _latency
+                        DesiredLatency = Common.Latency
                     };
                     _waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
                     break;
@@ -101,7 +102,7 @@ namespace ClipPlayer
                 var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
                 //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
                 _waveOut.Init(postVolumeMeter);
-                _waveOut.Volume = _volume;
+                _waveOut.Volume = Common.Volume;
             }
             else
             {

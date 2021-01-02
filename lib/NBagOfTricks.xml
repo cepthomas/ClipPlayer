@@ -5,37 +5,29 @@
     </assembly>
     <members>
         <member name="T:NBagOfTricks.CommandProcessor.ArgOptType">
-            <summary>Argument and value options.</summary>
-        </member>
-        <member name="F:NBagOfTricks.CommandProcessor.ArgOptType.Req">
-            <summary>Arg or value is required</summary>
-        </member>
-        <member name="F:NBagOfTricks.CommandProcessor.ArgOptType.Opt">
-            <summary>Arg or value is optional</summary>
-        </member>
-        <member name="F:NBagOfTricks.CommandProcessor.ArgOptType.None">
-            <summary>Arg has no value</summary>
+            <summary>Argument and value options: None, required, optional.</summary>
         </member>
         <member name="T:NBagOfTricks.CommandProcessor.Processor">
             <summary>Main processor.</summary>
         </member>
         <member name="P:NBagOfTricks.CommandProcessor.Processor.ArgumentPrefix">
-            <summary>Denotes the start of an argument.</summary>
-        </member>
-        <member name="P:NBagOfTricks.CommandProcessor.Processor.CommandName">
-            <summary>Selected command name.</summary>
+            <summary>Denotes the start of an argument name.</summary>
         </member>
         <member name="P:NBagOfTricks.CommandProcessor.Processor.Commands">
             <summary>All the commands.</summary>
         </member>
+        <member name="P:NBagOfTricks.CommandProcessor.Processor.CommandName">
+            <summary>Selected command name.</summary>
+        </member>
         <member name="P:NBagOfTricks.CommandProcessor.Processor.Errors">
             <summary>Missing args etc.</summary>
         </member>
-        <member name="M:NBagOfTricks.CommandProcessor.Processor.Parse(System.String)">
+        <member name="M:NBagOfTricks.CommandProcessor.Processor.Parse(System.String,System.Boolean)">
             <summary>
             Parse the cmd string using our definitions.
             </summary>
             <param name="cmdString">String to parse.</param>
+            <param name="skipFirst">Ignore first string, usually the exe name.</param>
             <returns>The main command name or empty if failed.</returns>
         </member>
         <member name="M:NBagOfTricks.CommandProcessor.Processor.GetUsage(System.String)">

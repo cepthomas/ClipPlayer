@@ -1,12 +1,12 @@
-﻿using NBagOfTricks.CommandProcessor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NBagOfTricks.CommandProcessor;
+using NBagOfTricks.Utils;
 
 
 namespace ClipPlayer
 {
-
     public class App
     {
         #region Fields
@@ -17,13 +17,6 @@ namespace ClipPlayer
         IPlayer _player = null;
         #endregion
 
-
-        bool _running = false;
-
-
-
-
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -31,47 +24,96 @@ namespace ClipPlayer
         {
             // Create the specs for the command processor.
             var cp = new Processor();
-            var args = Environment.GetCommandLineArgs();
-            // ClipPlayer.exe  play -log -mdev "my midi device" -tmp 99
 
             cp.Commands = new Commands
             {
                 {
                     "",
-                    "",
+                    "play a file: .mid|.wav|.mp3",
                     new Arguments
                     {
                         ///// Common
-                        { "vol", "volume from 0 to 1",                  ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { return float.TryParse(v, out _volume); } },
-                        { "log", "log events",                          ArgOptType.Opt, ArgOptType.None,
-                            (v) => { Common.LogEvents = true; return true; } },
+                        { 
+                            "vol",
+                            "volume from 0 to 1",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) => 
+                            {
+                                bool aok = double.TryParse(v, out double d);
+                                if(aok) Common.Volume = (float)MathUtils.Constrain(d, 0, 1);
+                                return aok;
+                            }
+                        },
                         ///// Wave player
-                        { "wdev", "wav device",                         ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { Common.WavOutDevice = v; return true; } },
-                        { "lat", "latency",                             ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { return int.TryParse(v, out _latency); } },
+                        {
+                            "wdev",
+                            "wav device",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) =>
+                            {
+                                Common.WavOutDevice = v;
+                                return true;
+                            }
+                        },
+                        {
+                            "lat",
+                            "latency",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) =>
+                            {
+                                bool aok = int.TryParse(v, out int i);
+                                if(aok) Common.Latency = MathUtils.Constrain(i, 5, 500);
+                                return aok;
+                            }
+                        },
                         ///// Midi player
-                        { "mdev", "midi device",                        ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { Common.MidiOutDevice = v; return true; } },
-                        { "drch", "map this channel to drum channel",   ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { return int.TryParse(v, out _drumChannel); } },
-                        { "tmp", "tempo aka bpm",                       ArgOptType.Opt, ArgOptType.Req,
-                            (v) => { return int.TryParse(v, out _tempo); int.Parse  } }
+                        {
+                            "mdev",
+                            "midi device",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) =>
+                            {
+                                Common.MidiOutDevice = v;
+                                return true;
+                            }
+                        },
+                        {
+                            "drch",
+                            "map this channel to drum channel",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) =>
+                            {
+                                bool aok = int.TryParse(v, out int i);
+                                if(aok) Common.DrumChannel = MathUtils.Constrain(i, 1, 16);
+                                return aok;
+                            }
+                        },
+                        {
+                            "tmp",
+                            "tempo/bpm if not in file",
+                            ArgOptType.Opt, ArgOptType.Req,
+                            (v) =>
+                            {
+                                bool aok = int.TryParse(v, out int i);
+                                if(aok) Common.Tempo = MathUtils.Constrain(i, 30, 250);
+                                return aok;
+
+                            }
+                        }
                     },
                     // Files func
                     (v) =>
                     {
                         _fn = v.ToLower();
-                        return ".wav.mp3.mid".Contains(Path.GetExtension(_fn));
+                        return File.Exists(_fn) && ".wav.mp3.mid".Contains(Path.GetExtension(_fn));
                     }
                 }
             };
 
-            /////// Basic processing ///////
-            int ecode = 0;
-            string testCmd = "realcmd -def -jkl some1 -ghi -abc some2 InputFile1.txt InputFile2.doc InputFile3.doc";
-            bool ok = cp.Parse("TODO testCmd");
+            /////// Processing ///////
+            //-vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
+            //-vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
+            bool ok = cp.Parse(Environment.CommandLine, true);
 
             if(ok && _fn != "")
             {
@@ -91,35 +133,43 @@ namespace ClipPlayer
 
                     if (_player != null)
                     {
+                        bool running = false;
+
                         if (_player.OpenFile(_fn))
                         {
-                            _player.PlaybackCompleted += (_, __) => _running = false;
+                            _player.PlaybackCompleted += (_, __) => running = false;
                             _player.Log += (sender, msg) => Console.WriteLine($"> ({sender}) {msg}");
-                            _running = true;
+                            running = true;
                             _player.Start();
 
-                            // TODO wait until done.
-
+                            // Wait until done.
+                            while(running)
+                            {
+                                System.Threading.Thread.Sleep(50);
+                            }
                         }
                         else
                         {
                             Console.WriteLine($"Couldn't open file");
-                            ecode = 1;
+                            Environment.ExitCode = 2;
                         }
                     }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Fail: {e}");
-                    ecode = 2;
+                    Environment.ExitCode = 3;
                 }
                 finally
                 {
                     _player?.Dispose();
                 }
             }
-
-            Environment.Exit(ecode);
+            else
+            {
+                Console.WriteLine(cp.GetUsage());
+                Environment.ExitCode = 1;
+            }
         }
     }
 }

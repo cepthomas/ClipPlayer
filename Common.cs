@@ -15,8 +15,6 @@ namespace ClipPlayer
         event EventHandler<string> Log;
 
         /// <summary>Open playback file in player.</summary>
-        /// <param name="fn">The file to open.</param>
-        /// <returns>Success</returns>
         bool OpenFile(string fn);
 
         /// <summary>Start playback.</summary>
@@ -25,24 +23,27 @@ namespace ClipPlayer
         /// <summary>Stop playback.</summary>
         void Stop();
 
-        /// <summary>Stop playback and return to beginning.</summary>
+        /// <summary>Return to beginning.</summary>
         void Rewind();
     }
 
     public class Common
     {
+        /// <summary>Common volume setting.</summary>
         public static float Volume { get; set; } = 0.8f;
 
-        public static bool LogEvents { get; set; } = false;
-
+        /// <summary>Wave device.</summary>
         public static string WavOutDevice { get; set; } = "Microsoft Sound Mapper";
 
         public static int Latency { get; set; } = 200;
 
-        public static string MidiOutDevice { get; set; } = "";
+        /// <summary>Midi device.</summary>
+        public static string MidiOutDevice { get; set; } = "Microsoft GS Wavetable Synth";
 
+        /// <summary>Some midi files have drums on non-standard channel.</summary>
         public static int DrumChannel { get; set; } = 0;
 
+        /// <summary>Midi files may or may not specify this in the file.</summary>
         public static int Tempo { get; set; } = 100;
     }
 }

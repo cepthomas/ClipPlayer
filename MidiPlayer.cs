@@ -7,10 +7,6 @@ using NAudio.Midi;
 using NBagOfTricks.Utils;
 
 
-// TODO solo/mute individual drums.
-// TODO incorporate fluidsynth?
-
-
 namespace ClipPlayer
 {
     /// <summary>
@@ -35,9 +31,6 @@ namespace ClipPlayer
         #endregion
 
         #region Fields
-        /// <summary>Current file.</summary>
-        string _fn = "";
-
         /// <summary>Indicates whether or not the midi is playing.</summary>
         bool _running = false;
 
@@ -47,37 +40,11 @@ namespace ClipPlayer
         /// <summary>Period.</summary>
         double _msecPerTick = 0;
 
-        /// <summary>Current volume between 0 and 1.</summary>
-        float _volume = 0.8f;
-
         /// <summary>Midi events from the input file.</summary>
         MidiEventCollection _sourceEvents = null;
 
         /// <summary>All the channels.</summary>
         readonly PlayChannel[] _playChannels = new PlayChannel[NUM_CHANNELS];
-
-        /// <summary>Requested tempo from file.</summary>
-        int _tempo = 100;
-
-        /// <summary>Multimedia timer identifier.</summary>
-        int _timerID = -1;
-
-        /// <summary>Delegate for Windows mmtimer callback.</summary>
-        delegate void TimeProc(int id, int msg, int user, int param1, int param2);
-
-        /// <summary>Called by Windows when a mmtimer event occurs.</summary>
-        readonly TimeProc _timeProc;
-
-
-
-
-        string _midiOutDevice = "";
-
-        int _drumChannel = 1;
-
-        bool _mapDrumChannel = false;
-
-        bool _logEvents = false;
 
         /// <summary>Total length in ticks.</summary>
         int _length;
@@ -91,8 +58,15 @@ namespace ClipPlayer
         /// <summary>Current.</summary>
         int _current;
 
-        #endregion
+        /// <summary>Multimedia timer identifier.</summary>
+        int _timerID = -1;
 
+        /// <summary>Delegate for Windows mmtimer callback.</summary>
+        delegate void TimeProc(int id, int msg, int user, int param1, int param2);
+
+        /// <summary>Called by Windows when a mmtimer event occurs.</summary>
+        readonly TimeProc _timeProc;
+        #endregion
 
         #region Events
         /// <inheritdoc />
@@ -108,28 +82,26 @@ namespace ClipPlayer
         /// </summary>
         public MidiPlayer()
         {
-            //chkMapDrums.Checked = Common.Settings.MapDrumChannel;
-            //chkMapDrums.Text = $"Drums\r\nchan {Common.Settings.DrumChannel}";
-            //BeatsPerBar = BEATS_PER_BAR;
-            //TicksPerBeat = PPQ;
-            //Snap = Common.Settings.Snap;
-
             // Figure out which midi output device.
-            for (int devindex = 0; devindex < MidiOut.NumberOfDevices; devindex++)
+            int devIndex = -1;
+            for (int i = 0; i < MidiOut.NumberOfDevices; i++)
             {
-                if (_midiOutDevice == MidiOut.DeviceInfo(devindex).ProductName)
+                if (Common.MidiOutDevice == MidiOut.DeviceInfo(i).ProductName)
                 {
-                    _midiOut = new MidiOut(devindex);
+                    devIndex = i;
                     break;
                 }
             }
+            _midiOut = new MidiOut(devIndex);
 
-            if(_midiOut == null)
+            if (_midiOut == null)
             {
-//                MessageBox.Show($"Invalid midi device: {Common.Settings.MidiOutDevice}");
+                LogMessage($"Invalid midi device: {Common.MidiOutDevice}");
             }
-
-            _timeProc = new TimeProc(MmTimerCallback);
+            else
+            {
+                _timeProc = new TimeProc(MmTimerCallback);
+            }
         }
 
         /// <summary> 
@@ -152,18 +124,12 @@ namespace ClipPlayer
         public bool OpenFile(string fn)
         {
             bool ok = true;
-            _fn = fn;
 
             // Clean up first.
             Rewind();
 
             if (ok)
             {
-                // Default in case not specified in file.
-                int lastTick = 0;
-                _tempo = 100;
-                HashSet<int> allDrums = new HashSet<int>();
-
                 // Get events.
                 var mfile = new MidiFile(fn, true);
                 _sourceEvents = mfile.Events;
@@ -187,7 +153,7 @@ namespace ClipPlayer
                             long tick = te.AbsoluteTime * PPQ / _sourceEvents.DeltaTicksPerQuarterNote;
 
                             // Adjust channel for non-standard drums.
-                            if (_mapDrumChannel && te.Channel == _drumChannel)
+                            if (Common.DrumChannel > 0 && te.Channel == Common.DrumChannel)
                             {
                                 te.Channel = DRUM_CHANNEL;
                             }
@@ -196,20 +162,13 @@ namespace ClipPlayer
                             switch(te)
                             {
                                 case NoteOnEvent non:
-                                    // Collect drum list.
-                                    if(non.Channel == DRUM_CHANNEL)
-                                    {
-                                        allDrums.Add(non.NoteNumber);
-                                    }
+                                    break;
 
-                                    //if (non.Velocity > 0 && non.NoteLength == 0) EXP
-                                    //{
-                                    //    non.NoteLength = 1;
-                                    //}
+                                case TempoEvent evt:
+                                    Common.Tempo = (int)evt.Tempo;
                                     break;
 
                                 case PatchChangeEvent evt:
-                                    _playChannels[te.Channel - 1].Patch = evt.Patch;
                                     break;
                             }
 
@@ -220,50 +179,18 @@ namespace ClipPlayer
                 }
 
                 // Final fixups.
+                _length = 0;
                 for (int i = 0; i < _playChannels.Count(); i++)
                 {
                     var pc = _playChannels[i];
-
                     pc.Name = $"Ch:({i + 1}) ";
-
-                    if(i + 1 == DRUM_CHANNEL)
-                    {
-                        pc.Name += $"Drums";
-                    }
-                    else if (pc.Patch == -1)
-                    {
-                        pc.Name += $"NoPatch";
-                    }
-                    //else if(_instrumentDefs.ContainsKey(pc.Patch))
-                    //{
-                    //    pc.Name += $"{_instrumentDefs[pc.Patch]}";
-                    //}
-                    else
-                    {
-                        pc.Name += $"Patch:{pc.Patch}";
-                    }
-
-                    lastTick = Math.Max(lastTick, pc.MaxTick);
-                    if(pc.Valid)
-                    {
-                    //    clickGrid.AddIndicator(pc.Name, i);
-                    }
+                    _length = Math.Max(_length, pc.MaxTick);
                 }
 
                 // Figure out times.
-                _length = lastTick;
                 _start = 0;
                 _end = _length - 1;
                 _current = 0;
-
-                //// Debug stuff. EXP
-                //List<string> sdbg = new List<string>() { "Drums:" };
-                //foreach(int dr in allDrums)
-                //{
-                //    string snm = _drumDefs.ContainsKey(dr) ? _drumDefs[dr] : "???";
-                //    sdbg.Add($"{dr}={snm}");
-                //}
-                //LogMessage(string.Join(" ", sdbg));
             }
 
             return ok;
@@ -278,13 +205,13 @@ namespace ClipPlayer
                 timeKillEvent(_timerID);
 
                 // Calculate the actual period to tell the user.
-                double secPerBeat = 60 / _tempo;
+                double secPerBeat = 60.0 / Common.Tempo;
                 _msecPerTick = 1000 * secPerBeat / PPQ;
 
                 int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
                 float msecPerBeat = period * PPQ;
                 float actualBpm = 60.0f * 1000.0f / msecPerBeat;
-                LogMessage($"Period:{period} Goal_BPM:{_tempo:f2} Actual_BPM:{actualBpm:f2}");
+                LogMessage($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
 
                 // Create and start periodic timer. Resolution is 1. Mode is TIME_PERIODIC.
                 _timerID = timeSetEvent(period, 1, _timeProc, IntPtr.Zero, 1);
@@ -368,7 +295,7 @@ namespace ClipPlayer
                                             else
                                             {
                                                 double vel = evt.Velocity;
-                                                evt.Velocity = (int)(vel * _volume);
+                                                evt.Velocity = (int)(vel * Common.Volume);
                                                 MidiSend(evt);
                                                 // Need to restore.
                                                 evt.Velocity = (int)vel;
@@ -431,11 +358,7 @@ namespace ClipPlayer
         void MidiSend(MidiEvent evt)
         {
             _midiOut?.Send(evt.GetAsShortMessage());
-
-            if (_logEvents)
-            {
-                LogMessage(evt.ToString());
-            }
+            //LogMessage(evt.ToString());
         }
 
         /// <summary>
@@ -500,7 +423,7 @@ namespace ClipPlayer
         /// <summary>For UI.</summary>
         public int ChannelNumber { get; set; } = -1;
 
-        /// <summary>For UI.</summary>
+        /// <summary>For display.</summary>
         public string Name { get; set; } = "";
 
         /// <summary>Channel used.</summary>
@@ -509,9 +432,6 @@ namespace ClipPlayer
         /// <summary>For muting/soloing.</summary>
         public PlayMode Mode { get; set; } = PlayMode.Normal;
         public enum PlayMode { Normal = 0, Solo = 1, Mute = 2 }
-
-        /// <summary>For UI.</summary>
-        public int Patch { get; set; } = -1;
 
         ///<summary>The main collection of Steps. The key is the subbeat/tick to send the list.</summary>
         public Dictionary<int, List<MidiEvent>> Events { get; set; } = new Dictionary<int, List<MidiEvent>>();
