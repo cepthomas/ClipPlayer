@@ -4,6 +4,7 @@ using System.IO;
 using NBagOfTricks.CommandProcessor;
 using NBagOfTricks.Utils;
 
+//TODO how to stop/kill?
 
 namespace ClipPlayer
 {
@@ -113,6 +114,7 @@ namespace ClipPlayer
             /////// Processing ///////
             //-vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
             //-vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
+            //change the Output type from Console Application to Windows Application.
             bool ok = cp.Parse(Environment.CommandLine, true);
 
             if(ok && _fn != "")

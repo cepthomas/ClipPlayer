@@ -140,6 +140,24 @@ namespace ClipPlayer
                     _playChannels[i] = new PlayChannel() { ChannelNumber = i + 1 };
                 }
 
+                // Kind of cheating but have a look and see if this is a drums-on-ch1 situation. TODO
+                if(Common.DrumChannel == 0)
+                {
+                    HashSet<int> allChannels = new HashSet<int>();
+                    for (int track = 0; track < _sourceEvents.Tracks; track++)
+                    {
+                        foreach (var te in _sourceEvents.GetTrackEvents(track))
+                        {
+                            allChannels.Add(te.Channel);
+                        }
+                    }
+
+                    if(allChannels.Count == 1)
+                    {
+                        Common.DrumChannel = allChannels.ElementAt(0);
+                    }
+                }
+
                 // Bin events by channel. Scale ticks to internal ppq.
                 for (int track = 0; track < _sourceEvents.Tracks; track++)
                 {
