@@ -14,7 +14,7 @@ namespace ClipPlayer
     /// There are some limitations: Windows multimedia timer has 1 msec resolution at best. This causes a trade-off between
     /// ppq resolution and accuracy. The timer is also inherently wobbly.
     /// </summary>
-    public partial class MidiPlayer : IPlayer
+    public class MidiPlayer : IPlayer
     {
         #region Constants
         /// <summary>Midi caps.</summary>
@@ -31,8 +31,8 @@ namespace ClipPlayer
         #endregion
 
         #region Fields
-        /// <summary>Indicates whether or not the midi is playing.</summary>
-        bool _running = false;
+        /// <summary>Indicates current state.</summary>
+        RunState _state = RunState.Stopped;
 
         /// <summary>Midi output device.</summary>
         MidiOut _midiOut = null;
@@ -49,13 +49,7 @@ namespace ClipPlayer
         /// <summary>Total length in ticks.</summary>
         int _length;
 
-        /// <summary>First valid point.</summary>
-        int _start;
-
-        /// <summary>Last valid point.</summary>
-        int _end;
-
-        /// <summary>Current.</summary>
+        /// <summary>Current psition in ticks.</summary>
         int _current;
 
         /// <summary>Multimedia timer identifier.</summary>
@@ -70,10 +64,7 @@ namespace ClipPlayer
 
         #region Events
         /// <inheritdoc />
-        public event EventHandler PlaybackCompleted;
-
-        /// <inheritdoc />
-        public event EventHandler<string> Log;
+        public event EventHandler<StatusEventArgs> StatusEvent;
         #endregion
 
         #region Lifecycle
@@ -96,7 +87,7 @@ namespace ClipPlayer
 
             if (_midiOut == null)
             {
-                LogMessage($"Invalid midi device: {Common.MidiOutDevice}");
+                DoError($"Invalid midi device: {Common.MidiOutDevice}");
             }
             else
             {
@@ -140,8 +131,8 @@ namespace ClipPlayer
                     _playChannels[i] = new PlayChannel() { ChannelNumber = i + 1 };
                 }
 
-                // Kind of cheating but have a look and see if this is a drums-on-ch1 situation. TODO
-                if(Common.DrumChannel == 0)
+                // Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
+                if(Common.DrumChannel != 0)
                 {
                     HashSet<int> allChannels = new HashSet<int>();
                     for (int track = 0; track < _sourceEvents.Tracks; track++)
@@ -197,6 +188,7 @@ namespace ClipPlayer
                 }
 
                 // Final fixups.
+                _current = 0;
                 _length = 0;
                 for (int i = 0; i < _playChannels.Count(); i++)
                 {
@@ -204,11 +196,6 @@ namespace ClipPlayer
                     pc.Name = $"Ch:({i + 1}) ";
                     _length = Math.Max(_length, pc.MaxTick);
                 }
-
-                // Figure out times.
-                _start = 0;
-                _end = _length - 1;
-                _current = 0;
             }
 
             return ok;
@@ -218,7 +205,7 @@ namespace ClipPlayer
         public void Start()
         {
             // Start or restart?
-            if(!_running)
+            if(_state != RunState.Runnning)
             {
                 timeKillEvent(_timerID);
 
@@ -229,7 +216,7 @@ namespace ClipPlayer
                 int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
                 float msecPerBeat = period * PPQ;
                 float actualBpm = 60.0f * 1000.0f / msecPerBeat;
-                LogMessage($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
+                //Log($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
 
                 // Create and start periodic timer. Resolution is 1. Mode is TIME_PERIODIC.
                 _timerID = timeSetEvent(period, 1, _timeProc, IntPtr.Zero, 1);
@@ -237,12 +224,11 @@ namespace ClipPlayer
                 // If the timer was created successfully.
                 if (_timerID != 0)
                 {
-                    _running = true;
+                    _state = RunState.Runnning;
                 }
                 else
                 {
-                    _running = false;
-                    throw new Exception("Unable to start periodic multimedia Timer.");
+                    DoError("Unable to start periodic multimedia Timer.");
                 }
             }
             else
@@ -254,9 +240,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Stop()
         {
-            if(_running)
+            if(_state == RunState.Runnning)
             {
-                _running = false;
+                _state = RunState.Stopped;
                 timeKillEvent(_timerID);
                 _timerID = -1;
 
@@ -284,7 +270,7 @@ namespace ClipPlayer
         /// </summary>
         void MmTimerCallback(int id, int msg, int user, int param1, int param2)
         {
-            if (_running)
+            if (_state == RunState.Runnning)
             {
                 // Any soloes?
                 bool solo = _playChannels.Where(c => c.Mode == PlayChannel.PlayMode.Solo).Count() > 0;
@@ -343,29 +329,14 @@ namespace ClipPlayer
                 }
 
                 // Bump time. Check for end of play. Client will take care of transport control.
-                bool done = false;
-
                 _current += 1;
-                if (_current < 0)
+                if (_current >= _length)
                 {
+                    _state = RunState.Complete;
                     _current = 0;
                 }
-                else if (_current >= _length)
-                {
-                    _current = _length - 1;
-                    done = true;
-                }
-                else if (_current >= _end)
-                {
-                    _current = _end - 1;
-                    done = true;
-                }
 
-                if (done)
-                {
-                    _running = false;
-                    PlaybackCompleted?.Invoke(this, new EventArgs());
-                }
+                DoUpdate();
             }
         }
 
@@ -375,17 +346,8 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void MidiSend(MidiEvent evt)
         {
-            _midiOut?.Send(evt.GetAsShortMessage());
             //LogMessage(evt.ToString());
-        }
-
-        /// <summary>
-        /// Logger.
-        /// </summary>
-        /// <param name="s"></param>
-        void LogMessage(string s)
-        {
-            Log?.Invoke(this, s);
+            _midiOut?.Send(evt.GetAsShortMessage());
         }
 
         /// <summary>
@@ -407,6 +369,34 @@ namespace ClipPlayer
         (int bar, int beat, int tick) Convert(int tick)
         {
             return (tick / BEATS_PER_BAR / PPQ, tick / PPQ % BEATS_PER_BAR, tick % PPQ);
+        }
+
+        /// <summary>
+        /// Tell the mothership.
+        /// </summary>
+        void DoUpdate()
+        {
+            StatusEvent.Invoke(this, new StatusEventArgs()
+            {
+                State = _state,
+                Progress = _current < _length ? 100 * _current / _length : 100
+            });
+        }
+
+        /// <summary>
+        /// Tell the mothership.
+        /// </summary>
+        /// <param name="msg"></param>
+        void DoError(string msg)
+        {
+            _state = RunState.Error;
+            _current = 0;
+            StatusEvent.Invoke(this, new StatusEventArgs()
+            {
+                State = _state,
+                Progress = 0,
+                Message = msg
+            });
         }
         #endregion
 

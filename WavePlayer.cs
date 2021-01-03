@@ -9,7 +9,7 @@ using NBagOfTricks.Utils;
 
 namespace ClipPlayer
 {
-    public partial class WavePlayer : IPlayer
+    public class WavePlayer : IPlayer
     {
         #region Fields
         /// <summary>Wave output play device.</summary>
@@ -18,17 +18,11 @@ namespace ClipPlayer
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader _audioFileReader = null;
 
-        /// <summary>Stream read chunk.</summary>
-        const int READ_BUFF_SIZE = 1000000;
+        /// <summary>Indicates current state.</summary>
+        RunState _state = RunState.Stopped;
 
         /// <summary>Total length.</summary>
         TimeSpan _length = TimeSpan.Zero;
-
-        /// <summary>First valid point.</summary>
-        TimeSpan _start = TimeSpan.Zero;
-
-        /// <summary>Last valid point.</summary>
-        TimeSpan _end = TimeSpan.Zero;
 
         /// <summary>Current.</summary>
         TimeSpan _current = TimeSpan.Zero;
@@ -36,10 +30,7 @@ namespace ClipPlayer
 
         #region Events
         /// <inheritdoc />
-        public event EventHandler PlaybackCompleted;
-
-        /// <inheritdoc />
-        public event EventHandler<string> Log;
+        public event EventHandler<StatusEventArgs> StatusEvent;
         #endregion
 
         #region Lifecycle
@@ -65,7 +56,6 @@ namespace ClipPlayer
         public bool OpenFile(string fn)
         {
             bool ok = true;
-            LogMessage($"Open:{fn}");
 
             // Clean up first.
             CloseAudio();
@@ -92,8 +82,6 @@ namespace ClipPlayer
                 _audioFileReader = new AudioFileReader(fn);
 
                 _length = _audioFileReader.TotalTime;
-                _start = TimeSpan.Zero;
-                _end = TimeSpan.Zero;
                 _current = TimeSpan.Zero;
 
                 // Create reader.
@@ -123,6 +111,7 @@ namespace ClipPlayer
             if (_waveOut != null && _audioFileReader != null)
             {
                 _waveOut.Play();
+                _state = RunState.Runnning;
             }
         }
 
@@ -132,6 +121,7 @@ namespace ClipPlayer
             if (_waveOut != null && _audioFileReader != null)
             {
                 _waveOut.Pause(); // or Stop?
+                _state = RunState.Stopped;
             }
         }
 
@@ -161,12 +151,31 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// Logger.
+        /// Tell the mothership.
         /// </summary>
-        /// <param name="s"></param>
-        void LogMessage(string s)
+        void DoUpdate()
         {
-            Log?.Invoke(this, s);
+            StatusEvent.Invoke(this, new StatusEventArgs()
+            {
+                State = _state,
+                Progress = _current < _length ? 100 * (int)_current.TotalMilliseconds / (int)_length.TotalMilliseconds : 100
+            });
+        }
+
+        /// <summary>
+        /// Tell the mothership.
+        /// </summary>
+        /// <param name="msg"></param>
+        void DoError(string msg)
+        {
+            _state = RunState.Error;
+            _current = TimeSpan.Zero;
+            StatusEvent.Invoke(this, new StatusEventArgs()
+            {
+                State = _state,
+                Progress = 0,
+                Message = msg
+            });
         }
         #endregion
 
@@ -180,10 +189,10 @@ namespace ClipPlayer
         {
             if (e.Exception != null)
             {
-                Log?.Invoke(this, e.Exception.Message);
+                DoError(e.Exception.Message);
             }
 
-            PlaybackCompleted?.Invoke(this, new EventArgs());
+            DoUpdate();
         }
 
         /// <summary>
@@ -194,6 +203,7 @@ namespace ClipPlayer
         void SampleChannel_PreVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
             _current = _audioFileReader.CurrentTime;
+            DoUpdate();
         }
         #endregion
     }

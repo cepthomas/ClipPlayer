@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 
 namespace ClipPlayer
 {
+    public enum RunState { Stopped, Runnning, Complete, Error }
+
+    public class StatusEventArgs : EventArgs
+    {
+        /// <summary>0 -> 100</summary>
+        public int Progress { get; set; } = 0;
+        /// <summary>Where we at.</summary>
+        public RunState State { get; set; } = RunState.Stopped;
+        /// <summary>Optional info.</summary>
+        public string Message { get; set; } = "";
+    }
+
     interface IPlayer : IDisposable
     {
-        /// <summary>Client needs to know when playing is done.</summary>
-        event EventHandler PlaybackCompleted;
-
-        /// <summary>Log me please.</summary>
-        event EventHandler<string> Log;
+        /// <summary>Something changed.</summary>
+        event EventHandler<StatusEventArgs> StatusEvent;
 
         /// <summary>Open playback file in player.</summary>
         bool OpenFile(string fn);
@@ -35,6 +44,7 @@ namespace ClipPlayer
         /// <summary>Wave device.</summary>
         public static string WavOutDevice { get; set; } = "Microsoft Sound Mapper";
 
+        /// <summary>Wave performance.</summary>
         public static int Latency { get; set; } = 200;
 
         /// <summary>Midi device.</summary>

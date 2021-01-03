@@ -18,6 +18,8 @@ namespace ClipPlayer
         IPlayer _player = null;
         #endregion
 
+        RunState _state = RunState.Stopped;
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -135,17 +137,15 @@ namespace ClipPlayer
 
                     if (_player != null)
                     {
-                        bool running = false;
 
                         if (_player.OpenFile(_fn))
                         {
-                            _player.PlaybackCompleted += (_, __) => running = false;
-                            _player.Log += (sender, msg) => Console.WriteLine($"> ({sender}) {msg}");
-                            running = true;
+                            _player.StatusEvent += Player_StatusEvent;
+                            _state = RunState.Runnning;
                             _player.Start();
 
                             // Wait until done.
-                            while(running)
+                            while(_state == RunState.Runnning)
                             {
                                 System.Threading.Thread.Sleep(50);
                             }
@@ -171,6 +171,16 @@ namespace ClipPlayer
             {
                 Console.WriteLine(cp.GetUsage());
                 Environment.ExitCode = 1;
+            }
+        }
+
+        private void Player_StatusEvent(object sender, StatusEventArgs e)
+        {
+            _state = e.State;
+
+            if(e.Message != "")
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }
