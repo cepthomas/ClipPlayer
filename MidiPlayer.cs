@@ -202,7 +202,7 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
-        public void Start()
+        public void Play()
         {
             // Start or restart?
             if(_state != RunState.Runnning)

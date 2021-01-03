@@ -117,20 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="croco" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\croco.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="glyphicons_173_rewind" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\glyphicons-173-rewind.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="glyphicons_174_play" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\glyphicons-174-play.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="glyphicons_175_pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\glyphicons-175-pause.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="glyphicons_176_stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\glyphicons-176-stop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
 </root>

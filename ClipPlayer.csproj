@@ -67,6 +67,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Transport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Transport.Designer.cs">
+      <DependentUpon>Transport.cs</DependentUpon>
+    </Compile>
     <Compile Include="WavePlayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,9 +85,24 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Transport.resx">
+      <DependentUpon>Transport.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\croco.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\glyphicons-173-rewind.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\glyphicons-174-play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\glyphicons-175-pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\glyphicons-176-stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

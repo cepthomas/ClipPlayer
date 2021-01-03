@@ -16,9 +16,10 @@ namespace ClipPlayer
 
         /// <summary>Current play device.</summary>
         IPlayer _player = null;
-        #endregion
 
+        /// <summary>Current play state.</summary>
         RunState _state = RunState.Stopped;
+        #endregion
 
         /// <summary>
         /// Constructor.
@@ -142,7 +143,7 @@ namespace ClipPlayer
                         {
                             _player.StatusEvent += Player_StatusEvent;
                             _state = RunState.Runnning;
-                            _player.Start();
+                            _player.Play();
 
                             // Wait until done.
                             while(_state == RunState.Runnning)

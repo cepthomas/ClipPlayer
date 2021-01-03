@@ -27,7 +27,7 @@ namespace ClipPlayer
         bool OpenFile(string fn);
 
         /// <summary>Start playback.</summary>
-        void Start();
+        void Play();
 
         /// <summary>Stop playback.</summary>
         void Stop();
