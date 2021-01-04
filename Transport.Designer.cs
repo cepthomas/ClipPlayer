@@ -49,7 +49,7 @@ namespace ClipPlayer
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.progress.Size = new System.Drawing.Size(203, 30);
+            this.progress.Size = new System.Drawing.Size(251, 30);
             this.progress.TabIndex = 3;
             // 
             // pbPlay
@@ -89,14 +89,16 @@ namespace ClipPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 39);
+            this.ClientSize = new System.Drawing.Size(375, 39);
             this.Controls.Add(this.pbRewind);
             this.Controls.Add(this.pbStop);
             this.Controls.Add(this.pbPlay);
             this.Controls.Add(this.progress);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Transport";
-            this.Text = "Transport";
+            this.Text = "Clip Player";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
+            this.Load += new System.EventHandler(this.Transport_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).EndInit();

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NAudio.Midi;
+using NBagOfTricks.UI;
 using NBagOfTricks.Utils;
 
 
@@ -31,9 +32,6 @@ namespace ClipPlayer
         #endregion
 
         #region Fields
-        /// <summary>Indicates current state.</summary>
-        RunState _state = RunState.Stopped;
-
         /// <summary>Midi output device.</summary>
         MidiOut _midiOut = null;
 
@@ -43,8 +41,8 @@ namespace ClipPlayer
         /// <summary>Midi events from the input file.</summary>
         MidiEventCollection _sourceEvents = null;
 
-        /// <summary>All the channels.</summary>
-        readonly PlayChannel[] _playChannels = new PlayChannel[NUM_CHANNELS];
+        ///<summary>The internal collection of events. The key is the subbeat/tick to send the list.</summary>
+        Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
 
         /// <summary>Total length in ticks.</summary>
         int _length;
@@ -62,7 +60,12 @@ namespace ClipPlayer
         readonly TimeProc _timeProc;
         #endregion
 
-        #region Events
+        #region Properties - interface implementation
+        /// <inheritdoc />
+        public RunState State { get; set; } = RunState.Stopped;
+        #endregion
+
+        #region Events - interface implementation
         /// <inheritdoc />
         public event EventHandler<StatusEventArgs> StatusEvent;
         #endregion
@@ -101,7 +104,15 @@ namespace ClipPlayer
         public void Dispose()
         {
             // Stop and destroy mmtimer.
-            Stop();
+            State = RunState.Stopped;
+
+            // Send midi stop all notes just in case.
+            for (int i = 0; i < NUM_CHANNELS; i++)
+            {
+                ControlChangeEvent nevt = new ControlChangeEvent(0, i + 1, MidiController.AllNotesOff, 0);
+                MidiSend(nevt);
+            }
+
             timeKillEvent(_timerID);
 
             // Resources.
@@ -114,147 +125,114 @@ namespace ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
-            bool ok = true;
+            _current = 0;
+            _length = 0;
 
-            // Clean up first.
-            Rewind();
+            // Get events.
+            var mfile = new MidiFile(fn, true);
+            _sourceEvents = mfile.Events;
 
-            if (ok)
+            // TODO? Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
+            if (Common.DrumChannel != 0)
             {
-                // Get events.
-                var mfile = new MidiFile(fn, true);
-                _sourceEvents = mfile.Events;
-
-                // Init internal structure.
-                for (int i = 0; i < _playChannels.Count(); i++)
-                {
-                    _playChannels[i] = new PlayChannel() { ChannelNumber = i + 1 };
-                }
-
-                // Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
-                if(Common.DrumChannel != 0)
-                {
-                    HashSet<int> allChannels = new HashSet<int>();
-                    for (int track = 0; track < _sourceEvents.Tracks; track++)
-                    {
-                        foreach (var te in _sourceEvents.GetTrackEvents(track))
-                        {
-                            allChannels.Add(te.Channel);
-                        }
-                    }
-
-                    if(allChannels.Count == 1)
-                    {
-                        Common.DrumChannel = allChannels.ElementAt(0);
-                    }
-                }
-
-                // Bin events by channel. Scale ticks to internal ppq.
+                HashSet<int> allChannels = new HashSet<int>();
                 for (int track = 0; track < _sourceEvents.Tracks; track++)
                 {
-                    foreach(var te in _sourceEvents.GetTrackEvents(track))
+                    foreach (var te in _sourceEvents.GetTrackEvents(track))
                     {
-                        if (te.Channel - 1 < NUM_CHANNELS) // midi is one-based
-                        {
-                            // Do some miscellaneous fixups.
-
-                            // Scale tick to internal.
-                            long tick = te.AbsoluteTime * PPQ / _sourceEvents.DeltaTicksPerQuarterNote;
-
-                            // Adjust channel for non-standard drums.
-                            if (Common.DrumChannel > 0 && te.Channel == Common.DrumChannel)
-                            {
-                                te.Channel = DRUM_CHANNEL;
-                            }
-
-                            // Other ops.
-                            switch(te)
-                            {
-                                case NoteOnEvent non:
-                                    break;
-
-                                case TempoEvent evt:
-                                    Common.Tempo = (int)evt.Tempo;
-                                    break;
-
-                                case PatchChangeEvent evt:
-                                    break;
-                            }
-
-                            // Add to our collection.
-                            _playChannels[te.Channel - 1].AddEvent((int)tick, te);
-                        }
-                    };
+                        allChannels.Add(te.Channel);
+                    }
                 }
 
-                // Final fixups.
-                _current = 0;
-                _length = 0;
-                for (int i = 0; i < _playChannels.Count(); i++)
+                if(allChannels.Count == 1)
                 {
-                    var pc = _playChannels[i];
-                    pc.Name = $"Ch:({i + 1}) ";
-                    _length = Math.Max(_length, pc.MaxTick);
+                    Common.DrumChannel = allChannels.ElementAt(0);
                 }
             }
 
-            return ok;
+            // Scale ticks to internal ppq.
+            for (int track = 0; track < _sourceEvents.Tracks; track++)
+            {
+                foreach(var te in _sourceEvents.GetTrackEvents(track))
+                {
+                    if (te.Channel - 1 < NUM_CHANNELS) // midi is one-based
+                    {
+                        // Do some miscellaneous fixups.
+
+                        // Scale tick to internal.
+                        int tick = (int)(te.AbsoluteTime * PPQ / _sourceEvents.DeltaTicksPerQuarterNote);
+
+                        // Adjust channel for non-standard drums.
+                        if (Common.DrumChannel > 0 && te.Channel == Common.DrumChannel)
+                        {
+                            te.Channel = DRUM_CHANNEL;
+                        }
+
+                        // Other ops.
+                        switch(te)
+                        {
+                            case NoteOnEvent non:
+                                break;
+
+                            case TempoEvent evt:
+                                Common.Tempo = (int)evt.Tempo;
+                                break;
+                        }
+
+                        // Add to our collection.
+                        if (!_playEvents.ContainsKey(tick))
+                        {
+                            _playEvents.Add(tick, new List<MidiEvent>());
+                        }
+                        _playEvents[tick].Add(te);
+                        _length = Math.Max(_length, tick);
+                    }
+                };
+            }
+
+            State = RunState.Stopped;
+
+            // Calculate the actual period to tell the user.
+            double secPerBeat = 60.0 / Common.Tempo;
+            _msecPerTick = 1000 * secPerBeat / PPQ;
+
+            int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
+            float msecPerBeat = period * PPQ;
+            float actualBpm = 60.0f * 1000.0f / msecPerBeat;
+            //Log($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
+
+            // Create and start periodic timer. Resolution is 1. Mode is TIME_PERIODIC.
+            _timerID = timeSetEvent(period, 1, _timeProc, IntPtr.Zero, 1);
+            if (_timerID == 0)
+            {
+                DoError("Unable to start periodic multimedia Timer.");
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public string GetInfo()
+        {
+            int bars = _length / BEATS_PER_BAR / PPQ;
+            int beats = _length / PPQ % BEATS_PER_BAR;
+            int ticks = _length % PPQ;
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_length * _msecPerTick));
+
+            string s = $"{Common.Tempo} bpm {ts:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{ticks}";
+            return s;
         }
 
         /// <inheritdoc />
         public void Play()
         {
-            // Start or restart?
-            if(_state != RunState.Runnning)
-            {
-                timeKillEvent(_timerID);
-
-                // Calculate the actual period to tell the user.
-                double secPerBeat = 60.0 / Common.Tempo;
-                _msecPerTick = 1000 * secPerBeat / PPQ;
-
-                int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
-                float msecPerBeat = period * PPQ;
-                float actualBpm = 60.0f * 1000.0f / msecPerBeat;
-                //Log($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
-
-                // Create and start periodic timer. Resolution is 1. Mode is TIME_PERIODIC.
-                _timerID = timeSetEvent(period, 1, _timeProc, IntPtr.Zero, 1);
-
-                // If the timer was created successfully.
-                if (_timerID != 0)
-                {
-                    _state = RunState.Runnning;
-                }
-                else
-                {
-                    DoError("Unable to start periodic multimedia Timer.");
-                }
-            }
-            else
-            {
-                Rewind();
-            }
+            State = RunState.Playing;
         }
 
         /// <inheritdoc />
         public void Stop()
         {
-            if(_state == RunState.Runnning)
-            {
-                _state = RunState.Stopped;
-                timeKillEvent(_timerID);
-                _timerID = -1;
-
-                // Send midi stop all notes just in case.
-                for (int i = 0; i < _playChannels.Count(); i++)
-                {
-                    if(_playChannels[i].Valid)
-                    {
-                        Kill(i);
-                    }
-                }
-            }
+            State = RunState.Stopped;
         }
 
         /// <inheritdoc />
@@ -270,60 +248,46 @@ namespace ClipPlayer
         /// </summary>
         void MmTimerCallback(int id, int msg, int user, int param1, int param2)
         {
-            if (_state == RunState.Runnning)
+            if (State == RunState.Playing)
             {
-                // Any soloes?
-                bool solo = _playChannels.Where(c => c.Mode == PlayChannel.PlayMode.Solo).Count() > 0;
-
-                // Process each channel.
-                foreach (var ch in _playChannels)
+                // Process any sequence steps.
+                if(_playEvents.ContainsKey(_current))
                 {
-                    if(ch.Valid)
+                    foreach (var mevt in _playEvents[_current])
                     {
-                        // Look for events to send.
-                        if (ch.Mode == PlayChannel.PlayMode.Solo || (!solo && ch.Mode == PlayChannel.PlayMode.Normal))
+                        switch (mevt)
                         {
-                            // Process any sequence steps.
-                            if (ch.Events.ContainsKey(_current))
-                            {
-                                foreach (var mevt in ch.Events[_current])
+                            // Adjust volume.
+                            case NoteOnEvent evt:
+                                if (evt.Channel == DRUM_CHANNEL && evt.Velocity == 0)
                                 {
-                                    switch (mevt)
-                                    {
-                                        // Adjust volume.
-                                        case NoteOnEvent evt:
-                                            if (ch.ChannelNumber == DRUM_CHANNEL && evt.Velocity == 0)
-                                            {
-                                                // EXP - skip noteoffs as windows GM doesn't like them.
-                                            }
-                                            else
-                                            {
-                                                double vel = evt.Velocity;
-                                                evt.Velocity = (int)(vel * Common.Volume);
-                                                MidiSend(evt);
-                                                // Need to restore.
-                                                evt.Velocity = (int)vel;
-                                            }
-                                            break;
-
-                                        case NoteEvent evt:
-                                            if(ch.ChannelNumber == DRUM_CHANNEL)
-                                            {
-                                                // EXP - skip noteoffs as windows GM doesn't like them.
-                                            }
-                                            else
-                                            {
-                                                MidiSend(evt);
-                                            }
-                                            break;
-
-                                        // No change.
-                                        default:
-                                            MidiSend(mevt);
-                                            break;
-                                    }
+                                    // EXP - skip noteoffs as windows GM doesn't like them.
                                 }
-                            }
+                                else
+                                {
+                                    double vel = evt.Velocity;
+                                    evt.Velocity = (int)(vel * Common.Volume);
+                                    MidiSend(evt);
+                                    // Need to restore.
+                                    evt.Velocity = (int)vel;
+                                }
+                                break;
+
+                            case NoteEvent evt:
+                                if (evt.Channel == DRUM_CHANNEL)
+                                {
+                                    // EXP - skip noteoffs as windows GM doesn't like them.
+                                }
+                                else
+                                {
+                                    MidiSend(evt);
+                                }
+                                break;
+
+                            // No change.
+                            default:
+                                MidiSend(mevt);
+                                break;
                         }
                     }
                 }
@@ -332,7 +296,7 @@ namespace ClipPlayer
                 _current += 1;
                 if (_current >= _length)
                 {
-                    _state = RunState.Complete;
+                    State = RunState.Complete;
                     _current = 0;
                 }
 
@@ -346,29 +310,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void MidiSend(MidiEvent evt)
         {
-            //LogMessage(evt.ToString());
-            _midiOut?.Send(evt.GetAsShortMessage());
-        }
-
-        /// <summary>
-        /// Send all notes off.
-        /// </summary>
-        /// <param name="channel"></param>
-        void Kill(int channel)
-        {
-            //LogMessage($"Kill:{channel}");
-            ControlChangeEvent nevt = new ControlChangeEvent(0, channel + 1, MidiController.AllNotesOff, 0);
-            MidiSend(nevt);
-        }
-
-        /// <summary>
-        /// Convert to musical representation.
-        /// </summary>
-        /// <param name="tick"></param>
-        /// <returns></returns>
-        (int bar, int beat, int tick) Convert(int tick)
-        {
-            return (tick / BEATS_PER_BAR / PPQ, tick / PPQ % BEATS_PER_BAR, tick % PPQ);
+            _midiOut.Send(evt.GetAsShortMessage());
         }
 
         /// <summary>
@@ -378,7 +320,6 @@ namespace ClipPlayer
         {
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                State = _state,
                 Progress = _current < _length ? 100 * _current / _length : 100
             });
         }
@@ -389,11 +330,10 @@ namespace ClipPlayer
         /// <param name="msg"></param>
         void DoError(string msg)
         {
-            _state = RunState.Error;
+            State = RunState.Error;
             _current = 0;
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                State = _state,
                 Progress = 0,
                 Message = msg
             });
@@ -401,7 +341,7 @@ namespace ClipPlayer
         #endregion
 
         #region Interop Multimedia Timer Functions
-#pragma warning disable IDE1006 // Naming Styles
+        #pragma warning disable IDE1006 // Naming Styles
 
         [DllImport("winmm.dll")]
         private static extern int timeGetDevCaps(ref TimerCaps caps, int sizeOfTimerCaps);
@@ -422,49 +362,5 @@ namespace ClipPlayer
         }
         #pragma warning restore IDE1006 // Naming Styles
         #endregion
-    }
-
-    /// <summary>Channel events and other properties.</summary>
-    public class PlayChannel
-    {
-        #region Properties
-        /// <summary>For UI.</summary>
-        public int ChannelNumber { get; set; } = -1;
-
-        /// <summary>For display.</summary>
-        public string Name { get; set; } = "";
-
-        /// <summary>Channel used.</summary>
-        public bool Valid { get { return Events.Count > 0; } }
-
-        /// <summary>For muting/soloing.</summary>
-        public PlayMode Mode { get; set; } = PlayMode.Normal;
-        public enum PlayMode { Normal = 0, Solo = 1, Mute = 2 }
-
-        ///<summary>The main collection of Steps. The key is the subbeat/tick to send the list.</summary>
-        public Dictionary<int, List<MidiEvent>> Events { get; set; } = new Dictionary<int, List<MidiEvent>>();
-
-        ///<summary>The duration of the whole channel.</summary>
-        public int MaxTick { get; private set; } = 0;
-        #endregion
-
-        /// <summary>Add an event at the given tick.</summary>
-        /// <param name="tick"></param>
-        /// <param name="evt"></param>
-        public void AddEvent(int tick, MidiEvent evt)
-        {
-            if (!Events.ContainsKey(tick))
-            {
-                Events.Add(tick, new List<MidiEvent>());
-            }
-            Events[tick].Add(evt);
-            MaxTick = Math.Max(MaxTick, tick);
-        }
-
-        /// <summary>For viewing pleasure.</summary>
-        public override string ToString()
-        {
-            return $"PlayChannel: Name:{Name} Number:{ChannelNumber} Mode:{Mode} Events:{Events.Count} MaxTick:{MaxTick}";
-        }
     }
 }

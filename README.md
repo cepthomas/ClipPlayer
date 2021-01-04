@@ -1,5 +1,6 @@
 # ClipPlayer
 A tool for playing audio and midi files. This is intended to be used from the command line or Windows Explorer "Open With".
+It displays a small UI so that playing can be stopped.
 
 Midi playing is considered just "good enough" due to the inherent limitations of the windows multimedia timer.
 
@@ -8,9 +9,9 @@ It is designed to run without arguments but these options are available:
 ```
 ClipPlayer.exe [-vol val] [-wdev val] [-lat val] [-mdev val] [-drch val] [-tmp val] wav|mpr3|wav file
     vol: volume from 0 to 1
-    wdev: wav device
+    wdev: wav device name
     lat: latency
-    mdev: midi device
+    mdev: midi device name
     drch: map this channel to drum channel
     tmp: tempo/bpm if not in file
 ```

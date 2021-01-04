@@ -9,11 +9,6 @@ namespace ClipPlayer
 {
     static class Program
     {
-        //static void Main(string[] args)
-        //{
-        //    new App();
-        //}
-
         [STAThread]
         static void Main()
         {
@@ -21,6 +16,5 @@ namespace ClipPlayer
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Transport());
         }
-
     }
 }

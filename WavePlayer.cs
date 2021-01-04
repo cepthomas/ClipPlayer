@@ -18,9 +18,6 @@ namespace ClipPlayer
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader _audioFileReader = null;
 
-        /// <summary>Indicates current state.</summary>
-        RunState _state = RunState.Stopped;
-
         /// <summary>Total length.</summary>
         TimeSpan _length = TimeSpan.Zero;
 
@@ -28,7 +25,12 @@ namespace ClipPlayer
         TimeSpan _current = TimeSpan.Zero;
         #endregion
 
-        #region Events
+        #region Properties - interface implementation
+        /// <inheritdoc />
+        public RunState State { get; set; } = RunState.Stopped;
+        #endregion
+
+        #region Events - interface implementation
         /// <inheritdoc />
         public event EventHandler<StatusEventArgs> StatusEvent;
         #endregion
@@ -106,12 +108,19 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
+        public string GetInfo()
+        {
+            string s = $"{_length:mm\\:ss\\.fff}";
+            return s;
+        }
+
+        /// <inheritdoc />
         public void Play()
         {
             if (_waveOut != null && _audioFileReader != null)
             {
                 _waveOut.Play();
-                _state = RunState.Runnning;
+                State = RunState.Playing;
             }
         }
 
@@ -121,7 +130,7 @@ namespace ClipPlayer
             if (_waveOut != null && _audioFileReader != null)
             {
                 _waveOut.Pause(); // or Stop?
-                _state = RunState.Stopped;
+                State = RunState.Stopped;
             }
         }
 
@@ -157,7 +166,6 @@ namespace ClipPlayer
         {
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                State = _state,
                 Progress = _current < _length ? 100 * (int)_current.TotalMilliseconds / (int)_length.TotalMilliseconds : 100
             });
         }
@@ -168,11 +176,10 @@ namespace ClipPlayer
         /// <param name="msg"></param>
         void DoError(string msg)
         {
-            _state = RunState.Error;
+            State = RunState.Error;
             _current = TimeSpan.Zero;
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                State = _state,
                 Progress = 0,
                 Message = msg
             });
@@ -191,8 +198,11 @@ namespace ClipPlayer
             {
                 DoError(e.Exception.Message);
             }
-
-            DoUpdate();
+            else
+            {
+                State = RunState.Complete;
+                DoUpdate();
+            }
         }
 
         /// <summary>

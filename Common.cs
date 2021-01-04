@@ -6,25 +6,29 @@ using System.Threading.Tasks;
 
 namespace ClipPlayer
 {
-    public enum RunState { Stopped, Runnning, Complete, Error }
+    public enum RunState { Stopped, Playing, Complete, Error }
 
     public class StatusEventArgs : EventArgs
     {
         /// <summary>0 -> 100</summary>
         public int Progress { get; set; } = 0;
         /// <summary>Where we at.</summary>
-        public RunState State { get; set; } = RunState.Stopped;
-        /// <summary>Optional info.</summary>
         public string Message { get; set; } = "";
     }
 
     interface IPlayer : IDisposable
     {
+        /// <summary>Where we at.</summary>
+        RunState State { get; set; }
+
         /// <summary>Something changed.</summary>
         event EventHandler<StatusEventArgs> StatusEvent;
 
         /// <summary>Open playback file in player.</summary>
         bool OpenFile(string fn);
+
+        /// <summary>User friendly stuff.</summary>
+        string GetInfo();
 
         /// <summary>Start playback.</summary>
         void Play();
