@@ -18,6 +18,7 @@ namespace ClipPlayer
             {
                 components.Dispose();
             }
+            _player?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -29,10 +30,12 @@ namespace ClipPlayer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.progress = new NBagOfTricks.UI.Meter();
             this.pbPlay = new System.Windows.Forms.PictureBox();
             this.pbStop = new System.Windows.Forms.PictureBox();
             this.pbRewind = new System.Windows.Forms.PictureBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
@@ -51,6 +54,8 @@ namespace ClipPlayer
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.progress.Size = new System.Drawing.Size(251, 30);
             this.progress.TabIndex = 3;
+            this.progress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseDown);
+            this.progress.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseMove);
             // 
             // pbPlay
             // 
@@ -85,6 +90,10 @@ namespace ClipPlayer
             this.pbRewind.TabStop = false;
             this.pbRewind.Click += new System.EventHandler(this.Rewind_Click);
             // 
+            // toolTip
+            // 
+            this.toolTip.AutomaticDelay = 50;
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -97,7 +106,6 @@ namespace ClipPlayer
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Transport";
             this.Text = "Clip Player";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
             this.Load += new System.EventHandler(this.Transport_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).EndInit();
@@ -111,5 +119,6 @@ namespace ClipPlayer
         private System.Windows.Forms.PictureBox pbPlay;
         private System.Windows.Forms.PictureBox pbStop;
         private System.Windows.Forms.PictureBox pbRewind;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

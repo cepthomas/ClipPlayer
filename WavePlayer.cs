@@ -17,17 +17,22 @@ namespace ClipPlayer
 
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader _audioFileReader = null;
-
-        /// <summary>Total length.</summary>
-        TimeSpan _length = TimeSpan.Zero;
-
-        /// <summary>Current.</summary>
-        TimeSpan _current = TimeSpan.Zero;
         #endregion
 
         #region Properties - interface implementation
         /// <inheritdoc />
         public RunState State { get; set; } = RunState.Stopped;
+
+        /// <inheritdoc />
+        public TimeSpan Length { get; private set; } = TimeSpan.Zero;
+
+        /// <summary>Current time.</summary>
+        /// <inheritdoc />
+        public TimeSpan Current
+        {
+            get { return _audioFileReader.CurrentTime; }
+            set { _audioFileReader.CurrentTime = value < Length ? value : Length; }
+        }
         #endregion
 
         #region Events - interface implementation
@@ -83,8 +88,8 @@ namespace ClipPlayer
             {
                 _audioFileReader = new AudioFileReader(fn);
 
-                _length = _audioFileReader.TotalTime;
-                _current = TimeSpan.Zero;
+                Length = _audioFileReader.TotalTime;
+                //_current = TimeSpan.Zero;
 
                 // Create reader.
                 var sampleChannel = new SampleChannel(_audioFileReader, false);
@@ -110,7 +115,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            string s = $"{_length:mm\\:ss\\.fff}";
+            string s = Length.ToString(Common.TS_FORMAT);
             return s;
         }
 
@@ -139,8 +144,7 @@ namespace ClipPlayer
         {
             if (_waveOut != null && _audioFileReader != null)
             {
-                _audioFileReader.Position = 0;
-                _current = TimeSpan.Zero;
+                Current = TimeSpan.Zero;
             }
         }
         #endregion
@@ -166,7 +170,7 @@ namespace ClipPlayer
         {
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                Progress = _current < _length ? 100 * (int)_current.TotalMilliseconds / (int)_length.TotalMilliseconds : 100
+                Progress = Current < Length ? 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds : 100
             });
         }
 
@@ -177,7 +181,8 @@ namespace ClipPlayer
         void DoError(string msg)
         {
             State = RunState.Error;
-            _current = TimeSpan.Zero;
+            Current = TimeSpan.Zero;
+
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,
@@ -212,7 +217,6 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void SampleChannel_PreVolumeMeter(object sender, StreamVolumeEventArgs e)
         {
-            _current = _audioFileReader.CurrentTime;
             DoUpdate();
         }
         #endregion

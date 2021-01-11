@@ -45,10 +45,10 @@ namespace ClipPlayer
         Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
 
         /// <summary>Total length in ticks.</summary>
-        int _length;
+        int _totalTicks;
 
         /// <summary>Current psition in ticks.</summary>
-        int _current;
+        int _currentTick;
 
         /// <summary>Multimedia timer identifier.</summary>
         int _timerID = -1;
@@ -63,6 +63,17 @@ namespace ClipPlayer
         #region Properties - interface implementation
         /// <inheritdoc />
         public RunState State { get; set; } = RunState.Stopped;
+
+        /// <inheritdoc />
+        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick)); } }
+
+        /// <summary>Current time.</summary>
+        /// <inheritdoc />
+        public TimeSpan Current
+        {
+            get { return new TimeSpan(0, 0, 0, 0, (int)(_currentTick * _msecPerTick)); }
+            set { _currentTick = (int)(value.TotalMilliseconds / _msecPerTick); _currentTick = MathUtils.Constrain(_currentTick, 0, _totalTicks); }
+        }
         #endregion
 
         #region Events - interface implementation
@@ -125,14 +136,14 @@ namespace ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
-            _current = 0;
-            _length = 0;
+            _currentTick = 0;
+            _totalTicks = 0;
 
             // Get events.
             var mfile = new MidiFile(fn, true);
             _sourceEvents = mfile.Events;
 
-            // TODO? Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
+            // TODO Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
             if (Common.DrumChannel != 0)
             {
                 HashSet<int> allChannels = new HashSet<int>();
@@ -185,7 +196,7 @@ namespace ClipPlayer
                             _playEvents.Add(tick, new List<MidiEvent>());
                         }
                         _playEvents[tick].Add(te);
-                        _length = Math.Max(_length, tick);
+                        _totalTicks = Math.Max(_totalTicks, tick);
                     }
                 };
             }
@@ -214,12 +225,12 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            int bars = _length / BEATS_PER_BAR / PPQ;
-            int beats = _length / PPQ % BEATS_PER_BAR;
-            int ticks = _length % PPQ;
-            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_length * _msecPerTick));
+            int bars = _totalTicks / BEATS_PER_BAR / PPQ;
+            int beats = _totalTicks / PPQ % BEATS_PER_BAR;
+            int ticks = _totalTicks % PPQ;
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick));
 
-            string s = $"{Common.Tempo} bpm {ts:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{ticks}";
+            string s = $"{Common.Tempo} bpm {Length.ToString(Common.TS_FORMAT)} {bars + 1}:{beats + 1}:{ticks}";
             return s;
         }
 
@@ -232,13 +243,18 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Stop()
         {
+            for (int i = 0; i < NUM_CHANNELS; i++)
+            {
+                Kill(i);
+            }
+
             State = RunState.Stopped;
         }
 
         /// <inheritdoc />
         public void Rewind()
         {
-            _current = 0;
+            _currentTick = 0;
         }
         #endregion
 
@@ -251,9 +267,9 @@ namespace ClipPlayer
             if (State == RunState.Playing)
             {
                 // Process any sequence steps.
-                if(_playEvents.ContainsKey(_current))
+                if(_playEvents.ContainsKey(_currentTick))
                 {
-                    foreach (var mevt in _playEvents[_current])
+                    foreach (var mevt in _playEvents[_currentTick])
                     {
                         switch (mevt)
                         {
@@ -293,11 +309,11 @@ namespace ClipPlayer
                 }
 
                 // Bump time. Check for end of play. Client will take care of transport control.
-                _current += 1;
-                if (_current >= _length)
+                _currentTick += 1;
+                if (_currentTick >= _totalTicks)
                 {
                     State = RunState.Complete;
-                    _current = 0;
+                    _currentTick = 0;
                 }
 
                 DoUpdate();
@@ -314,13 +330,23 @@ namespace ClipPlayer
         }
 
         /// <summary>
+        /// Send all notes off.
+        /// </summary>
+        /// <param name="channel"></param>
+        void Kill(int channel)
+        {
+            ControlChangeEvent nevt = new ControlChangeEvent(0, channel + 1, MidiController.AllNotesOff, 0);
+            MidiSend(nevt);
+        }
+
+        /// <summary>
         /// Tell the mothership.
         /// </summary>
         void DoUpdate()
         {
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                Progress = _current < _length ? 100 * _current / _length : 100
+                Progress = _currentTick < _totalTicks ? 100 * _currentTick / _totalTicks : 100
             });
         }
 
@@ -331,7 +357,7 @@ namespace ClipPlayer
         void DoError(string msg)
         {
             State = RunState.Error;
-            _current = 0;
+            _currentTick = 0;
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,

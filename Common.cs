@@ -12,16 +12,26 @@ namespace ClipPlayer
     {
         /// <summary>0 -> 100</summary>
         public int Progress { get; set; } = 0;
+
         /// <summary>Where we at.</summary>
         public string Message { get; set; } = "";
     }
 
     interface IPlayer : IDisposable
     {
-        /// <summary>Where we at.</summary>
+        /// <summary>What are we doing right now.</summary>
         RunState State { get; set; }
 
-        /// <summary>Something changed.</summary>
+        ///// <summary>Where we at in file.</summary>
+        //TimeSpan Position { get; set; }
+
+        /// <summary>Total length.</summary>
+        TimeSpan Length { get; }
+
+        /// <summary>Current time.</summary>
+        TimeSpan Current { get; set; }
+
+        /// <summary>Something changed event.</summary>
         event EventHandler<StatusEventArgs> StatusEvent;
 
         /// <summary>Open playback file in player.</summary>
@@ -42,7 +52,7 @@ namespace ClipPlayer
 
     public class Common
     {
-        /// <summary>Common volume setting.</summary>
+        /// <summary>Common volume setting. Range is 0.0 to 1.0.</summary>
         public static float Volume { get; set; } = 0.8f;
 
         /// <summary>Wave device.</summary>
@@ -59,5 +69,8 @@ namespace ClipPlayer
 
         /// <summary>Midi files may or may not specify this in the file.</summary>
         public static int Tempo { get; set; } = 100;
+
+        /// <summary>For viewing purposes.</summary>
+        public const string TS_FORMAT = @"mm\:ss\.fff";
     }
 }

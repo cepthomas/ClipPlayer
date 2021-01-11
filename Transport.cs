@@ -23,12 +23,13 @@ namespace ClipPlayer
         /// <summary>Current play device.</summary>
         IPlayer _player = null;
 
-        /// <summary>Report to system.</summary>
-        int _exitCode = 0;
+        /// <summary>For tracking mouse moves.</summary>
+        int _lastXPos = 0;
         #endregion
 
+        #region Lifecycle
         /// <summary>
-        /// 
+        /// Constructor.
         /// </summary>
         public Transport()
         {
@@ -36,7 +37,7 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// 
+        /// Initializer.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -155,8 +156,8 @@ namespace ClipPlayer
                             break;
 
                         default:
-                            _exitCode = 4;
-                            ShowMessage($"Invalid file: {_fn}");
+                            Environment.ExitCode = 4;
+                            ShowMessageExit($"Invalid file: {_fn}");
                             break;
                     }
 
@@ -170,50 +171,42 @@ namespace ClipPlayer
                         }
                         else
                         {
-                            _exitCode = 2;
-                            ShowMessage($"Couldn't open file");
+                            Environment.ExitCode = 2;
+                            ShowMessageExit($"Couldn't open file");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _exitCode = 3;
-                    ShowMessage($"Fail: {ex}");
+                    Environment.ExitCode = 3;
+                    ShowMessageExit($"Fail: {ex}");
                 }
             }
             else
             {
-                _exitCode = 1;
-                ShowMessage(cp.GetUsage());
+                Environment.ExitCode = 1;
+                ShowMessageExit(cp.GetUsage());
             }
 
-            if(_exitCode > 0)
+            if(Environment.ExitCode > 0)
             {
                 // Bail out.
-                ShutDown();
+                Environment.Exit(Environment.ExitCode);
             }
         }
 
         /// <summary>
-        /// 
+        /// Show message then exit.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Transport_FormClosing(object sender, FormClosingEventArgs e)
+        /// <param name="msg"></param>
+        void ShowMessageExit(string msg)
         {
-            ShutDown();
+            MessageBox.Show(msg);
+            Environment.Exit(Environment.ExitCode);
         }
+        #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        void ShutDown()
-        {
-            _player?.Dispose();
-            _player = null;
-            Environment.Exit(_exitCode);
-        }
-
+        #region Event handlers
         /// <summary>
         /// 
         /// </summary>
@@ -232,23 +225,13 @@ namespace ClipPlayer
                     break;
 
                 case RunState.Complete:
-                    ShutDown();
+                    Environment.Exit(Environment.ExitCode);
                     break;
 
                 case RunState.Error:
-                    ShowMessage(e.Message);
+                    ShowMessageExit(e.Message);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Show message then exit.
-        /// </summary>
-        /// <param name="msg"></param>
-        void ShowMessage(string msg)
-        {
-            MessageBox.Show(msg);
-            ShutDown();
         }
 
         /// <summary>
@@ -281,5 +264,43 @@ namespace ClipPlayer
             _player.Rewind();
             progress.AddValue(0);
         }
+        #endregion
+
+        #region Mouse processing
+
+        /// <summary>
+        /// Handle dragging.
+        /// </summary>
+        private void Progress_MouseDown(object sender, MouseEventArgs e)
+        {
+            TimeSpan ts = GetTimeFromMouse(e.X);
+            _player.Current = ts;
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Handle mouse position changes.
+        /// </summary>
+        private void Progress_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.X != _lastXPos)
+            {
+                TimeSpan ts = GetTimeFromMouse(e.X);
+                toolTip.SetToolTip(progress, ts.ToString(Common.TS_FORMAT));
+                _lastXPos = e.X;
+            }
+        }
+
+        /// <summary>
+        /// Convert x pos to TimeSpan.
+        /// </summary>
+        /// <param name="x"></param>
+        TimeSpan GetTimeFromMouse(int x)
+        {
+            int msec = x * (int)_player.Length.TotalMilliseconds / progress.Width;
+            msec = MathUtils.Constrain(msec, 0, (int)_player.Length.TotalMilliseconds);
+            return new TimeSpan(0, 0, 0, 0, msec);
+        }
+        #endregion
     }
 }
