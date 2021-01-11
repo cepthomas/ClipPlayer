@@ -11,6 +11,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/*
+"C:\Dev\repos\ClipExplorer\_files\Cave Ceremony 01.wav"
+"C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
+"C:\Dev\repos\ClipExplorer\_files\one-sec.mp3"
+Cave Ceremony 01.wav
+
+-drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
+"C:\Dev\repos\ClipExplorer\_files\ambient.mid"
+
+-vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
+-vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
+*/
+
 
 namespace ClipPlayer
 {
@@ -137,7 +150,6 @@ namespace ClipPlayer
             /////// Processing ///////
             //-vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
             //-vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
-            //change the Output type from Console Application to Windows Application.
             bool ok = cp.Parse(Environment.CommandLine, true);
 
             if (ok && _fn != "")
@@ -225,7 +237,16 @@ namespace ClipPlayer
                     break;
 
                 case RunState.Complete:
-                    Environment.Exit(Environment.ExitCode);
+                    if(Common.AutoClose)
+                    {
+                        Environment.Exit(Environment.ExitCode);
+                    }
+                    else
+                    {
+                        _player.State = RunState.Stopped;
+                        _player.Current = TimeSpan.Zero;
+                        progress.AddValue(0);
+                    }
                     break;
 
                 case RunState.Error:
@@ -267,11 +288,10 @@ namespace ClipPlayer
         #endregion
 
         #region Mouse processing
-
         /// <summary>
         /// Handle dragging.
         /// </summary>
-        private void Progress_MouseDown(object sender, MouseEventArgs e)
+        void Progress_MouseDown(object sender, MouseEventArgs e)
         {
             TimeSpan ts = GetTimeFromMouse(e.X);
             _player.Current = ts;
@@ -281,7 +301,7 @@ namespace ClipPlayer
         /// <summary>
         /// Handle mouse position changes.
         /// </summary>
-        private void Progress_MouseMove(object sender, MouseEventArgs e)
+        void Progress_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.X != _lastXPos)
             {

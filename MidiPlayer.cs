@@ -42,7 +42,7 @@ namespace ClipPlayer
         MidiEventCollection _sourceEvents = null;
 
         ///<summary>The internal collection of events. The key is the subbeat/tick to send the list.</summary>
-        Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
+        readonly Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
 
         /// <summary>Total length in ticks.</summary>
         int _totalTicks;
@@ -117,13 +117,6 @@ namespace ClipPlayer
             // Stop and destroy mmtimer.
             State = RunState.Stopped;
 
-            // Send midi stop all notes just in case.
-            for (int i = 0; i < NUM_CHANNELS; i++)
-            {
-                ControlChangeEvent nevt = new ControlChangeEvent(0, i + 1, MidiController.AllNotesOff, 0);
-                MidiSend(nevt);
-            }
-
             timeKillEvent(_timerID);
 
             // Resources.
@@ -143,8 +136,9 @@ namespace ClipPlayer
             var mfile = new MidiFile(fn, true);
             _sourceEvents = mfile.Events;
 
-            // TODO Kind of cheating but have a look and see if this is a drums-not-on-ch10 situation.
-            if (Common.DrumChannel != 0)
+            // Some drum files use channel 1 instead of 10. If a specific drum channel is not identified,
+            // and there is only one channel, assume it is the drums. Note! there are many ways for this to fail.
+            if (Common.DrumChannel == 0)
             {
                 HashSet<int> allChannels = new HashSet<int>();
                 for (int track = 0; track < _sourceEvents.Tracks; track++)
