@@ -50,7 +50,7 @@ namespace ClipPlayer
         void Rewind();
     }
 
-    public class Common // TODO Persist some of these.
+    public class Common // TODO Persist/edit some of these.
     {
         /// <summary>Common volume setting. Range is 0.0 to 1.0.</summary>
         public static float Volume { get; set; } = 0.8f;
