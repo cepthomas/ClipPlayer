@@ -22,9 +22,6 @@ namespace ClipPlayer
         /// <summary>What are we doing right now.</summary>
         RunState State { get; set; }
 
-        ///// <summary>Where we at in file.</summary>
-        //TimeSpan Position { get; set; }
-
         /// <summary>Total length.</summary>
         TimeSpan Length { get; }
 
@@ -50,7 +47,7 @@ namespace ClipPlayer
         void Rewind();
     }
 
-    public class Common // TODO Persist/edit some of these.
+    public class Common
     {
         /// <summary>Common volume setting. Range is 0.0 to 1.0.</summary>
         public static float Volume { get; set; } = 0.8f;
@@ -70,7 +67,7 @@ namespace ClipPlayer
         /// <summary>Close at end of play.</summary>
         public static bool AutoClose { get; set; } = true;
 
-        /// <summary>Midi files may or may not specify this in the file.</summary>
+        /// <summary>Midi files may or may not specify this in the file. This is a reasonable default.</summary>
         public static int Tempo { get; set; } = 100;
 
         /// <summary>For viewing purposes.</summary>

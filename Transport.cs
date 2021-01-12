@@ -1,4 +1,6 @@
-﻿using NBagOfTricks.CommandProcessor;
+﻿using NAudio.Midi;
+using NAudio.Wave;
+using NBagOfTricks.CommandProcessor;
 using NBagOfTricks.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,19 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-/*
-"C:\Dev\repos\ClipExplorer\_files\Cave Ceremony 01.wav"
-"C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
-"C:\Dev\repos\ClipExplorer\_files\one-sec.mp3"
-Cave Ceremony 01.wav
-
--drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
-"C:\Dev\repos\ClipExplorer\_files\ambient.mid"
-
--vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
--vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
-*/
 
 
 namespace ClipPlayer
@@ -59,98 +48,103 @@ namespace ClipPlayer
             Icon = Properties.Resources.croco;
             Visible = true;
 
-            // Create the specs for the command processor.
+            // Get defaults first.
+            bool ok = ReadDefaults();
+            if(!ok)
+            {
+                ShowMessage("Something wrong with the defaltss.txt file", true);
+            }
+
+            // Do command line processor.
             var cp = new Processor();
 
-            cp.Commands = new Commands
+            if (ok)
             {
+                cp.Commands = new Commands
                 {
-                    "",
-                    "play a file: .mid|.wav|.mp3",
-                    new Arguments
                     {
-                        ///// Common
+                        "",
+                        "play a file: .mid|.wav|.mp3",
+                        new Arguments
                         {
-                            "vol",
-                            "volume from 0 to 1",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                            ///// Common
                             {
-                                bool aok = double.TryParse(v, out double d);
-                                if(aok) Common.Volume = (float)MathUtils.Constrain(d, 0, 1);
-                                return aok;
-                            }
-                        },
-                        ///// Wave player
-                        {
-                            "wdev",
-                            "wav device",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                                "vol",
+                                "volume from 0 to 1",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    bool aok = double.TryParse(v, out double d);
+                                    if(aok) Common.Volume = (float)MathUtils.Constrain(d, 0, 1);
+                                    return aok;
+                                }
+                            },
+                            ///// Wave player
                             {
-                                Common.WavOutDevice = v;
-                                return true;
-                            }
-                        },
-                        {
-                            "lat",
-                            "latency",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                                "wdev",
+                                "wav device",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    return ValidateWaveDevice(v);
+                                }
+                            },
                             {
-                                bool aok = int.TryParse(v, out int i);
-                                if(aok) Common.Latency = MathUtils.Constrain(i, 5, 500);
-                                return aok;
-                            }
-                        },
-                        ///// Midi player
-                        {
-                            "mdev",
-                            "midi device",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                                "lat",
+                                "latency",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    bool aok = int.TryParse(v, out int i);
+                                    if(aok) Common.Latency = MathUtils.Constrain(i, 5, 500);
+                                    return aok;
+                                }
+                            },
+                            ///// Midi player
                             {
-                                Common.MidiOutDevice = v;
-                                return true;
-                            }
-                        },
-                        {
-                            "drch",
-                            "map this channel to drum channel",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                                "mdev",
+                                "midi device",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    return ValidateMidiDevice(v);
+                                }
+                            },
                             {
-                                bool aok = int.TryParse(v, out int i);
-                                if(aok) Common.DrumChannel = MathUtils.Constrain(i, 1, 16);
-                                return aok;
-                            }
-                        },
-                        {
-                            "tmp",
-                            "tempo/bpm if not in file",
-                            ArgOptType.Opt, ArgOptType.Req,
-                            (v) =>
+                                "drch",
+                                "map this channel to drum channel",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    bool aok = int.TryParse(v, out int i);
+                                    if(aok) Common.DrumChannel = MathUtils.Constrain(i, 1, MidiPlayer.NUM_CHANNELS);
+                                    return aok;
+                                }
+                            },
                             {
-                                bool aok = int.TryParse(v, out int i);
-                                if(aok) Common.Tempo = MathUtils.Constrain(i, 30, 250);
-                                return aok;
+                                "tmp",
+                                "tempo/bpm if not in file",
+                                ArgOptType.Opt, ArgOptType.Req,
+                                (v) =>
+                                {
+                                    bool aok = int.TryParse(v, out int i);
+                                    if(aok) Common.Tempo = MathUtils.Constrain(i, 30, 250);
+                                    return aok;
 
+                                }
                             }
+                        },
+                        // Files func
+                        (v) =>
+                        {
+                            _fn = v;
+                            return File.Exists(_fn) && ".wav.mp3.mid".Contains(Path.GetExtension(_fn.ToLower()));
                         }
-                    },
-                    // Files func
-                    (v) =>
-                    {
-                        _fn = v;
-                        return File.Exists(_fn) && ".wav.mp3.mid".Contains(Path.GetExtension(_fn.ToLower()));
                     }
-                }
-            };
+                };
 
-            /////// Processing ///////
-            //-vol 0.9 -tmp 95 -drch 1 "C:\Dev\repos\ClipExplorer\_files\01 8th Hat.mid"
-            //-vol 0.9 "C:\Dev\repos\ClipExplorer\_files\one-sec.wav"
-            bool ok = cp.Parse(Environment.CommandLine, true);
+                ok = cp.Parse(Environment.CommandLine, true);
+            }
 
             if (ok && _fn != "")
             {
@@ -169,7 +163,7 @@ namespace ClipPlayer
 
                         default:
                             Environment.ExitCode = 4;
-                            ShowMessageExit($"Invalid file: {_fn}");
+                            ShowMessage($"Invalid file: {_fn}", true);
                             break;
                     }
 
@@ -184,20 +178,20 @@ namespace ClipPlayer
                         else
                         {
                             Environment.ExitCode = 2;
-                            ShowMessageExit($"Couldn't open file");
+                            ShowMessage($"Couldn't open file", true);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     Environment.ExitCode = 3;
-                    ShowMessageExit($"Fail: {ex}");
+                    ShowMessage($"Fail: {ex}", true);
                 }
             }
             else
             {
                 Environment.ExitCode = 1;
-                ShowMessageExit(cp.GetUsage());
+                ShowMessage(cp.GetUsage(), true);
             }
 
             if(Environment.ExitCode > 0)
@@ -206,15 +200,153 @@ namespace ClipPlayer
                 Environment.Exit(Environment.ExitCode);
             }
         }
+        #endregion
+
+        #region Private functions
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        bool ReadDefaults()
+        {
+            bool valid = true;
+            const string DEF_FILE = "defaults.txt";
+
+            if (File.Exists(DEF_FILE))
+            {
+                foreach(string s in File.ReadAllLines(DEF_FILE))
+                {
+                    if(!s.StartsWith("#"))
+                    {
+                        try
+                        {
+                            var parts = s.SplitByToken(":");
+                            switch (parts[0].ToLower())
+                            {
+                                case "volume":
+                                    Common.Volume = (float)MathUtils.Constrain(float.Parse(parts[1]), 0, 1);
+                                    break;
+
+                                case "wavoutdevice":
+                                    if (!ValidateWaveDevice(parts[1].Replace("\"", "")))
+                                    {
+                                        valid = false;
+                                    }
+                                    break;
+
+                                case "latency":
+                                    Common.Latency = MathUtils.Constrain(int.Parse(parts[1]), 5, 500);
+                                    break;
+
+                                case "midioutdevice":
+                                    if(!ValidateMidiDevice(parts[1].Replace("\"", "")))
+                                    {
+                                        valid = false;
+                                    }
+                                    break;
+
+                                case "drumchannel":
+                                    Common.DrumChannel = MathUtils.Constrain(int.Parse(parts[1]), 0, MidiPlayer.NUM_CHANNELS);
+                                    break;
+
+                                case "autoclose":
+                                    Common.AutoClose = bool.Parse(parts[1]);
+                                    break;
+
+                                case "tempo":
+                                    Common.Tempo = MathUtils.Constrain(int.Parse(parts[1]), 30, 250);
+                                    break;
+
+                                default:
+                                    throw new Exception();
+                            }
+
+                        }
+                        catch (Exception) // formatting errors etc.
+                        {
+                            valid = false;
+                        }
+                    }
+                }
+            }
+            // else just use internal defaults.
+
+            return valid;
+        }
 
         /// <summary>
-        /// Show message then exit.
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        bool ValidateWaveDevice(string v)
+        {
+            // Get available devices and check selection for sanity.
+            bool valid = false;
+            var rec = new List<string>();
+
+            for (int id = -1; id < WaveOut.DeviceCount; id++) // –1 indicates the default output device, while 0 is the first output device
+            {
+                var cap = WaveOut.GetCapabilities(id);
+                rec.Add(cap.ProductName);
+            }
+
+            if (rec.Contains(v))
+            {
+                Common.WavOutDevice = v;
+                valid = true;
+            }
+            else
+            {
+                rec.Insert(0, "Invalid wave device - must be one of:");
+                ShowMessage(string.Join(Environment.NewLine, rec), false);
+            }
+
+            return valid;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        bool ValidateMidiDevice(string v)
+        {
+            // Get available devices and check selection for sanity.
+            bool valid = false;
+            var rec = new List<string>();
+
+            for (int devindex = 0; devindex < MidiOut.NumberOfDevices; devindex++)
+            {
+                rec.Add(MidiOut.DeviceInfo(devindex).ProductName);
+            }
+
+            if (rec.Contains(v))
+            {
+                Common.MidiOutDevice = v;
+                valid = true;
+            }
+            else
+            {
+                rec.Insert(0, "Invalid midi device - must be one of:");
+                ShowMessage(string.Join(Environment.NewLine, rec), false);
+            }
+
+            return valid;
+        }
+
+        /// <summary>
+        /// Show message then optionally exit.
         /// </summary>
         /// <param name="msg"></param>
-        void ShowMessageExit(string msg)
+        /// <param name="exit"></param>
+        void ShowMessage(string msg, bool exit)
         {
             MessageBox.Show(msg);
-            Environment.Exit(Environment.ExitCode);
+            if(exit)
+            {
+                Environment.Exit(Environment.ExitCode);
+            }
         }
         #endregion
 
@@ -250,7 +382,7 @@ namespace ClipPlayer
                     break;
 
                 case RunState.Error:
-                    ShowMessageExit(e.Message);
+                    ShowMessage(e.Message, true);
                     break;
             }
         }

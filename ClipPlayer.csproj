@@ -103,5 +103,10 @@
   <ItemGroup>
     <None Include="Resources\glyphicons-176-stop.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="defaults.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

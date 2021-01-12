@@ -19,7 +19,7 @@ namespace ClipPlayer
     {
         #region Constants
         /// <summary>Midi caps.</summary>
-        const int NUM_CHANNELS = 16;
+        public const int NUM_CHANNELS = 16;
 
         /// <summary>Only 4/4 time supported.</summary>
         const int BEATS_PER_BAR = 4;
