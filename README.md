@@ -21,5 +21,3 @@ This application uses these FOSS components:
 - NAudio DLL including modified controls and midi file utilities: [NAudio](https://github.com/naudio/NAudio) (Microsoft Public License).
 - Main icon: [Charlotte Schmidt](http://pattedemouche.free.fr/) (Copyright © 2009 of Charlotte Schmidt).
 
-# License
-https://github.com/cepthomas/ClipPlayer/blob/master/LICENSE
