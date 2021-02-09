@@ -52,7 +52,7 @@ namespace ClipPlayer
             bool ok = ReadDefaults();
             if(!ok)
             {
-                ShowMessage("Something wrong with the defaltss.txt file", true);
+                ShowMessage("Something wrong with the defaults.txt file", true);
             }
 
             // Do command line processor.
@@ -64,7 +64,7 @@ namespace ClipPlayer
                 {
                     {
                         "",
-                        "play a file: .mid|.wav|.mp3",
+                        "play a file: .mid|.wav|.mp3|.flac",
                         new Arguments
                         {
                             ///// Common
@@ -138,7 +138,7 @@ namespace ClipPlayer
                         (v) =>
                         {
                             _fn = v;
-                            return File.Exists(_fn) && ".wav.mp3.mid".Contains(Path.GetExtension(_fn.ToLower()));
+                            return File.Exists(_fn) && ".wav.mp3.mid.flac".Contains(Path.GetExtension(_fn.ToLower()));
                         }
                     }
                 };
@@ -158,6 +158,7 @@ namespace ClipPlayer
 
                         case ".wav":
                         case ".mp3":
+                        case ".flac":
                             _player = new WavePlayer();
                             break;
 
