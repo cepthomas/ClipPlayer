@@ -1,17 +1,13 @@
-﻿using NAudio.Midi;
-using NAudio.Wave;
-using NBagOfTricks.CommandProcessor;
-using NBagOfTricks.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using NAudio.Midi;
+using NAudio.Wave;
+using NBagOfTricks.CommandProcessor;
+using NBagOfTricks.Utils;
 
 
 namespace ClipPlayer
@@ -27,6 +23,9 @@ namespace ClipPlayer
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
+
+        /// <summary>Supported file types..</summary>
+        string[] _fileTypes = new[] { ".mid", ".wav", ".mp3", ".m4a", ".flac" };
         #endregion
 
         #region Lifecycle
@@ -64,7 +63,7 @@ namespace ClipPlayer
                 {
                     {
                         "",
-                        "play a file: .mid|.wav|.mp3|.flac",
+                        $"play a file: {string.Join("|", _fileTypes)}",
                         new Arguments
                         {
                             ///// Common
@@ -138,7 +137,7 @@ namespace ClipPlayer
                         (v) =>
                         {
                             _fn = v;
-                            return File.Exists(_fn) && ".wav.mp3.mid.flac".Contains(Path.GetExtension(_fn.ToLower()));
+                            return File.Exists(_fn) && _fileTypes.Contains(Path.GetExtension(_fn.ToLower()));
                         }
                     }
                 };
@@ -158,6 +157,7 @@ namespace ClipPlayer
 
                         case ".wav":
                         case ".mp3":
+                        case ".m4a":
                         case ".flac":
                             _player = new WavePlayer();
                             break;
