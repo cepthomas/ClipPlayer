@@ -1,8 +1,9 @@
 # My defaults.
+Pos:30,30
 Volume:0.9
 WavOutDevice:"Microsoft Sound Mapper"
 Latency:200
 MidiOutDevice:"Microsoft GS Wavetable Synth"
-DrumChannel:0
+DrumChannel:10
 AutoClose:true
 Tempo:105

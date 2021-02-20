@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ClipPlayer
 {
@@ -61,7 +59,7 @@ namespace ClipPlayer
         /// <summary>Midi device.</summary>
         public static string MidiOutDevice { get; set; } = "Microsoft GS Wavetable Synth";
 
-        /// <summary>Some midi files have drums on non-standard channel.</summary>
+        /// <summary>Some midi files may have drums on non-standard channel.</summary>
         public static int DrumChannel { get; set; } = 0;
 
         /// <summary>Close at end of play.</summary>

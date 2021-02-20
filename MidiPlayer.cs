@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using NAudio.Midi;
-using NBagOfTricks.UI;
 using NBagOfTricks.Utils;
 
 
@@ -135,25 +133,6 @@ namespace ClipPlayer
             // Get events.
             var mfile = new MidiFile(fn, true);
             _sourceEvents = mfile.Events;
-
-            // Some drum files use channel 1 instead of 10. If a specific drum channel is not identified,
-            // and there is only one channel, assume it is the drums. Note! there are many ways for this to fail.
-            if (Common.DrumChannel == 0)
-            {
-                HashSet<int> allChannels = new HashSet<int>();
-                for (int track = 0; track < _sourceEvents.Tracks; track++)
-                {
-                    foreach (var te in _sourceEvents.GetTrackEvents(track))
-                    {
-                        allChannels.Add(te.Channel);
-                    }
-                }
-
-                if(allChannels.Count == 1)
-                {
-                    Common.DrumChannel = allChannels.ElementAt(0);
-                }
-            }
 
             // Scale ticks to internal ppq.
             for (int track = 0; track < _sourceEvents.Tracks; track++)

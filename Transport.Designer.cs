@@ -36,6 +36,7 @@ namespace ClipPlayer
             this.pbStop = new System.Windows.Forms.PictureBox();
             this.pbRewind = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.logBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
@@ -94,11 +95,20 @@ namespace ClipPlayer
             // 
             this.toolTip.AutomaticDelay = 50;
             // 
+            // logBox
+            // 
+            this.logBox.Location = new System.Drawing.Point(2, 50);
+            this.logBox.Name = "logBox";
+            this.logBox.Size = new System.Drawing.Size(367, 144);
+            this.logBox.TabIndex = 7;
+            this.logBox.Text = "";
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(375, 39);
+            this.ClientSize = new System.Drawing.Size(375, 197);
+            this.Controls.Add(this.logBox);
             this.Controls.Add(this.pbRewind);
             this.Controls.Add(this.pbStop);
             this.Controls.Add(this.pbPlay);
@@ -120,5 +130,6 @@ namespace ClipPlayer
         private System.Windows.Forms.PictureBox pbStop;
         private System.Windows.Forms.PictureBox pbRewind;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.RichTextBox logBox;
     }
 }

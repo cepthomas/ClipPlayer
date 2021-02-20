@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,10 @@ namespace ClipPlayer
         {
             Icon = Properties.Resources.croco;
             Visible = true;
+
+            Log($"CurrentDirectory:{Environment.CurrentDirectory}");
+            Log($"ExecutablePath:{Application.ExecutablePath}");
+            Log($"StartupPath:{Application.StartupPath}");
 
             // Get defaults first.
             bool ok = ReadDefaults();
@@ -211,62 +216,61 @@ namespace ClipPlayer
         bool ReadDefaults()
         {
             bool valid = true;
-            const string DEF_FILE = "defaults.txt";
+            string fn = $"{Application.StartupPath}\\defaults.txt";
 
-            if (File.Exists(DEF_FILE))
+            if (File.Exists(fn))
             {
-                foreach(string s in File.ReadAllLines(DEF_FILE))
+                foreach(string s in File.ReadAllLines(fn))
                 {
-                    if(!s.StartsWith("#"))
+                    try
                     {
-                        try
+                        var parts = s.SplitByToken(":");
+                        switch (parts[0].ToLower())
                         {
-                            var parts = s.SplitByToken(":");
-                            switch (parts[0].ToLower())
-                            {
-                                case "volume":
-                                    Common.Volume = (float)MathUtils.Constrain(float.Parse(parts[1]), 0, 1);
-                                    break;
+                            case "volume":
+                                Common.Volume = (float)MathUtils.Constrain(float.Parse(parts[1]), 0, 1);
+                                break;
 
-                                case "wavoutdevice":
-                                    if (!ValidateWaveDevice(parts[1].Replace("\"", "")))
-                                    {
-                                        valid = false;
-                                    }
-                                    break;
+                            case "wavoutdevice":
+                                valid &= ValidateWaveDevice(parts[1].Replace("\"", ""));
+                                break;
 
-                                case "latency":
-                                    Common.Latency = MathUtils.Constrain(int.Parse(parts[1]), 5, 500);
-                                    break;
+                            case "latency":
+                                Common.Latency = MathUtils.Constrain(int.Parse(parts[1]), 5, 500);
+                                break;
 
-                                case "midioutdevice":
-                                    if(!ValidateMidiDevice(parts[1].Replace("\"", "")))
-                                    {
-                                        valid = false;
-                                    }
-                                    break;
+                            case "midioutdevice":
+                                valid &= ValidateMidiDevice(parts[1].Replace("\"", ""));
+                                break;
 
-                                case "drumchannel":
-                                    Common.DrumChannel = MathUtils.Constrain(int.Parse(parts[1]), 0, MidiPlayer.NUM_CHANNELS);
-                                    break;
+                            case "drumchannel":
+                                Common.DrumChannel = MathUtils.Constrain(int.Parse(parts[1]), 0, MidiPlayer.NUM_CHANNELS);
+                                break;
 
-                                case "autoclose":
-                                    Common.AutoClose = bool.Parse(parts[1]);
-                                    break;
+                            case "autoclose":
+                                Common.AutoClose = bool.Parse(parts[1]);
+                                break;
 
-                                case "tempo":
-                                    Common.Tempo = MathUtils.Constrain(int.Parse(parts[1]), 30, 250);
-                                    break;
+                            case "tempo":
+                                Common.Tempo = MathUtils.Constrain(int.Parse(parts[1]), 30, 250);
+                                break;
 
-                                default:
+                            case "pos":
+                                var pos = parts[1].SplitByToken(",");
+                                Location = new Point(int.Parse(pos[0]), int.Parse(pos[1]));
+                                break;
+
+                            default:
+                                if (!s.StartsWith("#"))
+                                {
                                     throw new Exception();
-                            }
-
+                                }
+                                break;
                         }
-                        catch (Exception) // formatting errors etc.
-                        {
-                            valid = false;
-                        }
+                    }
+                    catch (Exception) // formatting errors etc.
+                    {
+                        valid = false;
                     }
                 }
             }
@@ -348,6 +352,15 @@ namespace ClipPlayer
             {
                 Environment.Exit(Environment.ExitCode);
             }
+        }
+
+        /// <summary>
+        /// Debug help.
+        /// </summary>
+        /// <param name="s"></param>
+        void Log(string s)
+        {
+            logBox.AppendText(s + Environment.NewLine);
         }
         #endregion
 
