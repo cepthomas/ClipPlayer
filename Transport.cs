@@ -53,7 +53,7 @@ namespace ClipPlayer
             Log($"StartupPath:{Application.StartupPath}");
 
             // Get defaults first.
-            bool ok = ReadDefaults();
+            bool ok = ReadConfig();
             if(!ok)
             {
                 ShowMessage("Something wrong with the defaults.txt file", true);
@@ -213,10 +213,10 @@ namespace ClipPlayer
         /// 
         /// </summary>
         /// <returns></returns>
-        bool ReadDefaults()
+        bool ReadConfig()
         {
             bool valid = true;
-            string fn = $"{Application.StartupPath}\\defaults.txt";
+            string fn = $"{Application.StartupPath}\\config.txt";
 
             if (File.Exists(fn))
             {
