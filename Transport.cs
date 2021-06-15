@@ -7,8 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using NAudio.Midi;
 using NAudio.Wave;
-using NBagOfTricks.CommandProcessor;
-using NBagOfTricks.Utils;
+using NBagOfTricks;
 
 
 namespace ClipPlayer
@@ -213,7 +212,7 @@ namespace ClipPlayer
         /// 
         /// </summary>
         /// <returns></returns>
-        bool ReadConfig()
+        bool ReadConfig() //TODO do better than this?
         {
             bool valid = true;
             string fn = $"{Application.StartupPath}\\config.txt";

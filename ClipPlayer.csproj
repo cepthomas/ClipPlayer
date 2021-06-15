@@ -45,6 +45,9 @@
     <Reference Include="NBagOfTricks">
       <HintPath>lib\NBagOfTricks.dll</HintPath>
     </Reference>
+    <Reference Include="NBagOfTricks.UI">
+      <HintPath>lib\NBagOfTricks.UI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

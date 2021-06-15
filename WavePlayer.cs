@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using NBagOfTricks.Utils;
+using NBagOfTricks;
 
 
 namespace ClipPlayer
