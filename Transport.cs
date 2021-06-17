@@ -212,7 +212,7 @@ namespace ClipPlayer
         /// 
         /// </summary>
         /// <returns></returns>
-        bool ReadConfig() //TODO do better than this?
+        bool ReadConfig() // TODO better config than this?
         {
             bool valid = true;
             string fn = $"{Application.StartupPath}\\config.txt";

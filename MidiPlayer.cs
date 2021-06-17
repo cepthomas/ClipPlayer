@@ -45,7 +45,7 @@ namespace ClipPlayer
         /// <summary>Total length in ticks.</summary>
         int _totalTicks;
 
-        /// <summary>Current psition in ticks.</summary>
+        /// <summary>Current position in ticks.</summary>
         int _currentTick;
 
         /// <summary>Multimedia timer identifier.</summary>

@@ -4,6 +4,6 @@ Volume:0.9
 WavOutDevice:"Microsoft Sound Mapper"
 Latency:200
 MidiOutDevice:"Microsoft GS Wavetable Synth"
-DrumChannel:10
+DrumChannel:1
 AutoClose:true
 Tempo:105
