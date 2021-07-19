@@ -75,8 +75,11 @@ namespace ClipPlayer
         /// <summary>Save object to file.</summary>
         public void Save()
         {
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(_fn, json);
+            if(File.Exists(_fn))
+            {
+                string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+                File.WriteAllText(_fn, json);
+            }
         }
 
         /// <summary>Create object from file.</summary>

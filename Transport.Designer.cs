@@ -153,7 +153,10 @@ namespace ClipPlayer
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Transport";
             this.Text = "Clip Player";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
             this.Load += new System.EventHandler(this.Transport_Load);
+            this.Move += new System.EventHandler(this.Transport_Move);
+            this.Resize += new System.EventHandler(this.Transport_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).EndInit();

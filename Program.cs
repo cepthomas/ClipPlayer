@@ -19,7 +19,7 @@ namespace ClipPlayer
             // Ensure only one playing at a time. TODO would be nicer to restart this one with a new file.
             if (procs.Length > 1)
             {
-                // Kill any currently running - this will essentialy replace it.
+                // Kill any currently running - this one will essentially replace it.
                 foreach (Process p in procs)
                 {
                     if (p.Id != proc.Id)

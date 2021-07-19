@@ -43,7 +43,6 @@ namespace ClipPlayer
         void Transport_Load(object sender, EventArgs e)
         {
             Icon = Properties.Resources.croco;
-            Visible = true;
             bool ok = true;
 
             if (Environment.GetCommandLineArgs().Length != 2)
@@ -66,6 +65,8 @@ namespace ClipPlayer
             UserSettings.Load(appDir);
             sldVolume.Value = Common.Settings.Volume;
             Location = Common.Settings.Position;
+
+            Visible = true;
 
             try
             {
@@ -116,19 +117,20 @@ namespace ClipPlayer
                 Environment.Exit(Environment.ExitCode);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Transport_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Common.Settings.Position = Location;
+            Common.Settings.Save();
+        }
         #endregion
 
         #region User settings
-        /// <summary>
-        /// Collect and save user settings.
-        /// </summary>
-        void SaveSettings()
-        {
-            Common.Settings.Position = Location;
-
-            Common.Settings.Save();
-        }
-
         /// <summary>
         /// Edit the common options in a property grid.
         /// </summary>
@@ -169,7 +171,7 @@ namespace ClipPlayer
                     MessageBox.Show("Restart required for device changes to take effect");
                 }
 
-                SaveSettings();
+                Common.Settings.Save();
             }
         }
         #endregion
@@ -279,6 +281,28 @@ namespace ClipPlayer
             {
                 _player.Volume = sldVolume.Value;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Transport_Move(object sender, EventArgs e)
+        {
+            Common.Settings.Position = Location;
+            Common.Settings.Save();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Transport_Resize(object sender, EventArgs e)
+        {
+            Common.Settings.Position = Location;
+            Common.Settings.Save();
         }
         #endregion
 
