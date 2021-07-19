@@ -36,8 +36,9 @@ namespace ClipPlayer
             this.pbStop = new System.Windows.Forms.PictureBox();
             this.pbRewind = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.logBox = new System.Windows.Forms.RichTextBox();
             this.pbSettings = new System.Windows.Forms.PictureBox();
+            this.logBox = new System.Windows.Forms.RichTextBox();
+            this.sldVolume = new NBagOfTricks.UI.Slider();
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
@@ -49,13 +50,13 @@ namespace ClipPlayer
             this.progress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.progress.DrawColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.progress.Label = "";
-            this.progress.Location = new System.Drawing.Point(118, 3);
+            this.progress.Location = new System.Drawing.Point(164, 3);
             this.progress.Maximum = 100D;
             this.progress.MeterType = NBagOfTricks.UI.MeterType.Linear;
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.progress.Size = new System.Drawing.Size(213, 30);
+            this.progress.Size = new System.Drawing.Size(167, 30);
             this.progress.TabIndex = 3;
             this.progress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseDown);
             this.progress.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseMove);
@@ -100,14 +101,6 @@ namespace ClipPlayer
             // 
             this.toolTip.AutomaticDelay = 50;
             // 
-            // logBox
-            // 
-            this.logBox.Location = new System.Drawing.Point(2, 50);
-            this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(367, 144);
-            this.logBox.TabIndex = 7;
-            this.logBox.Text = "";
-            // 
             // pbSettings
             // 
             this.pbSettings.BackgroundImage = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
@@ -120,11 +113,37 @@ namespace ClipPlayer
             this.toolTip.SetToolTip(this.pbSettings, "How do you like it");
             this.pbSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
+            // logBox
+            // 
+            this.logBox.Location = new System.Drawing.Point(2, 50);
+            this.logBox.Name = "logBox";
+            this.logBox.Size = new System.Drawing.Size(367, 144);
+            this.logBox.TabIndex = 7;
+            this.logBox.Text = "";
+            // 
+            // sldVolume
+            // 
+            this.sldVolume.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.sldVolume.DecPlaces = 1;
+            this.sldVolume.DrawColor = System.Drawing.Color.Pink;
+            this.sldVolume.Label = "";
+            this.sldVolume.Location = new System.Drawing.Point(118, 3);
+            this.sldVolume.Maximum = 1D;
+            this.sldVolume.Minimum = 0D;
+            this.sldVolume.Name = "sldVolume";
+            this.sldVolume.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sldVolume.ResetValue = 0D;
+            this.sldVolume.Size = new System.Drawing.Size(40, 32);
+            this.sldVolume.TabIndex = 9;
+            this.sldVolume.Value = 0.5D;
+            this.sldVolume.ValueChanged += new System.EventHandler(this.Volume_ValueChanged);
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(375, 197);
+            this.Controls.Add(this.sldVolume);
             this.Controls.Add(this.pbSettings);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.pbRewind);
@@ -151,5 +170,6 @@ namespace ClipPlayer
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.RichTextBox logBox;
         private System.Windows.Forms.PictureBox pbSettings;
+        private NBagOfTricks.UI.Slider sldVolume;
     }
 }

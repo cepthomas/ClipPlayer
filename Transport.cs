@@ -10,7 +10,6 @@ using NAudio.Wave;
 using NBagOfTricks;
 using NBagOfTricks.UI;
 
-//>>>>>>>>>>>>> TODO volume ui
 
 namespace ClipPlayer
 {
@@ -65,6 +64,8 @@ namespace ClipPlayer
             DirectoryInfo di = new DirectoryInfo(appDir);
             di.Create();
             UserSettings.Load(appDir);
+            sldVolume.Value = Common.Settings.Volume;
+            Location = Common.Settings.Position;
 
             try
             {
@@ -93,6 +94,7 @@ namespace ClipPlayer
                     {
                         Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
                         _player.StatusEvent += Player_StatusEvent;
+                        _player.Volume = sldVolume.Value;
                         _player.Play();
                     }
                     else
@@ -122,7 +124,6 @@ namespace ClipPlayer
         /// </summary>
         void SaveSettings()
         {
-//TODO            Common.Settings.Volume = sldVolume.Value;
             Common.Settings.Position = Location;
 
             Common.Settings.Save();
@@ -172,7 +173,6 @@ namespace ClipPlayer
             }
         }
         #endregion
-
 
         #region Private functions
         /// <summary>
@@ -265,6 +265,20 @@ namespace ClipPlayer
         {
             _player.Rewind();
             progress.AddValue(0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Volume_ValueChanged(object sender, EventArgs e)
+        {
+            Common.Settings.Volume = sldVolume.Value;
+            if(_player != null)
+            {
+                _player.Volume = sldVolume.Value;
+            }
         }
         #endregion
 

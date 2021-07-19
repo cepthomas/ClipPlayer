@@ -35,6 +35,9 @@ namespace ClipPlayer
         /// <summary>Current time.</summary>
         TimeSpan Current { get; set; }
 
+        /// <summary>Current volume.</summary>
+        double Volume { get; set; }
+
         /// <summary>Something changed event.</summary>
         event EventHandler<StatusEventArgs> StatusEvent;
 

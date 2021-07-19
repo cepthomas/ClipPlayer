@@ -68,7 +68,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick)); } }
 
-        /// <summary>Current time.</summary>
+        /// <inheritdoc />
+        public double Volume { get; set; }
+
         /// <inheritdoc />
         public TimeSpan Current
         {

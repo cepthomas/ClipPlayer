@@ -15,6 +15,9 @@ namespace ClipPlayer
 
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader _audioFileReader = null;
+
+        /// <summary>Current volume.</summary>
+        double _volume = 0.5;
         #endregion
 
         #region Properties - interface implementation
@@ -30,6 +33,13 @@ namespace ClipPlayer
         {
             get { return _audioFileReader.CurrentTime; }
             set { _audioFileReader.CurrentTime = value < Length ? value : Length; }
+        }
+
+        /// <inheritdoc />
+        public double Volume
+        {
+            get { return _volume; }
+            set { _volume = MathUtils.Constrain(value, 0, 1); if (_waveOut != null) _waveOut.Volume = (float)_volume; }
         }
         #endregion
 
