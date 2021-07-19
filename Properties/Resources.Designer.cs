@@ -73,6 +73,16 @@ namespace ClipPlayer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap glyphicons_137_cogwheel {
+            get {
+                object obj = ResourceManager.GetObject("glyphicons_137_cogwheel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap glyphicons_173_rewind {
             get {
                 object obj = ResourceManager.GetObject("glyphicons_173_rewind", resourceCulture);

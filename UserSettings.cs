@@ -18,29 +18,19 @@ namespace ClipPlayer
     public class UserSettings
     {
         #region Persisted editable properties
-        // [DisplayName("Root Directories")]
-        // [Description("Where to look in order as they appear.")]
-        // [Category("Navigator")]
-        // [Browsable(true)]
-        // [Editor(typeof(ListEditor), typeof(UITypeEditor))]
-        // public List<string> RootDirs { get; set; } = new List<string>();
-
-// AutoClose:true
         [DisplayName("Auto Close")]
         [Description("Automatically close after playing the file.")]
         [Category("Navigator")]
         [Browsable(true)]
         public bool AutoClose { get; set; } = true;
 
-// WavOutDevice:"Microsoft Sound Mapper"
         [DisplayName("Wave Output Device")]
         [Description("How to play the audio files.")]
         [Category("Audio")]
         [Browsable(true)]
         [TypeConverter(typeof(FixedListTypeConverter))]
-        public string WavOutDevice { get; set; } = "";
+        public string WavOutDevice { get; set; } = "Microsoft Sound Mapper";
 
-// Latency:200
         [DisplayName("Latency")]
         [Description("What's the hurry?")]
         [Category("Audio")]
@@ -48,84 +38,32 @@ namespace ClipPlayer
         [TypeConverter(typeof(FixedListTypeConverter))]
         public string Latency { get; set; } = "200";
 
-// MidiOutDevice:"Microsoft GS Wavetable Synth"
         [DisplayName("Midi Output Device")]
         [Description("How to play the midi files.")]
         [Category("Midi")]
         [Browsable(true)]
         [TypeConverter(typeof(FixedListTypeConverter))]
-        public string MidiOutDevice { get; set; } = "";
+        public string MidiOutDevice { get; set; } = "Microsoft GS Wavetable Synth";
 
-
-// Tempo:105                                  "tempo/bpm if not in file",
         [DisplayName("Default Tempo")]
         [Description("Use this tempo if it's not in the file.")]
         [Category("Midi")]
         [Browsable(true)]
         public int DefaultTempo { get; set; } = 100;
 
-
-// DrumChannel:1
         [DisplayName("Drum Channel")]
         [Description("Some files have drums on other than channel 10 so map those from that channel.")]
         [Category("Midi")]
         [Browsable(true)]
         public int DrumChannel { get; set; } = 1;
-
-        // [DisplayName("Enable Mapping Drum Channel")]
-        // [Description("Turn Drum Channel option on or off.")]
-        // [Category("Midi")]
-        // [Browsable(true)]
-        // public bool MapDrumChannel { get; set; } = false;
-
-        // [DisplayName("Log Midi Events")]
-        // [Description("Write to text viewer. Warning! could be very busy.")]
-        // [Category("Midi")]
-        // [Browsable(true)]
-        // public bool LogEvents { get; set; } = false;
-
-        // [DisplayName("Snap To Grid")]
-        // [Description("Snap to bar | beat | tick.")]
-        // [Category("Midi")]
-        // [Browsable(true)]
-        // public BarBar.SnapType Snap { get; set; } = BarBar.SnapType.Bar;
-
-        // [DisplayName("Slider Color")]
-        // [Description("Pick what you like.")]
-        // [Category("Cosmetics")]
-        // [Browsable(true)]
-        // public Color SliderColor { get; set; } = Color.MediumOrchid;
-
-        // [DisplayName("Meter Color")]
-        // [Description("Pick what you like.")]
-        // [Category("Cosmetics")]
-        // [Browsable(true)]
-        // public Color MeterColor { get; set; } = Color.LimeGreen;
-
-        // [DisplayName("Bar Color")]
-        // [Description("Pick what you like.")]
-        // [Category("Cosmetics")]
-        // [Browsable(true)]
-        // public Color BarColor { get; set; } = Color.Aqua;
         #endregion
 
         #region Persisted Non-editable Properties
-// Pos:30,30
         [Browsable(false)]
         public Point Position { get; set; } = new Point(50, 50);
 
-// Volume:0.9
         [Browsable(false)]
         public double Volume { get; set; } = 0.7;
-
-        // [Browsable(false)]
-        // public List<string> RecentFiles { get; set; } = new List<string>();
-
-        // [Browsable(false)]
-        // public Dictionary<string, bool> AllTags { get; set; } = new Dictionary<string, bool>();
-
-        // [Browsable(false)]
-        // public Dictionary<string, string> TaggedPaths { get; set; } = new Dictionary<string, string>();
         #endregion
 
         #region Fields

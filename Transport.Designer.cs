@@ -37,9 +37,11 @@ namespace ClipPlayer
             this.pbRewind = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.logBox = new System.Windows.Forms.RichTextBox();
+            this.pbSettings = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).BeginInit();
             this.SuspendLayout();
             // 
             // progress
@@ -53,7 +55,7 @@ namespace ClipPlayer
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.progress.Size = new System.Drawing.Size(251, 30);
+            this.progress.Size = new System.Drawing.Size(213, 30);
             this.progress.TabIndex = 3;
             this.progress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseDown);
             this.progress.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseMove);
@@ -67,6 +69,7 @@ namespace ClipPlayer
             this.pbPlay.Size = new System.Drawing.Size(32, 32);
             this.pbPlay.TabIndex = 4;
             this.pbPlay.TabStop = false;
+            this.toolTip.SetToolTip(this.pbPlay, "Go go go");
             this.pbPlay.Click += new System.EventHandler(this.Play_Click);
             // 
             // pbStop
@@ -78,6 +81,7 @@ namespace ClipPlayer
             this.pbStop.Size = new System.Drawing.Size(32, 32);
             this.pbStop.TabIndex = 5;
             this.pbStop.TabStop = false;
+            this.toolTip.SetToolTip(this.pbStop, "Hold your horses");
             this.pbStop.Click += new System.EventHandler(this.Stop_Click);
             // 
             // pbRewind
@@ -89,6 +93,7 @@ namespace ClipPlayer
             this.pbRewind.Size = new System.Drawing.Size(32, 32);
             this.pbRewind.TabIndex = 6;
             this.pbRewind.TabStop = false;
+            this.toolTip.SetToolTip(this.pbRewind, "Go back Jack");
             this.pbRewind.Click += new System.EventHandler(this.Rewind_Click);
             // 
             // toolTip
@@ -103,11 +108,24 @@ namespace ClipPlayer
             this.logBox.TabIndex = 7;
             this.logBox.Text = "";
             // 
+            // pbSettings
+            // 
+            this.pbSettings.BackgroundImage = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
+            this.pbSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.pbSettings.Location = new System.Drawing.Point(337, 3);
+            this.pbSettings.Name = "pbSettings";
+            this.pbSettings.Size = new System.Drawing.Size(32, 32);
+            this.pbSettings.TabIndex = 8;
+            this.pbSettings.TabStop = false;
+            this.toolTip.SetToolTip(this.pbSettings, "How do you like it");
+            this.pbSettings.Click += new System.EventHandler(this.Settings_Click);
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(375, 197);
+            this.Controls.Add(this.pbSettings);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.pbRewind);
             this.Controls.Add(this.pbStop);
@@ -120,6 +138,7 @@ namespace ClipPlayer
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -131,5 +150,6 @@ namespace ClipPlayer
         private System.Windows.Forms.PictureBox pbRewind;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.RichTextBox logBox;
+        private System.Windows.Forms.PictureBox pbSettings;
     }
 }

@@ -171,6 +171,7 @@ namespace ClipPlayer
                         {
                             _playEvents.Add(tick, new List<MidiEvent>());
                         }
+
                         _playEvents[tick].Add(te);
                         _totalTicks = Math.Max(_totalTicks, tick);
                     }
@@ -204,7 +205,6 @@ namespace ClipPlayer
             int bars = _totalTicks / BEATS_PER_BAR / PPQ;
             int beats = _totalTicks / PPQ % BEATS_PER_BAR;
             int ticks = _totalTicks % PPQ;
-            TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick));
 
             string s = $"{_tempo} bpm {Length.ToString(Common.TS_FORMAT)} {bars + 1}:{beats + 1}:{ticks}";
             return s;

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using NAudio.Midi;
 using NAudio.Wave;
 using NBagOfTricks;
+using NBagOfTricks.UI;
 
 //>>>>>>>>>>>>> TODO volume ui
 
@@ -24,9 +25,6 @@ namespace ClipPlayer
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
-
-        /// <summary>Supported file types..</summary>
-        string[] _fileTypes = new[] { ".mid", ".wav", ".mp3", ".m4a", ".flac" };
         #endregion
 
         #region Lifecycle
@@ -154,17 +152,11 @@ namespace ClipPlayer
                 };
 
                 // Detect changes of interest.
-                bool midiChange = false;
-                bool audioChange = false;
-                bool navChange = false;
                 bool restart = false;
 
                 pg.PropertyValueChanged += (sdr, args) =>
                 {
                     restart |= args.ChangedItem.PropertyDescriptor.Name.EndsWith("Device");
-                    midiChange |= args.ChangedItem.PropertyDescriptor.Category == "Midi";
-                    audioChange |= args.ChangedItem.PropertyDescriptor.Category == "Audio";
-                    navChange |= args.ChangedItem.PropertyDescriptor.Category == "Navigator";
                 };
 
                 f.Controls.Add(pg);
@@ -176,11 +168,6 @@ namespace ClipPlayer
                     MessageBox.Show("Restart required for device changes to take effect");
                 }
 
-                if ((midiChange && _player is MidiPlayer) || (audioChange && _player is WavePlayer))
-                {
-                    //TODO                   _player.SettingsUpdated();
-                }
-
                 SaveSettings();
             }
         }
@@ -188,137 +175,6 @@ namespace ClipPlayer
 
 
         #region Private functions
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        // bool ReadConfig()
-        // {
-        //     bool valid = true;
-        //     string fn = $"{Application.StartupPath}\\config.txt";
-
-        //     if (File.Exists(fn))
-        //     {
-        //         foreach(string s in File.ReadAllLines(fn))
-        //         {
-        //             try
-        //             {
-        //                 var parts = s.SplitByToken(":");
-        //                 switch (parts[0].ToLower())
-        //                 {
-        //                     case "volume":
-        //                         Common.Volume = (float)MathUtils.Constrain(float.Parse(parts[1]), 0, 1);
-        //                         break;
-
-        //                     case "wavoutdevice":
-        //                         valid &= ValidateWaveDevice(parts[1].Replace("\"", ""));
-        //                         break;
-
-        //                     case "latency":
-        //                         Common.Latency = MathUtils.Constrain(int.Parse(parts[1]), 5, 500);
-        //                         break;
-
-        //                     case "midioutdevice":
-        //                         valid &= ValidateMidiDevice(parts[1].Replace("\"", ""));
-        //                         break;
-
-        //                     case "drumchannel":
-        //                         Common.DrumChannel = MathUtils.Constrain(int.Parse(parts[1]), 0, MidiPlayer.NUM_CHANNELS);
-        //                         break;
-
-        //                     case "autoclose":
-        //                         Common.AutoClose = bool.Parse(parts[1]);
-        //                         break;
-
-        //                     case "tempo":
-        //                         Common.Tempo = MathUtils.Constrain(int.Parse(parts[1]), 30, 250);
-        //                         break;
-
-        //                     case "pos":
-        //                         var pos = parts[1].SplitByToken(",");
-        //                         Location = new Point(int.Parse(pos[0]), int.Parse(pos[1]));
-        //                         break;
-
-        //                     default:
-        //                         if (!s.StartsWith("#"))
-        //                         {
-        //                             throw new Exception();
-        //                         }
-        //                         break;
-        //                 }
-        //             }
-        //             catch (Exception) // formatting errors etc.
-        //             {
-        //                 valid = false;
-        //             }
-        //         }
-        //     }
-        //     // else just use internal defaults.
-
-        //     return valid;
-        // }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
-        // bool ValidateWaveDevice(string v)
-        // {
-        //     // Get available devices and check selection for sanity.
-        //     bool valid = false;
-        //     var rec = new List<string>();
-
-        //     for (int id = -1; id < WaveOut.DeviceCount; id++) // –1 indicates the default output device, while 0 is the first output device
-        //     {
-        //         var cap = WaveOut.GetCapabilities(id);
-        //         rec.Add(cap.ProductName);
-        //     }
-
-        //     if (rec.Contains(v))
-        //     {
-        //         Common.WavOutDevice = v;
-        //         valid = true;
-        //     }
-        //     else
-        //     {
-        //         rec.Insert(0, "Invalid wave device - must be one of:");
-        //         ShowMessage(string.Join(Environment.NewLine, rec), false);
-        //     }
-
-        //     return valid;
-        // }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
-        // bool ValidateMidiDevice(string v)
-        // {
-        //     // Get available devices and check selection for sanity.
-        //     bool valid = false;
-        //     var rec = new List<string>();
-
-        //     for (int devindex = 0; devindex < MidiOut.NumberOfDevices; devindex++)
-        //     {
-        //         rec.Add(MidiOut.DeviceInfo(devindex).ProductName);
-        //     }
-
-        //     if (rec.Contains(v))
-        //     {
-        //         Common.MidiOutDevice = v;
-        //         valid = true;
-        //     }
-        //     else
-        //     {
-        //         rec.Insert(0, "Invalid midi device - must be one of:");
-        //         ShowMessage(string.Join(Environment.NewLine, rec), false);
-        //     }
-
-        //     return valid;
-        // }
-
         /// <summary>
         /// Show message then optionally exit.
         /// </summary>

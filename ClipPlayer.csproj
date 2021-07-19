@@ -45,7 +45,8 @@
     <Reference Include="NBagOfTricks">
       <HintPath>lib\NBagOfTricks.dll</HintPath>
     </Reference>
-    <Reference Include="NBagOfTricks.UI">
+    <Reference Include="NBagOfTricks.UI, Version=0.9.7865.18683, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\NBagOfTricks.UI.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -109,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\glyphicons-176-stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\glyphicons-137-cogwheel.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
