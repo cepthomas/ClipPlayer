@@ -48,6 +48,9 @@ namespace ClipPlayer
         /// <summary>Current position in ticks.</summary>
         int _currentTick;
 
+        /// <summary>Current tempo.</summary>
+        int _tempo = Common.Settings.DefaultTempo;
+
         /// <summary>Multimedia timer identifier.</summary>
         int _timerID = -1;
 
@@ -89,7 +92,7 @@ namespace ClipPlayer
             int devIndex = -1;
             for (int i = 0; i < MidiOut.NumberOfDevices; i++)
             {
-                if (Common.MidiOutDevice == MidiOut.DeviceInfo(i).ProductName)
+                if (Common.Settings.MidiOutDevice == MidiOut.DeviceInfo(i).ProductName)
                 {
                     devIndex = i;
                     break;
@@ -99,7 +102,7 @@ namespace ClipPlayer
 
             if (_midiOut == null)
             {
-                DoError($"Invalid midi device: {Common.MidiOutDevice}");
+                DoError($"Invalid midi device: {Common.Settings.MidiOutDevice}");
             }
             else
             {
@@ -147,7 +150,7 @@ namespace ClipPlayer
                         int tick = (int)(te.AbsoluteTime * PPQ / _sourceEvents.DeltaTicksPerQuarterNote);
 
                         // Adjust channel for non-standard drums.
-                        if (Common.DrumChannel > 0 && te.Channel == Common.DrumChannel)
+                        if (Common.Settings.DrumChannel > 0 && te.Channel == Common.Settings.DrumChannel)
                         {
                             te.Channel = DRUM_CHANNEL;
                         }
@@ -159,7 +162,7 @@ namespace ClipPlayer
                                 break;
 
                             case TempoEvent evt:
-                                Common.Tempo = (int)evt.Tempo;
+                                _tempo = (int)evt.Tempo;
                                 break;
                         }
 
@@ -177,7 +180,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Calculate the actual period to tell the user.
-            double secPerBeat = 60.0 / Common.Tempo;
+            double secPerBeat = 60.0 / _tempo;
             _msecPerTick = 1000 * secPerBeat / PPQ;
 
             int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
@@ -203,7 +206,7 @@ namespace ClipPlayer
             int ticks = _totalTicks % PPQ;
             TimeSpan ts = new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick));
 
-            string s = $"{Common.Tempo} bpm {Length.ToString(Common.TS_FORMAT)} {bars + 1}:{beats + 1}:{ticks}";
+            string s = $"{_tempo} bpm {Length.ToString(Common.TS_FORMAT)} {bars + 1}:{beats + 1}:{ticks}";
             return s;
         }
 
@@ -255,7 +258,7 @@ namespace ClipPlayer
                                 else
                                 {
                                     double vel = evt.Velocity;
-                                    evt.Velocity = (int)(vel * Common.Volume);
+                                    evt.Velocity = (int)(vel * Common.Settings.Volume);
                                     MidiSend(evt);
                                     // Need to restore.
                                     evt.Velocity = (int)vel;

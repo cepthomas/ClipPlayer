@@ -48,6 +48,9 @@
     <Reference Include="NBagOfTricks.UI">
       <HintPath>lib\NBagOfTricks.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -75,6 +78,7 @@
     <Compile Include="Transport.Designer.cs">
       <DependentUpon>Transport.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserSettings.cs" />
     <Compile Include="WavePlayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,11 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\glyphicons-176-stop.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="config.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

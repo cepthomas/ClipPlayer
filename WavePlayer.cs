@@ -69,12 +69,12 @@ namespace ClipPlayer
             for (int id = -1; id < WaveOut.DeviceCount; id++)
             {
                 var cap = WaveOut.GetCapabilities(id);
-                if (Common.WavOutDevice == cap.ProductName)
+                if (Common.Settings.WavOutDevice == cap.ProductName)
                 {
                     _waveOut = new WaveOut
                     {
                         DeviceNumber = id,
-                        DesiredLatency = Common.Latency
+                        DesiredLatency = int.Parse(Common.Settings.Latency)
                     };
                     _waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
                     break;
@@ -95,7 +95,7 @@ namespace ClipPlayer
                 var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
                 //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
                 _waveOut.Init(postVolumeMeter);
-                _waveOut.Volume = Common.Volume;
+                _waveOut.Volume = (float)Common.Settings.Volume;
             }
             else
             {
