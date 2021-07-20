@@ -5,10 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using NAudio.Midi;
-using NAudio.Wave;
 using NBagOfTricks;
-using NBagOfTricks.UI;
 
 
 namespace ClipPlayer
@@ -66,6 +63,11 @@ namespace ClipPlayer
             sldVolume.Value = Common.Settings.Volume;
             Location = Common.Settings.Position;
 
+            if(!Common.Settings.ShowLog)
+            {
+                ClientSize = new Size(ClientRectangle.Width, progress.Bottom + 5);
+            }
+
             Visible = true;
 
             try
@@ -91,11 +93,12 @@ namespace ClipPlayer
 
                 if (_player != null)
                 {
+                    _player.StatusEvent += Player_StatusEvent;
+                    _player.Volume = sldVolume.Value;
+
                     if (_player.OpenFile(_fn))
                     {
                         Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
-                        _player.StatusEvent += Player_StatusEvent;
-                        _player.Volume = sldVolume.Value;
                         _player.Play();
                     }
                     else
@@ -239,7 +242,7 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// 
+        /// Go!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -249,7 +252,7 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// 
+        /// Stop!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

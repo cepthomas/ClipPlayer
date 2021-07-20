@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using NAudio.Midi;
 using NBagOfTricks;
 
@@ -33,6 +32,9 @@ namespace ClipPlayer
         /// <summary>Midi output device.</summary>
         MidiOut _midiOut = null;
 
+        /// <summary>The fast timer.</summary>
+        MmTimerEx _mmTimer = new MmTimerEx();
+
         /// <summary>Period.</summary>
         double _msecPerTick = 0;
 
@@ -50,15 +52,6 @@ namespace ClipPlayer
 
         /// <summary>Current tempo.</summary>
         int _tempo = Common.Settings.DefaultTempo;
-
-        /// <summary>Multimedia timer identifier.</summary>
-        int _timerID = -1;
-
-        /// <summary>Delegate for Windows mmtimer callback.</summary>
-        delegate void TimeProc(int id, int msg, int user, int param1, int param2);
-
-        /// <summary>Called by Windows when a mmtimer event occurs.</summary>
-        readonly TimeProc _timeProc;
         #endregion
 
         #region Properties - interface implementation
@@ -104,11 +97,7 @@ namespace ClipPlayer
 
             if (_midiOut == null)
             {
-                DoError($"Invalid midi device: {Common.Settings.MidiOutDevice}");
-            }
-            else
-            {
-                _timeProc = new TimeProc(MmTimerCallback);
+                Tell($"Invalid midi device: {Common.Settings.MidiOutDevice}");
             }
         }
 
@@ -120,11 +109,13 @@ namespace ClipPlayer
             // Stop and destroy mmtimer.
             State = RunState.Stopped;
 
-            timeKillEvent(_timerID);
-
             // Resources.
             _midiOut?.Dispose();
             _midiOut = null;
+
+            _mmTimer?.Stop();
+            _mmTimer?.Dispose();
+            _mmTimer = null;
         }
         #endregion
 
@@ -132,6 +123,8 @@ namespace ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
+            _mmTimer.Stop();
+
             _currentTick = 0;
             _totalTicks = 0;
 
@@ -189,14 +182,11 @@ namespace ClipPlayer
             int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
             float msecPerBeat = period * PPQ;
             float actualBpm = 60.0f * 1000.0f / msecPerBeat;
-            //Log($"Period:{period} Goal_BPM:{Common.Tempo:f2} Actual_BPM:{actualBpm:f2}");
+            Tell($"Period:{period} Goal_BPM:{_tempo:f2} Actual_BPM:{actualBpm:f2}");
 
-            // Create and start periodic timer. Resolution is 1. Mode is TIME_PERIODIC.
-            _timerID = timeSetEvent(period, 1, _timeProc, IntPtr.Zero, 1);
-            if (_timerID == 0)
-            {
-                DoError("Unable to start periodic multimedia Timer.");
-            }
+            // Create periodic timer.
+            _mmTimer.SetTimer(period, MmTimerCallback);
+            _mmTimer.Start();
 
             return true;
         }
@@ -240,7 +230,7 @@ namespace ClipPlayer
         /// <summary>
         /// Multimedia timer callback. Synchronously outputs the next midi events.
         /// </summary>
-        void MmTimerCallback(int id, int msg, int user, int param1, int param2)
+        void MmTimerCallback(double totalElapsed, double periodElapsed)
         {
             if (State == RunState.Playing)
             {
@@ -332,39 +322,14 @@ namespace ClipPlayer
         /// Tell the mothership.
         /// </summary>
         /// <param name="msg"></param>
-        void DoError(string msg)
+        void Tell(string msg)
         {
-            State = RunState.Error;
-            _currentTick = 0;
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,
                 Message = msg
             });
         }
-        #endregion
-
-        #region Interop Multimedia Timer Functions
-        #pragma warning disable IDE1006 // Naming Styles
-
-        [DllImport("winmm.dll")]
-        private static extern int timeGetDevCaps(ref TimerCaps caps, int sizeOfTimerCaps);
-
-        /// <summary>Start her up.</summary>
-        [DllImport("winmm.dll")]
-        private static extern int timeSetEvent(int delay, int resolution, TimeProc proc, IntPtr user, int mode);
-
-        [DllImport("winmm.dll")]
-        private static extern int timeKillEvent(int id);
-
-        /// <summary>Represents information about the multimedia timer capabilities.</summary>
-        [StructLayout(LayoutKind.Sequential)]
-        struct TimerCaps
-        {
-            public int periodMin;
-            public int periodMax;
-        }
-        #pragma warning restore IDE1006 // Naming Styles
         #endregion
     }
 }

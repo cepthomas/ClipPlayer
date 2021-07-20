@@ -186,11 +186,8 @@ namespace ClipPlayer
         /// Tell the mothership.
         /// </summary>
         /// <param name="msg"></param>
-        void DoError(string msg)
+        void Tell(string msg)
         {
-            State = RunState.Error;
-            Current = TimeSpan.Zero;
-
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,
@@ -209,7 +206,7 @@ namespace ClipPlayer
         {
             if (e.Exception != null)
             {
-                DoError(e.Exception.Message);
+                Tell(e.Exception.Message);
             }
             else
             {

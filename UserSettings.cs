@@ -4,9 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Design;
-using System.ComponentModel.Design;
-using System.Windows.Forms.Design;
 using Newtonsoft.Json;
 using NAudio.Wave;
 using NAudio.Midi;
@@ -23,6 +20,12 @@ namespace ClipPlayer
         [Category("Navigator")]
         [Browsable(true)]
         public bool AutoClose { get; set; } = true;
+
+        [DisplayName("Show Log")]
+        [Description("Really only for debugging.")]
+        [Category("Navigator")]
+        [Browsable(true)]
+        public bool ShowLog { get; set; } = false;
 
         [DisplayName("Wave Output Device")]
         [Description("How to play the audio files.")]
