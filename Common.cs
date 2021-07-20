@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ClipPlayer
 {
-    public enum RunState { Stopped, Playing, Complete, Error }
+    public enum RunState { Stopped, Playing, Complete }
 
     public class Common
     {

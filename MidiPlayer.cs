@@ -21,7 +21,7 @@ namespace ClipPlayer
         /// <summary>Only 4/4 time supported.</summary>
         const int BEATS_PER_BAR = 4;
 
-        /// <summary>Our ppq aka resolution aka ticks per beat. 4 gives 16th note, 8 gives 32nd note, etc.</summary>
+        /// <summary>Our ppq aka resolution.</summary>
         const int PPQ = 32;
 
         /// <summary>The drum channel.</summary>

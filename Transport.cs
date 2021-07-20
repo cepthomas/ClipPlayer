@@ -212,7 +212,12 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void Player_StatusEvent(object sender, StatusEventArgs e)
         {
-            switch(_player.State)
+            if(e.Message != "")
+            {
+                Log(e.Message);
+            }
+
+            switch (_player.State)
             {
                 case RunState.Playing:
                     progress.AddValue(e.Progress);
@@ -233,10 +238,6 @@ namespace ClipPlayer
                         _player.Current = TimeSpan.Zero;
                         progress.AddValue(0);
                     }
-                    break;
-
-                case RunState.Error:
-                    ShowMessage(e.Message, true);
                     break;
             }
         }
