@@ -16,10 +16,6 @@ namespace ClipPlayer
             var pname = proc.ProcessName;
             var procs = Process.GetProcessesByName(pname);
 
-            Console.WriteLine($"==========");
-            Console.WriteLine($"========== {args.Length}");
-            //Console.WriteLine($"{args[0]}:{args[1]}");
-
             // Ensure only one playing at a time. If this is the second, alert the primary by writing the
             // args to the semaphore file.
             if (procs.Length > 1)

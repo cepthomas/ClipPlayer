@@ -176,7 +176,7 @@ namespace ClipPlayer
         /// </summary>
         void DoUpdate()
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()
+            StatusEvent.Invoke(this, new StatusEventArgs()//xxx1
             {
                 Progress = Current < Length ? 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds : 100
             });
@@ -198,7 +198,7 @@ namespace ClipPlayer
 
         #region Event Handlers
         /// <summary>
-        /// Usually end of file but could be error.
+        /// Usually end of file but could be error. Also when client tells it to Stop();
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -211,7 +211,7 @@ namespace ClipPlayer
             else
             {
                 State = RunState.Complete;
-                DoUpdate();
+                DoUpdate();//xxx2
             }
         }
 

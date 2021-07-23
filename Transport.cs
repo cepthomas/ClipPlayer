@@ -16,6 +16,12 @@ namespace ClipPlayer
         /// <summary>Current file.</summary>
         string _fn = "";
 
+        /// <summary>Audio device.</summary>
+        WavePlayer _wavePlayer = null;
+
+        /// <summary>Midi device.</summary>
+        MidiPlayer _midiPlayer = null;
+
         /// <summary>Current play device.</summary>
         IPlayer _player = null;
 
@@ -69,6 +75,12 @@ namespace ClipPlayer
             {
                 ClientSize = new Size(ClientRectangle.Width, progress.Bottom + 5);
             }
+
+            // Create the devices.
+            _midiPlayer = new MidiPlayer();
+            _midiPlayer.StatusEvent += Player_StatusEvent;
+            _wavePlayer = new WavePlayer();
+            _wavePlayer.StatusEvent += Player_StatusEvent;
 
             // Hook up UI handlers.
             pbPlay.Click += (_, __) => { _player.Play(); };
@@ -124,7 +136,13 @@ namespace ClipPlayer
                 components.Dispose();
             }
 
-            RemovePlayer();
+            _midiPlayer.Stop();
+            _midiPlayer.Dispose();
+            _midiPlayer = null;
+
+            _wavePlayer.Stop();
+            _wavePlayer.Dispose();
+            _wavePlayer = null;
 
             base.Dispose(disposing);
         }
@@ -186,22 +204,21 @@ namespace ClipPlayer
         {
             bool ok = true;
 
+            _player?.Stop();
+
             try
             {
-                // Remove old one.
-                RemovePlayer();
-
                 switch (Path.GetExtension(fn).ToLower())
                 {
                     case ".mid":
-                        _player = new MidiPlayer();
+                        _player = _midiPlayer;
                         break;
 
                     case ".wav":
                     case ".mp3":
                     case ".m4a":
                     case ".flac":
-                        _player = new WavePlayer();
+                        _player = _wavePlayer;
                         break;
 
                     default:
@@ -210,23 +227,19 @@ namespace ClipPlayer
                         break;
                 }
 
-                if (_player != null)
+                if (_player.OpenFile(fn))
                 {
-                    _player.StatusEvent += Player_StatusEvent;
+                    Text = $"{Path.GetFileName(fn)} {_player.GetInfo()}";
+                    _fn = fn;
                     _player.Volume = sldVolume.Value;
-
-                    if (_player.OpenFile(fn))
-                    {
-                        Text = $"{Path.GetFileName(fn)} {_player.GetInfo()}";
-                        _fn = fn;
-                        _player.Play();
-                    }
-                    else
-                    {
-                        ShowMessage($"Couldn't open file", true);
-                        _fn = "";
-                        ok = false;
-                    }
+                    _player.Rewind();
+                    _player.Play();
+                }
+                else
+                {
+                    ShowMessage($"Couldn't open file", true);
+                    _fn = "";
+                    ok = false;
                 }
             }
             catch (Exception ex)
@@ -270,16 +283,16 @@ namespace ClipPlayer
         /// <summary>
         /// Clean up resources.
         /// </summary>
-        void RemovePlayer()
-        {
-            if (_player != null)
-            {
-                _player.Stop();
-                _player.StatusEvent -= Player_StatusEvent;
-                _player.Dispose();
-                _player = null;
-            }
-        }
+        //void RemovePlayer()
+        //{
+        //    if (_player != null)
+        //    {
+        //        _player.Stop();
+        //        _player.StatusEvent -= Player_StatusEvent;
+        //        _player.Dispose();
+        //        _player = null;
+        //    }
+        //}
         #endregion
 
         #region Event handlers
