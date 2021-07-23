@@ -8,20 +8,6 @@ namespace ClipPlayer
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            _player?.Dispose();
-            base.Dispose(disposing);
-        }
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -71,7 +57,6 @@ namespace ClipPlayer
             this.pbPlay.TabIndex = 4;
             this.pbPlay.TabStop = false;
             this.toolTip.SetToolTip(this.pbPlay, "Go go go");
-            this.pbPlay.Click += new System.EventHandler(this.Play_Click);
             // 
             // pbStop
             // 
@@ -83,7 +68,6 @@ namespace ClipPlayer
             this.pbStop.TabIndex = 5;
             this.pbStop.TabStop = false;
             this.toolTip.SetToolTip(this.pbStop, "Hold your horses");
-            this.pbStop.Click += new System.EventHandler(this.Stop_Click);
             // 
             // pbRewind
             // 
@@ -95,7 +79,6 @@ namespace ClipPlayer
             this.pbRewind.TabIndex = 6;
             this.pbRewind.TabStop = false;
             this.toolTip.SetToolTip(this.pbRewind, "Go back Jack");
-            this.pbRewind.Click += new System.EventHandler(this.Rewind_Click);
             // 
             // toolTip
             // 
@@ -136,7 +119,6 @@ namespace ClipPlayer
             this.sldVolume.Size = new System.Drawing.Size(40, 32);
             this.sldVolume.TabIndex = 9;
             this.sldVolume.Value = 0.5D;
-            this.sldVolume.ValueChanged += new System.EventHandler(this.Volume_ValueChanged);
             // 
             // Transport
             // 
@@ -155,8 +137,6 @@ namespace ClipPlayer
             this.Text = "Clip Player";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
             this.Load += new System.EventHandler(this.Transport_Load);
-            this.Move += new System.EventHandler(this.Transport_Move);
-            this.Resize += new System.EventHandler(this.Transport_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pbPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbStop)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).EndInit();

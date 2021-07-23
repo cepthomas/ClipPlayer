@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace ClipPlayer
@@ -15,22 +16,24 @@ namespace ClipPlayer
             var pname = proc.ProcessName;
             var procs = Process.GetProcessesByName(pname);
 
-            // Ensure only one playing at a time. TODO would be nicer to restart this one with a new file.
+            Console.WriteLine($"==========");
+            Console.WriteLine($"========== {args.Length}");
+            //Console.WriteLine($"{args[0]}:{args[1]}");
+
+            // Ensure only one playing at a time. If this is the second, alert the primary by writing the
+            // args to the semaphore file.
             if (procs.Length > 1)
             {
-                // Kill any currently running - this one will essentially replace it.
-                foreach (Process p in procs)
-                {
-                    if (p.Id != proc.Id)
-                    {
-                        p.Kill();
-                    }
-                }
+                File.WriteAllText(Common.GetSemFile(), args[0]);
+                // Then exit.
             }
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Transport());
+            else
+            {
+                // I'm the first, start normally.
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new Transport());
+            }
         }
     }
 }

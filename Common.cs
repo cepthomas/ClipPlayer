@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using NBagOfTricks;
+
 
 namespace ClipPlayer
 {
@@ -13,6 +16,18 @@ namespace ClipPlayer
 
         /// <summary>For viewing purposes.</summary>
         public const string TS_FORMAT = @"mm\:ss\.fff";
+
+        /// <summary>Simple helper.</summary>
+        public static string GetAppDir()
+        {
+            return MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
+        }
+
+        /// <summary>Simple helper.</summary>
+        public static string GetSemFile()
+        {
+            return Path.Combine(GetAppDir(), "touch_me.txt");
+        }
     }
 
     public class StatusEventArgs : EventArgs
