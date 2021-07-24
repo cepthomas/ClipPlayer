@@ -17,17 +17,8 @@ namespace ClipPlayer
         /// <summary>For viewing purposes.</summary>
         public const string TS_FORMAT = @"mm\:ss\.fff";
 
-        /// <summary>Simple helper.</summary>
-        public static string GetAppDir()
-        {
-            return MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-        }
-
-        /// <summary>Simple helper.</summary>
-        public static string GetSemFile()
-        {
-            return Path.Combine(GetAppDir(), "touch_me.txt");
-        }
+        /// <summary>Client/server comm.</summary>
+        public const string PIPE_NAME = "ClipPlayer-5826C396-B847-4F86-87A0-52475EDC0082";
     }
 
     public class StatusEventArgs : EventArgs

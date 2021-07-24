@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks;
 
@@ -27,17 +31,15 @@ namespace ClipPlayer
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
-
-        /// <summary>Watch for changes to sem file.</summary>
-        FileSystemWatcher _watcher;
         #endregion
 
         #region Lifecycle
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Transport()
+        public Transport(string fn)
         {
+            _fn = fn;
             InitializeComponent();
         }
 
@@ -48,23 +50,15 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void Transport_Load(object sender, EventArgs e)
         {
-            if (Environment.GetCommandLineArgs().Length != 2)
-            {
-                // Should never happen.
-                Environment.Exit(1);
-            }
-
             Icon = Properties.Resources.croco;
             bool ok = true;
-
-            var fn = Environment.GetCommandLineArgs()[1];
 
             Log($"CurrentDirectory:{Environment.CurrentDirectory}");
             Log($"ExecutablePath:{Application.ExecutablePath}");
             Log($"StartupPath:{Application.StartupPath}");
 
             // Get the settings.
-            string appDir = Common.GetAppDir();
+            string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
             DirectoryInfo di = new DirectoryInfo(appDir);
             di.Create();
             UserSettings.Load(appDir);
@@ -76,7 +70,7 @@ namespace ClipPlayer
                 ClientSize = new Size(ClientRectangle.Width, progress.Bottom + 5);
             }
 
-            // Create the devices.
+            // Create the playback devices.
             _midiPlayer = new MidiPlayer();
             _midiPlayer.StatusEvent += Player_StatusEvent;
             _wavePlayer = new WavePlayer();
@@ -88,23 +82,12 @@ namespace ClipPlayer
             pbRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
 
-            // Hook up sem file watcher.
-            var path = Common.GetSemFile();
-            File.WriteAllText(path, "nothing-here-yet");
-            _watcher = new FileSystemWatcher()
-            {
-                Path = Path.GetDirectoryName(path),
-                Filter = Path.GetFileName(path),
-                EnableRaisingEvents = true,
-                NotifyFilter = NotifyFilters.LastWrite
-            };
-            _watcher.Changed += (_, __) =>
-            {
-                fn = File.ReadAllText(Common.GetSemFile());
-                OpenFile(fn);
-            };
+            // Start listening for new instances.
+            var pipeServer = new NamedPipeServerStream(Common.PIPE_NAME, PipeDirection.In);
+            Task.Factory.StartNew( () => ClientListen(pipeServer));
 
-            ok = OpenFile(fn);
+            // Go!
+            ok = OpenFile();
 
             if(!ok)
             {
@@ -145,6 +128,150 @@ namespace ClipPlayer
             _wavePlayer = null;
 
             base.Dispose(disposing);
+        }
+        #endregion
+
+        #region Play file
+        /// <summary>
+        /// Open a file to play.
+        /// </summary>
+        /// <returns></returns>
+        bool OpenFile()
+        {
+            bool ok = true;
+
+            _player?.Stop();
+
+            try
+            {
+                switch (Path.GetExtension(_fn).ToLower())
+                {
+                    case ".mid":
+                        _player = _midiPlayer;
+                        break;
+
+                    case ".wav":
+                    case ".mp3":
+                    case ".m4a":
+                    case ".flac":
+                        _player = _wavePlayer;
+                        break;
+
+                    default:
+                        ShowMessage($"Invalid file: {_fn}", true);
+                        ok = false;
+                        break;
+                }
+
+                if (_player.OpenFile(_fn))
+                {
+                    Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
+                    _player.Volume = sldVolume.Value;
+                    _player.Rewind();
+                    _player.Play();
+                }
+                else
+                {
+                    ShowMessage($"Couldn't open file", true);
+                    _fn = "";
+                    ok = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Fail open file: {ex}", true);
+                _fn = "";
+                ok = false;
+            }
+
+            if (_fn != "")
+            {
+                Log($"File to play:{_fn}");
+            }
+
+            return ok;
+        }
+
+        /// <summary>
+        /// A second instance wants us to open the file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        async Task ClientListen(NamedPipeServerStream stream)
+        {
+            var buffer = new byte[1024];
+            var buffIndex = 0;
+            bool run = true;
+
+            while (run)
+            {
+                stream.WaitForConnection();
+
+                var bytesRead = await stream.ReadAsync(buffer, buffIndex, buffer.Length - buffIndex);
+
+                if (bytesRead == 0)
+                {
+                    // EOF - all done.
+                    run = false;
+                }
+                else
+                {
+                    // Keep track of the amount of buffered bytes
+                    buffIndex += bytesRead;
+
+                    // Look for a EOL in the buffered data
+                    int linePosition = Array.IndexOf(buffer, (byte)'\n');
+
+                    if (linePosition >= 0)
+                    {
+                        string s = new UTF8Encoding().GetString(buffer, 0, linePosition);
+
+                        // Reset.
+                        buffIndex = 0;
+
+                        // Process the line
+                        MessageBox.Show(s);
+                        ProcessLine(s);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Player_StatusEvent(object sender, StatusEventArgs e)
+        {
+            if (e.Message != "")
+            {
+                Log(e.Message);
+            }
+
+            switch (_player.State)
+            {
+                case RunState.Playing:
+                    progress.AddValue(e.Progress);
+                    break;
+
+                case RunState.Stopped:
+                    progress.AddValue(e.Progress);
+                    break;
+
+                case RunState.Complete:
+                    if (Common.Settings.AutoClose)
+                    {
+                        Environment.Exit(Environment.ExitCode);
+                    }
+                    else
+                    {
+                        _player.State = RunState.Stopped;
+                        _player.Current = TimeSpan.Zero;
+                        progress.AddValue(0);
+                    }
+                    break;
+            }
         }
         #endregion
 
@@ -196,68 +323,6 @@ namespace ClipPlayer
 
         #region Private functions
         /// <summary>
-        /// Open a file to play.
-        /// </summary>
-        /// <param name="fn"></param>
-        /// <returns></returns>
-        bool OpenFile(string fn)
-        {
-            bool ok = true;
-
-            _player?.Stop();
-
-            try
-            {
-                switch (Path.GetExtension(fn).ToLower())
-                {
-                    case ".mid":
-                        _player = _midiPlayer;
-                        break;
-
-                    case ".wav":
-                    case ".mp3":
-                    case ".m4a":
-                    case ".flac":
-                        _player = _wavePlayer;
-                        break;
-
-                    default:
-                        ShowMessage($"Invalid file: {fn}", true);
-                        ok = false;
-                        break;
-                }
-
-                if (_player.OpenFile(fn))
-                {
-                    Text = $"{Path.GetFileName(fn)} {_player.GetInfo()}";
-                    _fn = fn;
-                    _player.Volume = sldVolume.Value;
-                    _player.Rewind();
-                    _player.Play();
-                }
-                else
-                {
-                    ShowMessage($"Couldn't open file", true);
-                    _fn = "";
-                    ok = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowMessage($"Fail open file: {ex}", true);
-                _fn = "";
-                ok = false;
-            }
-
-            if(_fn != "")
-            {
-                Log($"File to play:{_fn}");
-            }
-
-            return ok;
-        }
-
-        /// <summary>
         /// Show message then optionally exit.
         /// </summary>
         /// <param name="msg"></param>
@@ -278,59 +343,7 @@ namespace ClipPlayer
         void Log(string s)
         {
             logBox.AppendText(s + Environment.NewLine);
-        }
-
-        /// <summary>
-        /// Clean up resources.
-        /// </summary>
-        //void RemovePlayer()
-        //{
-        //    if (_player != null)
-        //    {
-        //        _player.Stop();
-        //        _player.StatusEvent -= Player_StatusEvent;
-        //        _player.Dispose();
-        //        _player = null;
-        //    }
-        //}
-        #endregion
-
-        #region Event handlers
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Player_StatusEvent(object sender, StatusEventArgs e)
-        {
-            if(e.Message != "")
-            {
-                Log(e.Message);
-            }
-
-            switch (_player.State)
-            {
-                case RunState.Playing:
-                    progress.AddValue(e.Progress);
-                    break;
-
-                case RunState.Stopped:
-                    progress.AddValue(e.Progress);
-                    break;
-
-                case RunState.Complete:
-                    if(Common.Settings.AutoClose)
-                    {
-                        Environment.Exit(Environment.ExitCode);
-                    }
-                    else
-                    {
-                        _player.State = RunState.Stopped;
-                        _player.Current = TimeSpan.Zero;
-                        progress.AddValue(0);
-                    }
-                    break;
-            }
+            logBox.ScrollToCaret();
         }
         #endregion
 
