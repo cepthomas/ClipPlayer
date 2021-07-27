@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using NBagOfTricks;
-
+using System.Diagnostics;
 
 namespace ClipPlayer
 {
@@ -17,10 +17,17 @@ namespace ClipPlayer
         /// <summary>For viewing purposes.</summary>
         public const string TS_FORMAT = @"mm\:ss\.fff";
 
-        /// <summary>Client/server comm.</summary>
+        /// <summary>Client/server comm id.</summary>
         public const string PIPE_NAME = "ClipPlayer-5826C396-B847-4F86-87A0-52475EDC0082";
+
+        public static void Dump(string s) // TODO
+        {
+            //Debug.WriteLine(s);
+            File.AppendAllText(@"C:\Dev\repos\ClipPlayer\dump.txt", $"{s}{Environment.NewLine}");
+        }
     }
 
+    /// <summary>Player has something to say or show.</summary>
     public class StatusEventArgs : EventArgs
     {
         /// <summary>0 -> 100</summary>

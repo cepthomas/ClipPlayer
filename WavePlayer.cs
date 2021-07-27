@@ -61,8 +61,12 @@ namespace ClipPlayer
         /// </summary>
         public void Dispose()
         {
-            // My stuff here.
-            CloseAudio();
+            _waveOut?.Stop();
+            _waveOut?.Dispose();
+            _waveOut = null;
+
+            _audioFileReader?.Dispose();
+            _audioFileReader = null;
         }
         #endregion
 
@@ -71,9 +75,6 @@ namespace ClipPlayer
         public bool OpenFile(string fn)
         {
             bool ok = true;
-
-            // Clean up first.
-            CloseAudio();
 
             // Create output device.
             for (int id = -1; id < WaveOut.DeviceCount; id++)
@@ -110,11 +111,6 @@ namespace ClipPlayer
             else
             {
                 ok = false;
-            }
-
-            if (!ok)
-            {
-                CloseAudio();
             }
 
             return ok;
@@ -158,19 +154,6 @@ namespace ClipPlayer
         #endregion
 
         #region Private functions
-        /// <summary>
-        /// 
-        /// </summary>
-        void CloseAudio()
-        {
-            _waveOut?.Stop();
-            _waveOut?.Dispose();
-            _waveOut = null;
-
-            _audioFileReader?.Dispose();
-            _audioFileReader = null;
-        }
-
         /// <summary>
         /// Tell the mothership.
         /// </summary>

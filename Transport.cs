@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks;
@@ -29,6 +26,9 @@ namespace ClipPlayer
         /// <summary>Current play device.</summary>
         IPlayer _player = null;
 
+        /// <summary>Listen for new instances.</summary>
+        IpcServer _server = null;
+
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
         #endregion
@@ -48,7 +48,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Transport_Load(object sender, EventArgs e)
+        /*async*/ void Transport_Load(object sender, EventArgs e)
         {
             Icon = Properties.Resources.croco;
             bool ok = true;
@@ -82,10 +82,6 @@ namespace ClipPlayer
             pbRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
 
-            // Start listening for new instances.
-            var pipeServer = new NamedPipeServerStream(Common.PIPE_NAME, PipeDirection.In);
-            Task.Factory.StartNew( () => ClientListen(pipeServer));
-
             // Go!
             ok = OpenFile();
 
@@ -95,6 +91,20 @@ namespace ClipPlayer
                 Environment.ExitCode = 1;
                 Close();
             }
+
+            // Start listening for new instances.
+            Log($"LOAD start listen");
+
+            // Start listening for others.
+            _server = new IpcServer(Common.PIPE_NAME);
+            _server.IpcEvent += Server_IpcEvent;
+            _server.Start();
+
+            //await Task.Run(async () =>
+            //{
+            //    await _server.Start();
+            //});
+            //_server.Start();
         }
 
         /// <summary>
@@ -127,13 +137,17 @@ namespace ClipPlayer
             _wavePlayer.Dispose();
             _wavePlayer = null;
 
+            _server.Kill();
+            _server.Dispose();
+            _server = null;
+
             base.Dispose(disposing);
         }
         #endregion
 
         #region Play file
         /// <summary>
-        /// Open a file to play.
+        /// Open a file to play. Caller has set _fn to requested file name.
         /// </summary>
         /// <returns></returns>
         bool OpenFile()
@@ -160,21 +174,25 @@ namespace ClipPlayer
                     default:
                         ShowMessage($"Invalid file: {_fn}", true);
                         ok = false;
+                        _fn = "";
                         break;
                 }
 
-                if (_player.OpenFile(_fn))
+                if(ok)
                 {
-                    Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
-                    _player.Volume = sldVolume.Value;
-                    _player.Rewind();
-                    _player.Play();
-                }
-                else
-                {
-                    ShowMessage($"Couldn't open file", true);
-                    _fn = "";
-                    ok = false;
+                    if (_player.OpenFile(_fn))
+                    {
+                        Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
+                        _player.Volume = sldVolume.Value;
+                        _player.Rewind();
+                        _player.Play();
+                    }
+                    else
+                    {
+                        ShowMessage($"Couldn't open file", true);
+                        _fn = "";
+                        ok = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -190,51 +208,6 @@ namespace ClipPlayer
             }
 
             return ok;
-        }
-
-        /// <summary>
-        /// A second instance wants us to open the file.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        async Task ClientListen(NamedPipeServerStream stream)
-        {
-            var buffer = new byte[1024];
-            var buffIndex = 0;
-            bool run = true;
-
-            while (run)
-            {
-                stream.WaitForConnection();
-
-                var bytesRead = await stream.ReadAsync(buffer, buffIndex, buffer.Length - buffIndex);
-
-                if (bytesRead == 0)
-                {
-                    // EOF - all done.
-                    run = false;
-                }
-                else
-                {
-                    // Keep track of the amount of buffered bytes
-                    buffIndex += bytesRead;
-
-                    // Look for a EOL in the buffered data
-                    int linePosition = Array.IndexOf(buffer, (byte)'\n');
-
-                    if (linePosition >= 0)
-                    {
-                        string s = new UTF8Encoding().GetString(buffer, 0, linePosition);
-
-                        // Reset.
-                        buffIndex = 0;
-
-                        // Process the line
-                        MessageBox.Show(s);
-                        ProcessLine(s);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -273,6 +246,162 @@ namespace ClipPlayer
                     break;
             }
         }
+        #endregion
+
+        #region Pipe
+        /// <summary>
+        /// Something has arrived.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Server_IpcEvent(object sender, IpcEventArgs e)
+        {
+            this.InvokeIfRequired(_ =>
+            {
+                switch (e.Status)
+                {
+                    case IpcStatus.RcvMessage:
+                        _fn = e.Message;
+                        OpenFile();
+                        break;
+
+                    case IpcStatus.LogMessage:
+                        Log($"{e.Message}");
+                        break;
+
+                    case IpcStatus.ServerError:
+                        Log($"Server error:{e.Message}");
+                        break;
+
+                    case IpcStatus.ClientError:
+                        Log($"Client error:{e.Message}");
+                        break;
+
+                    case IpcStatus.ClientTimeout://TODO?
+                        break;
+                }
+            });
+        }
+
+        /// <summary>
+        /// A second instance wants us to open the file. This forever server listens for the new file name.
+        /// </summary>
+        //        static void ServerThread()
+        //        {
+        //            var buffer = new byte[1024];
+        //            var index = 0;
+        //            bool run = true;
+
+        //            //https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-use-named-pipes-for-network-interprocess-communication?redirectedfrom=MSDN
+
+        //            //private static async Task Server()
+        //            //{
+        //            //    using (var cancellationTokenSource = new CancellationTokenSource(1000))
+        //            //    using (var server = new NamedPipeServerStream("test", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+        //            //    {
+        //            //        var cancellationToken = cancellationTokenSource.Token;
+        //            //        await server.WaitForConnectionAsync(cancellationToken);
+        //            //        await server.WriteAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, cancellationToken);
+        //            //        var buffer = new byte[4];
+        //            //        await server.ReadAsync(buffer, 0, 4, cancellationToken);
+        //            //        Console.WriteLine("exit server");
+        //            //    }
+        //            //}
+
+
+        //            using (var server = new NamedPipeServerStream(Common.PIPE_NAME, PipeDirection.In, 1))//, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+        //            {
+        //                while (run)
+        //                {
+        //                    Common.Dump($"SERVER before connection");
+
+        //                    //await server.WaitForConnectionAsync();
+
+        //                    Common.Dump($"SERVER in connection");
+
+        //                    //var bytesRead = await server.ReadAsync(buffer, index, buffer.Length - index);//, ct);
+        ////                    var bytesRead = server.ReadAsync(buffer, index, buffer.Length - index);//, ct);
+        //                    //server.Read()
+
+        ////                    Common.Dump($"SERVER read:{bytesRead}");
+
+        //                    //if (bytesRead == 0)
+        //                    //{
+        //                    //    // Means all done.
+        //                    //    run = false;
+        //                    //}
+        //                    //else
+        //                    {
+        //                        /*
+        //                        index += bytesRead;
+
+        //                        // Full string arrived?
+        //                        int terminator = Array.IndexOf(buffer, (byte)'\n');
+
+        //                        if (terminator >= 0)
+        //                        {
+        //                            // Make buffer into a string.
+        //                            string fn = new UTF8Encoding().GetString(buffer, 0, terminator);
+
+        //                            Common.Dump($"SERVER fn:{fn}");
+
+        //                            // Process the line.
+        //                            Log($"DO FILE:{fn}");
+        //                            _fn = fn;
+        //                            OpenFile();
+
+        //                            // Reset buffer.
+        //                            index = 0;
+        //                        }
+        //                        */
+        //                    }
+        //                }
+        //            }
+        //        }
+
+
+        //public static void Client(string fn)
+        //{
+        //    try
+        //    {
+        //        using (var pipeClient = new NamedPipeClientStream(".", Common.PIPE_NAME, PipeDirection.Out))
+        //        {
+        //            Common.Dump($"CLIENT 1");
+
+        //            pipeClient.Connect(1000);
+
+        //            Common.Dump($"CLIENT 2");
+
+        //            byte[] outBuffer = new UTF8Encoding().GetBytes(fn + "\n");
+
+        //            Common.Dump($"CLIENT 3");
+
+        //            pipeClient.Write(outBuffer, 0, outBuffer.Length);
+
+
+        //            Common.Dump($"CLIENT 4");
+
+        //            //pipeClient.Flush();
+        //            pipeClient.WaitForPipeDrain();
+
+        //            Common.Dump($"CLIENT 5");
+
+        //            // Then exit.
+        //        }
+        //    }
+        //    catch (TimeoutException)//TODO handle?
+        //    {
+        //        Common.Dump($"CLIENT timed out");
+        //    }
+        //    catch (IOException ex)//TODO handle?
+        //    {
+        //        Common.Dump($"CLIENT IO bad:{ex}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Common.Dump($"CLIENT !!!!! {ex}");
+        //    }
+        //}
         #endregion
 
         #region User settings
@@ -342,8 +471,10 @@ namespace ClipPlayer
         /// <param name="s"></param>
         void Log(string s)
         {
-            logBox.AppendText(s + Environment.NewLine);
+            logBox.AppendText($"> {s}{Environment.NewLine}");
             logBox.ScrollToCaret();
+
+            Common.Dump("LOG " + s);
         }
         #endregion
 
