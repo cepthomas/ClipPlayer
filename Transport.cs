@@ -48,14 +48,14 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        /*async*/ void Transport_Load(object sender, EventArgs e)
+        void Transport_Load(object sender, EventArgs e)
         {
             Icon = Properties.Resources.croco;
             bool ok = true;
 
-            Log($"CurrentDirectory:{Environment.CurrentDirectory}");
-            Log($"ExecutablePath:{Application.ExecutablePath}");
-            Log($"StartupPath:{Application.StartupPath}");
+            Trace($"CurrentDirectory:{Environment.CurrentDirectory}");
+            Trace($"ExecutablePath:{Application.ExecutablePath}");
+            Trace($"StartupPath:{Application.StartupPath}");
 
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
@@ -85,26 +85,19 @@ namespace ClipPlayer
             // Go!
             ok = OpenFile();
 
-            if(!ok)
+            if(ok)
+            {
+                // Start listening for new app instances.
+                _server = new IpcServer(Common.PIPE_NAME);
+                _server.IpcServerEvent += Server_IpcEvent;
+                _server.Start();
+            }
+            else
             {
                 // Bail out.
                 Environment.ExitCode = 1;
                 Close();
             }
-
-            // Start listening for new instances.
-            Log($"LOAD start listen");
-
-            // Start listening for others.
-            _server = new IpcServer(Common.PIPE_NAME);
-            _server.IpcEvent += Server_IpcEvent;
-            _server.Start();
-
-            //await Task.Run(async () =>
-            //{
-            //    await _server.Start();
-            //});
-            //_server.Start();
         }
 
         /// <summary>
@@ -204,7 +197,7 @@ namespace ClipPlayer
 
             if (_fn != "")
             {
-                Log($"File to play:{_fn}");
+                Trace($"File to play:{_fn}");
             }
 
             return ok;
@@ -219,7 +212,7 @@ namespace ClipPlayer
         {
             if (e.Message != "")
             {
-                Log(e.Message);
+                Trace(e.Message);
             }
 
             switch (_player.State)
@@ -248,160 +241,29 @@ namespace ClipPlayer
         }
         #endregion
 
-        #region Pipe
+        #region Pipe event handler
         /// <summary>
         /// Something has arrived.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcEvent(object sender, IpcEventArgs e)
+        void Server_IpcEvent(object sender, IpcServerEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
                 switch (e.Status)
                 {
-                    case IpcStatus.RcvMessage:
+                    case IpcServerStatus.Message:
                         _fn = e.Message;
                         OpenFile();
                         break;
 
-                    case IpcStatus.LogMessage:
-                        Log($"{e.Message}");
-                        break;
-
-                    case IpcStatus.ServerError:
-                        Log($"Server error:{e.Message}");
-                        break;
-
-                    case IpcStatus.ClientError:
-                        Log($"Client error:{e.Message}");
-                        break;
-
-                    case IpcStatus.ClientTimeout://TODO?
+                    case IpcServerStatus.Error:
+                        Trace($"Server error:{e.Message}");
                         break;
                 }
             });
         }
-
-        /// <summary>
-        /// A second instance wants us to open the file. This forever server listens for the new file name.
-        /// </summary>
-        //        static void ServerThread()
-        //        {
-        //            var buffer = new byte[1024];
-        //            var index = 0;
-        //            bool run = true;
-
-        //            //https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-use-named-pipes-for-network-interprocess-communication?redirectedfrom=MSDN
-
-        //            //private static async Task Server()
-        //            //{
-        //            //    using (var cancellationTokenSource = new CancellationTokenSource(1000))
-        //            //    using (var server = new NamedPipeServerStream("test", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
-        //            //    {
-        //            //        var cancellationToken = cancellationTokenSource.Token;
-        //            //        await server.WaitForConnectionAsync(cancellationToken);
-        //            //        await server.WriteAsync(new byte[] { 1, 2, 3, 4 }, 0, 4, cancellationToken);
-        //            //        var buffer = new byte[4];
-        //            //        await server.ReadAsync(buffer, 0, 4, cancellationToken);
-        //            //        Console.WriteLine("exit server");
-        //            //    }
-        //            //}
-
-
-        //            using (var server = new NamedPipeServerStream(Common.PIPE_NAME, PipeDirection.In, 1))//, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
-        //            {
-        //                while (run)
-        //                {
-        //                    Common.Dump($"SERVER before connection");
-
-        //                    //await server.WaitForConnectionAsync();
-
-        //                    Common.Dump($"SERVER in connection");
-
-        //                    //var bytesRead = await server.ReadAsync(buffer, index, buffer.Length - index);//, ct);
-        ////                    var bytesRead = server.ReadAsync(buffer, index, buffer.Length - index);//, ct);
-        //                    //server.Read()
-
-        ////                    Common.Dump($"SERVER read:{bytesRead}");
-
-        //                    //if (bytesRead == 0)
-        //                    //{
-        //                    //    // Means all done.
-        //                    //    run = false;
-        //                    //}
-        //                    //else
-        //                    {
-        //                        /*
-        //                        index += bytesRead;
-
-        //                        // Full string arrived?
-        //                        int terminator = Array.IndexOf(buffer, (byte)'\n');
-
-        //                        if (terminator >= 0)
-        //                        {
-        //                            // Make buffer into a string.
-        //                            string fn = new UTF8Encoding().GetString(buffer, 0, terminator);
-
-        //                            Common.Dump($"SERVER fn:{fn}");
-
-        //                            // Process the line.
-        //                            Log($"DO FILE:{fn}");
-        //                            _fn = fn;
-        //                            OpenFile();
-
-        //                            // Reset buffer.
-        //                            index = 0;
-        //                        }
-        //                        */
-        //                    }
-        //                }
-        //            }
-        //        }
-
-
-        //public static void Client(string fn)
-        //{
-        //    try
-        //    {
-        //        using (var pipeClient = new NamedPipeClientStream(".", Common.PIPE_NAME, PipeDirection.Out))
-        //        {
-        //            Common.Dump($"CLIENT 1");
-
-        //            pipeClient.Connect(1000);
-
-        //            Common.Dump($"CLIENT 2");
-
-        //            byte[] outBuffer = new UTF8Encoding().GetBytes(fn + "\n");
-
-        //            Common.Dump($"CLIENT 3");
-
-        //            pipeClient.Write(outBuffer, 0, outBuffer.Length);
-
-
-        //            Common.Dump($"CLIENT 4");
-
-        //            //pipeClient.Flush();
-        //            pipeClient.WaitForPipeDrain();
-
-        //            Common.Dump($"CLIENT 5");
-
-        //            // Then exit.
-        //        }
-        //    }
-        //    catch (TimeoutException)//TODO handle?
-        //    {
-        //        Common.Dump($"CLIENT timed out");
-        //    }
-        //    catch (IOException ex)//TODO handle?
-        //    {
-        //        Common.Dump($"CLIENT IO bad:{ex}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Common.Dump($"CLIENT !!!!! {ex}");
-        //    }
-        //}
         #endregion
 
         #region User settings
@@ -469,12 +331,11 @@ namespace ClipPlayer
         /// Debug help.
         /// </summary>
         /// <param name="s"></param>
-        void Log(string s)
+        void Trace(string s)
         {
             logBox.AppendText($"> {s}{Environment.NewLine}");
             logBox.ScrollToCaret();
-
-            Common.Dump("LOG " + s);
+            TraceLog.Trace("TRACE", s);
         }
         #endregion
 

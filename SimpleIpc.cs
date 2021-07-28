@@ -11,17 +11,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks;
 
+// Simple IPC mechanism so there is only one instance but can be updated from a new one. TOCO put in nbot?
 
-//DOCDOCDOC simple uni-directional ipc. for a way to send a string from a client to a server.
-
-namespace ClipPlayer // TODO put in nbot?
+namespace ClipPlayer
 {
+    /// <summary>Possible outcomes.</summary>
+    public enum IpcServerStatus { Ok, Message, Error }
 
-    public enum IpcStatus { None, LogMessage, RcvMessage, ServerError, ClientError, ClientTimeout }
+    /// <summary>Possible outcomes.</summary>
+    public enum IpcClientStatus { Ok, Timeout, Error }
 
-    public class IpcEventArgs : EventArgs
+    public class IpcServerEventArgs : EventArgs
     {
-        public IpcStatus Status { get; set; } = IpcStatus.None;
+        public IpcServerStatus Status { get; set; } = IpcServerStatus.Ok;
         public string Message { get; set; } = "";
     }
 
@@ -36,8 +38,8 @@ namespace ClipPlayer // TODO put in nbot?
         /// <summary>Flag to unblock the listen and end the thread.</summary>
         bool _running = true;
 
-        /// <summary>Something changed event. Client will have to take care of thread issues.</summary>
-        public event EventHandler<IpcEventArgs> IpcEvent = null;
+        /// <summary>Something happened. Client will have to take care of thread issues.</summary>
+        public event EventHandler<IpcServerEventArgs> IpcServerEvent = null;
 
         /// <summary>The canceller.</summary>
         ManualResetEvent _cancelEvent = new ManualResetEvent(false);
@@ -68,14 +70,14 @@ namespace ClipPlayer // TODO put in nbot?
         {
             bool ok = true;
 
-            Common.Dump($"SERVER Kill...");
+            TraceLog.Trace("SERVER", $"Kill()");
 
             _running = false;
             _cancelEvent.Set();
 
-            Common.Dump($"SERVER Shutting down");
+            TraceLog.Trace("SERVER", $"Shutting down");
             _thread.Join();
-            Common.Dump("SERVER Thread shut down");
+            TraceLog.Trace("SERVER", $"Thread ended");
             _thread = null;
 
             return ok;
@@ -90,109 +92,110 @@ namespace ClipPlayer // TODO put in nbot?
         }
 
         /// <summary>
-        /// Listen for client messages.
+        /// Listen for client messages. Interruptible by setting _cancelEvent.
         /// </summary>
         void ServerThread()
         {
             var buffer = new byte[1024];
             var index = 0;
 
-            Common.Dump($"SERVER thread started");
+            TraceLog.Trace("SERVER", $"thread started");
 
-            using (var stream = new NamedPipeServerStream(_pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            while (_running)
             {
-                while (_running)
+                using (var stream = new NamedPipeServerStream(_pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+                using (AutoResetEvent connectEvent = new AutoResetEvent(false))
                 {
-                    Exception e = null;
+                    Exception et = null;
 
                     try
                     {
-                        AutoResetEvent connectEvent = new AutoResetEvent(false); //TODO using
-
+                        TraceLog.Trace("SERVER", $"before BeginWaitForConnection");
                         stream.BeginWaitForConnection(ar =>
                         {
-                            Common.Dump($"SERVER BeginWaitForConnection");
-
-                            //TODO: The "right" way to do an interruptible WaitForConnection is to call BeginWaitForConnection, handle the
-                            //new connection in the callback, and close the pipe stream to stop waiting for connections.
-                            //If the pipe is closed, EndWaitForConnection will throw ObjectDisposedException which the callback
-                            //thread can catch, clean up any loose ends, and exit cleanly.
-
-
-                            stream.EndWaitForConnection(ar);
-
-                            //////////////////////////////////
-                            // A client wants to tell us something.
-                            Common.Dump($"SERVER client connected");
-
-                            var bytesRead = stream.Read(buffer, index, buffer.Length - index);
-
-                            Common.Dump($"SERVER read:{bytesRead}");
-
-                            if (bytesRead > 0) //TODO need a timeout.
+                            try
                             {
-                                index += bytesRead;
+                                // This is running in a new thread.
+                                TraceLog.Trace("SERVER", $"before EndWaitForConnection");
+                                stream.EndWaitForConnection(ar);
+                                TraceLog.Trace("SERVER", $"after EndWaitForConnection - client connected");
 
-                                // Full string arrived?
-                                int terminator = Array.IndexOf(buffer, (byte)'\n');
+                                // A client wants to tell us something.
+                                var numRead = stream.Read(buffer, index, buffer.Length - index);
 
-                                if (terminator >= 0)
+                                TraceLog.Trace("SERVER", $"num read:{numRead}");
+
+                                if (numRead > 0) //TODO need a timeout.
                                 {
-                                    // Make buffer into a string.
-                                    string msg = new UTF8Encoding().GetString(buffer, 0, terminator);
+                                    index += numRead;
 
-                                    Common.Dump($"SERVER got fn:{msg}");
+                                    // Full string arrived?
+                                    int terminator = Array.IndexOf(buffer, (byte)'\n');
 
-                                    // Process the line.
-                                    IpcEvent?.Invoke(this, new IpcEventArgs() { Message = msg, Status = IpcStatus.RcvMessage });
+                                    if (terminator >= 0)
+                                    {
+                                        // Make buffer into a string.
+                                        string msg = new UTF8Encoding().GetString(buffer, 0, terminator);
 
-                                    // Reset buffer.
-                                    index = 0;
+                                        TraceLog.Trace("SERVER", $"got msg:{msg}");
+
+                                        // Process the line.
+                                        IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = msg, Status = IpcServerStatus.Message });
+
+                                        // Reset buffer.
+                                        index = 0;
+                                    }
                                 }
                             }
+                            catch (Exception er)
+                            {
+                                // Pass any exceptions back to the main thread for handling.
+                                et = er;
+                            }
 
-                            // Signal happy completion.
+                            // Signal completion.
                             connectEvent.Set();
-
-                        }, null);//BeginWaitForConnection
-
-                        int sig = WaitHandle.WaitAny(new WaitHandle[] { connectEvent, _cancelEvent });
-
-                        if (sig == 1)
-                        {
-                            Common.Dump($"SERVER shutdown sig");
-                            _running = false;
-                        }
-
-                        connectEvent.Dispose();
-
+                        }, null);
                     }
-                    catch (Exception er)
+                    catch (Exception ee)
                     {
-                        e = er;
+                        et = ee;
                     }
 
-                    if (e != null)
+                    // Wait for events of interest.
+                    int sig = WaitHandle.WaitAny(new WaitHandle[] { connectEvent, _cancelEvent });
+
+                    if (sig == 1)
                     {
-                        //throw e; // TODO rethrow exception
+                        TraceLog.Trace("SERVER", $"shutdown sig");
+                        _running = false;
                     }
+                    else if (et != null)
+                    {
+                        TraceLog.Trace("SERVER", $"exception:{et}");
+                        throw et; // TODO rethrow exception?
+                    }
+                    // else done with this stream.
                 }
             }
 
-            Common.Dump($"SERVER thread ended");
+            TraceLog.Trace("SERVER", $"thread ended");
         }
     }
 
-    /// <summary>Companion client to server.</summary>
+    /// <summary>Companion client to server. This runs in a new process.</summary>
     public class IpcClient
     {
-        /// <summary></summary>
+        /// <summary>Pipe name.</summary>
         readonly string _pipeName;
+
+        /// <summary>Caller may be able to use this.</summary>
+        public string Error { get; set; } = "";
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="pipeName"></param>
+        /// <param name="pipeName">Pipe name to use.</param>
         public IpcClient(string pipeName)
         {
             _pipeName = pipeName;
@@ -201,53 +204,44 @@ namespace ClipPlayer // TODO put in nbot?
         /// <summary>
         /// Blocking send string.
         /// </summary>
-        /// <param name="s"></param>
-        /// <param name="timeout"></param>
+        /// <param name="s">String to send.</param>
+        /// <param name="timeout">Msec to wait for completion.</param>
         /// <returns></returns>
-        public IpcStatus Send(string s, int timeout)
+        public IpcClientStatus Send(string s, int timeout)
         {
-            IpcStatus res = IpcStatus.None;
+            IpcClientStatus res = IpcClientStatus.Ok;
 
             try
             {
                 using (var pipeClient = new NamedPipeClientStream(".", _pipeName, PipeDirection.Out))
                 {
-                    Common.Dump($"CLIENT 1 s:{s}");
-
+                    TraceLog.Trace("CLIENT", $"1 s:{s}");
                     pipeClient.Connect(timeout);
 
-                    Common.Dump($"CLIENT 2");
-
+                    TraceLog.Trace("CLIENT", $"2");
                     byte[] outBuffer = new UTF8Encoding().GetBytes(s + "\n");
 
-                    Common.Dump($"CLIENT 3");
-
+                    TraceLog.Trace("CLIENT", $"3");
                     pipeClient.Write(outBuffer, 0, outBuffer.Length);
 
-                    Common.Dump($"CLIENT 4");
-
-                    //pipeClient.Flush();
+                    TraceLog.Trace("CLIENT", $"4");
                     pipeClient.WaitForPipeDrain();
 
-                    Common.Dump($"CLIENT 5");
-
-                    // Then exit.
+                    TraceLog.Trace("CLIENT", $"5");
+                    // Now exit.
                 }
             }
-            catch (TimeoutException)//TODO handle?
+            catch (TimeoutException)
             {
-                Common.Dump($"CLIENT timed out");
-                res = IpcStatus.ClientTimeout;
-            }
-            catch (IOException ex)//TODO handle?
-            {
-                Common.Dump($"CLIENT {ex}");
-                res = IpcStatus.ClientError;
+                // Client can deal with this.
+                TraceLog.Trace("CLIENT", $"timed out");
+                res = IpcClientStatus.Timeout;
             }
             catch (Exception ex)
             {
-                Common.Dump($"CLIENT !!!!! {ex}");
-                res = IpcStatus.ClientError;
+                TraceLog.Trace("CLIENT", $"!!!!! {ex}");
+                Error = ex.ToString();
+                res = IpcClientStatus.Error;
             }
 
             return res;
