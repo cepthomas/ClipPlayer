@@ -260,6 +260,7 @@ namespace ClipPlayer
 
                     case IpcServerStatus.Error:
                         Trace($"Server error:{e.Message}");
+                        MessageBox.Show(e.Message, "Server error!");
                         break;
                 }
             });
@@ -335,7 +336,7 @@ namespace ClipPlayer
         {
             logBox.AppendText($"> {s}{Environment.NewLine}");
             logBox.ScrollToCaret();
-            TraceLog.Trace("TRACE", s);
+            MpLog.Write("HOST", s);
         }
         #endregion
 

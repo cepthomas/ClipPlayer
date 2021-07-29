@@ -23,59 +23,6 @@ namespace ClipPlayer
         public const string PIPE_NAME = "5826C396-B847-4F86-87A0-52475EDC0082";
     }
 
-    /// <summary>
-    /// A dumb logger which handles calls from multiple processes/threads.
-    /// </summary>
-    public class TraceLog
-    {
-        /// <summary>File lock id.</summary>
-        const string MUTEX_GUID = "65A7B2CE-D1A1-410F-AA57-1146E9B29E02";
-
-        /// <summary>Which.</summary>
-        static string _filename = @"..\trace.txt";
-
-        /// <summary>
-        /// Cleans out the file.
-        /// </summary>
-        /// <param name="filename">The file.</param>
-        /// <param name="clear">Clears out the file.</param>
-        public static void Init(string filename, bool clear)
-        {
-            _filename = filename;
-
-            using (var mutex = new Mutex(false, MUTEX_GUID))
-            {
-                mutex.WaitOne();
-                string s = $"============================= {DateTime.Now} =============================";
-                if(clear)
-                {
-                    File.WriteAllText(_filename, s);
-                }
-                else
-                {
-                    File.AppendAllText(_filename, s);
-                }
-                mutex.ReleaseMutex();
-            }
-        }
-
-        /// <summary>
-        /// Add a line.
-        /// </summary>
-        /// <param name="cat"></param>
-        /// <param name="s"></param>
-        public static void Trace(string cat, string s)
-        {
-            using (var mutex = new Mutex(false, MUTEX_GUID))
-            {
-                s = $"{DateTime.Now.ToString(Common.TS_FORMAT)} {cat} {Process.GetCurrentProcess().Id} {Thread.CurrentThread.ManagedThreadId} {s}{Environment.NewLine}";
-                mutex.WaitOne();
-                File.AppendAllText(_filename, s);
-                mutex.ReleaseMutex();
-            }
-        }
-    }
-
     /// <summary>Player has something to say or show.</summary>
     public class StatusEventArgs : EventArgs
     {

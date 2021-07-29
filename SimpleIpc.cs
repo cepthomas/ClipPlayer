@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks;
 
-// Simple IPC mechanism so there is only one instance but can be updated from a new one. TOCO put in nbot?
 
 namespace ClipPlayer
 {
@@ -70,14 +69,14 @@ namespace ClipPlayer
         {
             bool ok = true;
 
-            TraceLog.Trace("SERVER", $"Kill()");
+            MpLog.Write("SRVR", $"Kill()");
 
             _running = false;
             _cancelEvent.Set();
 
-            TraceLog.Trace("SERVER", $"Shutting down");
+            MpLog.Write("SRVR", $"Shutting down");
             _thread.Join();
-            TraceLog.Trace("SERVER", $"Thread ended");
+            MpLog.Write("SRVR", $"Thread ended");
             _thread = null;
 
             return ok;
@@ -99,7 +98,7 @@ namespace ClipPlayer
             var buffer = new byte[1024];
             var index = 0;
 
-            TraceLog.Trace("SERVER", $"thread started");
+            MpLog.Write("SRVR", $"thread started");
 
             while (_running)
             {
@@ -110,40 +109,63 @@ namespace ClipPlayer
 
                     try
                     {
-                        TraceLog.Trace("SERVER", $"before BeginWaitForConnection");
+                        MpLog.Write("SRVR", $"before BeginWaitForConnection()");
                         stream.BeginWaitForConnection(ar =>
                         {
                             try
                             {
                                 // This is running in a new thread.
-                                TraceLog.Trace("SERVER", $"before EndWaitForConnection");
+                                MpLog.Write("SRVR", $"before EndWaitForConnection()");
                                 stream.EndWaitForConnection(ar);
-                                TraceLog.Trace("SERVER", $"after EndWaitForConnection - client connected");
+                                MpLog.Write("SRVR", $"after EndWaitForConnection() - client connected");
 
                                 // A client wants to tell us something.
-                                var numRead = stream.Read(buffer, index, buffer.Length - index);
+                                bool done = false;
+                                int retries = 0;
 
-                                TraceLog.Trace("SERVER", $"num read:{numRead}");
-
-                                if (numRead > 0) //TODO need a timeout.
+                                while(!done)
                                 {
-                                    index += numRead;
-
-                                    // Full string arrived?
-                                    int terminator = Array.IndexOf(buffer, (byte)'\n');
-
-                                    if (terminator >= 0)
+                                    if(retries++ < 10)
                                     {
-                                        // Make buffer into a string.
-                                        string msg = new UTF8Encoding().GetString(buffer, 0, terminator);
+                                        var numRead = stream.Read(buffer, index, buffer.Length - index);
+                                        MpLog.Write("SRVR", $"num read:{numRead}");
 
-                                        TraceLog.Trace("SERVER", $"got msg:{msg}");
+                                        if (numRead > 0)
+                                        {
+                                            index += numRead;
 
-                                        // Process the line.
-                                        IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = msg, Status = IpcServerStatus.Message });
+                                            // Full string arrived?
+                                            int terminator = Array.IndexOf(buffer, (byte)'\n');
 
-                                        // Reset buffer.
-                                        index = 0;
+                                            if (terminator >= 0)
+                                            {
+                                                done = true;
+
+                                                // Make buffer into a string.
+                                                string msg = new UTF8Encoding().GetString(buffer, 0, terminator);
+
+                                                MpLog.Write("SRVR", $"got message:{msg}");
+
+                                                // Process the line.
+                                                IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = msg, Status = IpcServerStatus.Message });
+
+                                                // Reset buffer.
+                                                index = 0;
+                                            }
+                                        }
+
+                                        if(!done)
+                                        {
+                                            // Wait a bit.
+                                            Thread.Sleep(50);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Timed out waiting for client.
+                                        MpLog.Write("SRVR", $"Timed out waiting for client eol");
+                                        IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = $"Timed out waiting for client eol", Status = IpcServerStatus.Error });
+                                        done = true;
                                     }
                                 }
                             }
@@ -153,8 +175,12 @@ namespace ClipPlayer
                                 et = er;
                             }
 
-                            // Signal completion.
-                            connectEvent.Set();
+                            // Signal completion. Blows up on shutdown - not sure why.
+                            if (!connectEvent.SafeWaitHandle.IsClosed)
+                            {
+                                connectEvent.Set();
+                            }
+
                         }, null);
                     }
                     catch (Exception ee)
@@ -167,19 +193,19 @@ namespace ClipPlayer
 
                     if (sig == 1)
                     {
-                        TraceLog.Trace("SERVER", $"shutdown sig");
+                        MpLog.Write("SRVR", $"shutdown sig");
                         _running = false;
                     }
                     else if (et != null)
                     {
-                        TraceLog.Trace("SERVER", $"exception:{et}");
-                        throw et; // TODO rethrow exception?
+                        MpLog.Write("SRVR", $"exception:{et}");
+                        throw et; // rethrow
                     }
                     // else done with this stream.
                 }
             }
 
-            TraceLog.Trace("SERVER", $"thread ended");
+            MpLog.Write("SRVR", $"thread ended");
         }
     }
 
@@ -215,31 +241,31 @@ namespace ClipPlayer
             {
                 using (var pipeClient = new NamedPipeClientStream(".", _pipeName, PipeDirection.Out))
                 {
-                    TraceLog.Trace("CLIENT", $"1 s:{s}");
+                    MpLog.Write("CLNT", $"1 s:{s}");
                     pipeClient.Connect(timeout);
 
-                    TraceLog.Trace("CLIENT", $"2");
+                    MpLog.Write("CLNT", $"2");
                     byte[] outBuffer = new UTF8Encoding().GetBytes(s + "\n");
 
-                    TraceLog.Trace("CLIENT", $"3");
+                    MpLog.Write("CLNT", $"3");
                     pipeClient.Write(outBuffer, 0, outBuffer.Length);
 
-                    TraceLog.Trace("CLIENT", $"4");
+                    MpLog.Write("CLNT", $"4");
                     pipeClient.WaitForPipeDrain();
 
-                    TraceLog.Trace("CLIENT", $"5");
+                    MpLog.Write("CLNT", $"5");
                     // Now exit.
                 }
             }
             catch (TimeoutException)
             {
                 // Client can deal with this.
-                TraceLog.Trace("CLIENT", $"timed out");
+                MpLog.Write("CLNT", $"timed out");
                 res = IpcClientStatus.Timeout;
             }
             catch (Exception ex)
             {
-                TraceLog.Trace("CLIENT", $"!!!!! {ex}");
+                MpLog.Write("CLNT", $"!!!!! {ex}");
                 Error = ex.ToString();
                 res = IpcClientStatus.Error;
             }

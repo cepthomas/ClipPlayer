@@ -159,7 +159,7 @@ namespace ClipPlayer
         /// </summary>
         void DoUpdate()
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()//xxx1
+            StatusEvent.Invoke(this, new StatusEventArgs()
             {
                 Progress = Current < Length ? 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds : 100
             });
@@ -194,7 +194,7 @@ namespace ClipPlayer
             else
             {
                 State = RunState.Complete;
-                DoUpdate();//xxx2
+                DoUpdate();
             }
         }
 
