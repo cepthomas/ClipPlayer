@@ -198,7 +198,7 @@ namespace ClipPlayer
             int beats = _totalTicks / PPQ % BEATS_PER_BAR;
             int ticks = _totalTicks % PPQ;
 
-            string s = $"{_tempo} bpm {Length.ToString(Common.TS_FORMAT)} {bars + 1}:{beats + 1}:{ticks}";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{ticks}";
             return s;
         }
 

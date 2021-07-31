@@ -119,8 +119,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            string s = Length.ToString(Common.TS_FORMAT);
-            return s;
+            return Length.ToString(@"mm\:ss\.fff");
         }
 
         /// <inheritdoc />

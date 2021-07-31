@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using NBagOfTricks.SimpleIpc;
 using System.Threading;
 
 namespace ClipPlayer
@@ -42,17 +43,17 @@ namespace ClipPlayer
                     // If this is the second instance, alert the primary by connecting and sending the new file name.
                     _log.Write($"sub thread enter");
 
-                    IpcClient client = new IpcClient(Common.PIPE_NAME);
+                    Client client = new Client(Common.PipeName, Common.LogFileName);
                     var res = client.Send(fn, 1000);
 
                     switch (res)
                     {
-                        case IpcClientStatus.Error:
+                        case ClientStatus.Error:
                             _log.Write($"Client error:{client.Error}", true);
                             MessageBox.Show(client.Error, "Error!");
                             break;
 
-                        case IpcClientStatus.Timeout:
+                        case ClientStatus.Timeout:
                             _log.Write($"Client timeout", true);
                             MessageBox.Show("Timeout!");
                             break;

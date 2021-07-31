@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NBagOfTricks.SimpleIpc</name>
+    </assembly>
+    <members>
+        <member name="T:NBagOfTricks.SimpleIpc.ClientStatus">
+            <summary>Possible outcomes.</summary>
+        </member>
+        <member name="T:NBagOfTricks.SimpleIpc.Client">
+            <summary>Companion client to server. This runs in a new process.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Client._pipeName">
+            <summary>Pipe name.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Client._log">
+            <summary>My logger.</summary>
+        </member>
+        <member name="P:NBagOfTricks.SimpleIpc.Client.Error">
+            <summary>Caller may be able to use this.</summary>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Client.#ctor(System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="pipeName">Pipe name to use.</param>
+            <param name="logfn"></param>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Client.Send(System.String,System.Int32)">
+            <summary>
+            Blocking send string.
+            </summary>
+            <param name="s">String to send.</param>
+            <param name="timeout">Msec to wait for completion.</param>
+            <returns></returns>
+        </member>
+        <member name="T:NBagOfTricks.SimpleIpc.MpLog">
+            <summary>
+            A simple logger which handles client calls from multiple processes/threads.
+            This is not intended to be a general purpose logger but one that serves a specific purpose,
+            to debug the SimpleIpc component.
+            </summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.MpLog.MUTEX_GUID">
+            <summary>File lock id.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.MpLog._filename">
+            <summary>Which file.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.MpLog._category">
+            <summary>For sorting.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.MpLog._maxSize">
+            <summary>Rollover size.</summary>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.MpLog.#ctor(System.String,System.String)">
+            <summary>
+            Init the log file.
+            </summary>
+            <param name="filename">The file.</param>
+            <param name="category">The category.</param>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.MpLog.Write(System.String,System.Boolean)">
+            <summary>
+            Add a line.
+            </summary>
+            <param name="s"></param>
+            <param name="error">T/F</param>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.MpLog.Clear">
+            <summary>
+            Empty the log file.
+            </summary>
+        </member>
+        <member name="T:NBagOfTricks.SimpleIpc.ServerStatus">
+            <summary>Possible outcomes.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Server._pipeName">
+            <summary>Named pipe name.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Server._thread">
+            <summary>The server thread.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Server._running">
+            <summary>Flag to unblock the listen and end the thread.</summary>
+        </member>
+        <member name="E:NBagOfTricks.SimpleIpc.Server.ServerEvent">
+            <summary>Something happened. Client will have to take care of thread issues.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Server._cancelEvent">
+            <summary>The canceller.</summary>
+        </member>
+        <member name="F:NBagOfTricks.SimpleIpc.Server._log">
+            <summary>My logger.</summary>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Server.#ctor(System.String,System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="pipeName"></param>
+            <param name="logfn"></param>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Server.Start">
+            <summary>
+            Run it.
+            </summary>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Server.Kill">
+            <summary>
+            Kill the server.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Server.Dispose">
+            <summary>
+            Required.
+            </summary>
+        </member>
+        <member name="M:NBagOfTricks.SimpleIpc.Server.ServerThread">
+            <summary>
+            Listen for client messages. Interruptible by setting _cancelEvent.
+            </summary>
+        </member>
+    </members>
+</doc>

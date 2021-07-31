@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NBagOfTricks.SimpleIpc;
 using NBagOfTricks;
 
 
@@ -27,10 +28,10 @@ namespace ClipPlayer
         IPlayer _player = null;
 
         /// <summary>Listen for new instances.</summary>
-        IpcServer _server = null;
+        Server _server = null;
 
         /// <summary>My logger.</summary>
-        MpLog _log = new MpLog(Common.LogFileName, "TRNS");
+        readonly MpLog _log = new MpLog(Common.LogFileName, "TRNS");
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
@@ -91,8 +92,8 @@ namespace ClipPlayer
             if(ok)
             {
                 // Start listening for new app instances.
-                _server = new IpcServer(Common.PIPE_NAME);
-                _server.IpcServerEvent += Server_IpcEvent;
+                _server = new Server(Common.PipeName, Common.LogFileName);
+                _server.ServerEvent += Server_IpcEvent;
                 _server.Start();
             }
             else
@@ -250,18 +251,18 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcEvent(object sender, IpcServerEventArgs e)
+        void Server_IpcEvent(object sender, ServerEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
                 switch (e.Status)
                 {
-                    case IpcServerStatus.Message:
+                    case ServerStatus.Message:
                         _fn = e.Message;
                         OpenFile();
                         break;
 
-                    case IpcServerStatus.Error:
+                    case ServerStatus.Error:
                         _log.Write($"Server error:{e.Message}", true);
                         ShowMessage($"Server error:{e.Message}", false);
                         break;
@@ -351,7 +352,7 @@ namespace ClipPlayer
             if (e.X != _lastXPos)
             {
                 TimeSpan ts = GetTimeFromMouse(e.X);
-                toolTip.SetToolTip(progress, ts.ToString(Common.TS_FORMAT));
+                toolTip.SetToolTip(progress, ts.ToString(@"mm\:ss\.fff"));
                 _lastXPos = e.X;
             }
         }
