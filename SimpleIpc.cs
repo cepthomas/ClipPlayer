@@ -43,6 +43,9 @@ namespace ClipPlayer
         /// <summary>The canceller.</summary>
         ManualResetEvent _cancelEvent = new ManualResetEvent(false);
 
+        /// <summary>My logger.</summary>
+        MpLog _log = new MpLog(Common.LogFileName, "SRVR");
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -69,14 +72,14 @@ namespace ClipPlayer
         {
             bool ok = true;
 
-            MpLog.Write("SRVR", $"Kill()");
+            _log.Write($"Kill()");
 
             _running = false;
             _cancelEvent.Set();
 
-            MpLog.Write("SRVR", $"Shutting down");
+            _log.Write($"Shutting down");
             _thread.Join();
-            MpLog.Write("SRVR", $"Thread ended");
+            _log.Write($"Thread ended");
             _thread = null;
 
             return ok;
@@ -98,7 +101,7 @@ namespace ClipPlayer
             var buffer = new byte[1024];
             var index = 0;
 
-            MpLog.Write("SRVR", $"thread started");
+            _log.Write($"thread started");
 
             while (_running)
             {
@@ -109,15 +112,15 @@ namespace ClipPlayer
 
                     try
                     {
-                        MpLog.Write("SRVR", $"before BeginWaitForConnection()");
+                        _log.Write($"before BeginWaitForConnection()");
                         stream.BeginWaitForConnection(ar =>
                         {
                             try
                             {
                                 // This is running in a new thread.
-                                MpLog.Write("SRVR", $"before EndWaitForConnection()");
+                                _log.Write($"before EndWaitForConnection()");
                                 stream.EndWaitForConnection(ar);
-                                MpLog.Write("SRVR", $"after EndWaitForConnection() - client connected");
+                                _log.Write($"after EndWaitForConnection() - client connected");
 
                                 // A client wants to tell us something.
                                 bool done = false;
@@ -128,7 +131,7 @@ namespace ClipPlayer
                                     if(retries++ < 10)
                                     {
                                         var numRead = stream.Read(buffer, index, buffer.Length - index);
-                                        MpLog.Write("SRVR", $"num read:{numRead}");
+                                        _log.Write($"num read:{numRead}");
 
                                         if (numRead > 0)
                                         {
@@ -144,7 +147,7 @@ namespace ClipPlayer
                                                 // Make buffer into a string.
                                                 string msg = new UTF8Encoding().GetString(buffer, 0, terminator);
 
-                                                MpLog.Write("SRVR", $"got message:{msg}");
+                                                _log.Write($"got message:{msg}");
 
                                                 // Process the line.
                                                 IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = msg, Status = IpcServerStatus.Message });
@@ -163,7 +166,7 @@ namespace ClipPlayer
                                     else
                                     {
                                         // Timed out waiting for client.
-                                        MpLog.Write("SRVR", $"Timed out waiting for client eol");
+                                        _log.Write($"Timed out waiting for client eol", true);
                                         IpcServerEvent?.Invoke(this, new IpcServerEventArgs() { Message = $"Timed out waiting for client eol", Status = IpcServerStatus.Error });
                                         done = true;
                                     }
@@ -193,19 +196,19 @@ namespace ClipPlayer
 
                     if (sig == 1)
                     {
-                        MpLog.Write("SRVR", $"shutdown sig");
+                        _log.Write($"shutdown sig");
                         _running = false;
                     }
                     else if (et != null)
                     {
-                        MpLog.Write("SRVR", $"exception:{et}");
+                        _log.Write($"exception:{et}", true);
                         throw et; // rethrow
                     }
                     // else done with this stream.
                 }
             }
 
-            MpLog.Write("SRVR", $"thread ended");
+            _log.Write($"thread ended");
         }
     }
 
@@ -214,6 +217,9 @@ namespace ClipPlayer
     {
         /// <summary>Pipe name.</summary>
         readonly string _pipeName;
+
+        /// <summary>My logger.</summary>
+        MpLog _log = new MpLog(Common.LogFileName, "CLNT");
 
         /// <summary>Caller may be able to use this.</summary>
         public string Error { get; set; } = "";
@@ -241,31 +247,31 @@ namespace ClipPlayer
             {
                 using (var pipeClient = new NamedPipeClientStream(".", _pipeName, PipeDirection.Out))
                 {
-                    MpLog.Write("CLNT", $"1 s:{s}");
+                    _log.Write($"1 s:{s}");
                     pipeClient.Connect(timeout);
 
-                    MpLog.Write("CLNT", $"2");
+                    _log.Write($"2");
                     byte[] outBuffer = new UTF8Encoding().GetBytes(s + "\n");
 
-                    MpLog.Write("CLNT", $"3");
+                    _log.Write($"3");
                     pipeClient.Write(outBuffer, 0, outBuffer.Length);
 
-                    MpLog.Write("CLNT", $"4");
+                    _log.Write($"4");
                     pipeClient.WaitForPipeDrain();
 
-                    MpLog.Write("CLNT", $"5");
+                    _log.Write($"5");
                     // Now exit.
                 }
             }
             catch (TimeoutException)
             {
                 // Client can deal with this.
-                MpLog.Write("CLNT", $"timed out");
+                _log.Write($"timed out", true);
                 res = IpcClientStatus.Timeout;
             }
             catch (Exception ex)
             {
-                MpLog.Write("CLNT", $"!!!!! {ex}");
+                _log.Write($"{ex}", true);
                 Error = ex.ToString();
                 res = IpcClientStatus.Error;
             }

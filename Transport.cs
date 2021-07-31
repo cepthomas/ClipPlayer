@@ -29,6 +29,9 @@ namespace ClipPlayer
         /// <summary>Listen for new instances.</summary>
         IpcServer _server = null;
 
+        /// <summary>My logger.</summary>
+        MpLog _log = new MpLog(Common.LogFileName, "TRNS");
+
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
         #endregion
@@ -53,9 +56,9 @@ namespace ClipPlayer
             Icon = Properties.Resources.croco;
             bool ok = true;
 
-            Trace($"CurrentDirectory:{Environment.CurrentDirectory}");
-            Trace($"ExecutablePath:{Application.ExecutablePath}");
-            Trace($"StartupPath:{Application.StartupPath}");
+            _log.Write($"CurrentDirectory:{Environment.CurrentDirectory}");
+            _log.Write($"ExecutablePath:{Application.ExecutablePath}");
+            _log.Write($"StartupPath:{Application.StartupPath}");
 
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
@@ -140,7 +143,7 @@ namespace ClipPlayer
 
         #region Play file
         /// <summary>
-        /// Open a file to play. Caller has set _fn to requested file name.
+        /// Open the file to play. Caller has already set _fn to requested file name.
         /// </summary>
         /// <returns></returns>
         bool OpenFile()
@@ -197,7 +200,7 @@ namespace ClipPlayer
 
             if (_fn != "")
             {
-                Trace($"File to play:{_fn}");
+                _log.Write($"File to play:{_fn}");
             }
 
             return ok;
@@ -212,7 +215,7 @@ namespace ClipPlayer
         {
             if (e.Message != "")
             {
-                Trace(e.Message);
+                _log.Write(e.Message);
             }
 
             switch (_player.State)
@@ -259,8 +262,8 @@ namespace ClipPlayer
                         break;
 
                     case IpcServerStatus.Error:
-                        Trace($"Server error:{e.Message}");
-                        MessageBox.Show(e.Message, "Server error!");
+                        _log.Write($"Server error:{e.Message}", true);
+                        ShowMessage($"Server error:{e.Message}", false);
                         break;
                 }
             });
@@ -326,17 +329,6 @@ namespace ClipPlayer
             {
                 Environment.Exit(Environment.ExitCode);
             }
-        }
-
-        /// <summary>
-        /// Debug help.
-        /// </summary>
-        /// <param name="s"></param>
-        void Trace(string s)
-        {
-            logBox.AppendText($"> {s}{Environment.NewLine}");
-            logBox.ScrollToCaret();
-            MpLog.Write("HOST", s);
         }
         #endregion
 

@@ -14,6 +14,8 @@ namespace ClipPlayer
         [STAThread]
         static void Main(string[] args)
         {
+            var _log = new MpLog(Common.LogFileName, "MAIN");
+
             if (args.Length > 0)
             {
                 var fn = args[0];
@@ -21,26 +23,24 @@ namespace ClipPlayer
                 var pname = proc.ProcessName;
                 var procs = Process.GetProcessesByName(pname);
 
-                string tracefn = NBagOfTricks.MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera") + @"\mplog.txt";
-                MpLog.Init(tracefn);
-                MpLog.Write("MAIN", $"num-procs:{procs.Length} pid:{proc.Id} arg-fn:{fn}");
+                _log.Write($"num-procs:{procs.Length} pid:{proc.Id} arg-fn:{fn}");
 
                 // Ensure only one playing at a time.
                 if (procs.Length == 1)
                 {
-                    MpLog.Write("MAIN", $"===============================================================================");
-                    MpLog.Write("MAIN", $"main thread enter");
+                    _log.Write($"===============================================================================");
+                    _log.Write($"main thread enter");
 
                     // I'm the first, start normally by passing the file name.
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new Transport(fn));
-                    MpLog.Write("MAIN", $"main thread exit");
+                    _log.Write($"main thread exit");
                 }
                 else
                 {
                     // If this is the second instance, alert the primary by connecting and sending the new file name.
-                    MpLog.Write("MAIN", $"sub thread enter");
+                    _log.Write($"sub thread enter");
 
                     IpcClient client = new IpcClient(Common.PIPE_NAME);
                     var res = client.Send(fn, 1000);
@@ -48,17 +48,17 @@ namespace ClipPlayer
                     switch (res)
                     {
                         case IpcClientStatus.Error:
-                            MpLog.Write("MAIN", $"Client error:{client.Error}");
+                            _log.Write($"Client error:{client.Error}", true);
                             MessageBox.Show(client.Error, "Error!");
                             break;
 
                         case IpcClientStatus.Timeout:
-                            MpLog.Write("MAIN", $"Client timeout");
+                            _log.Write($"Client timeout", true);
                             MessageBox.Show("Timeout!");
                             break;
                     }
 
-                    MpLog.Write("MAIN", $"sub thread exit {res}");
+                    _log.Write($"sub thread exit {res}");
                 }
             }
             else

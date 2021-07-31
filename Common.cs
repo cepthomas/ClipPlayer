@@ -21,6 +21,9 @@ namespace ClipPlayer
 
         /// <summary>Client/server comm id.</summary>
         public const string PIPE_NAME = "5826C396-B847-4F86-87A0-52475EDC0082";
+
+        /// <summary>Shared log file.</summary>
+        public static string LogFileName { get { return MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera") + @"\mplog.txt"; } }
     }
 
     /// <summary>Player has something to say or show.</summary>
