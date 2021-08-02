@@ -133,6 +133,13 @@ namespace ClipPlayer
             _sourceEvents = mfile.Events;
 
             // Scale ticks to internal ppq.
+            MidiTime mt = new MidiTime()
+            {
+                InternalPpq = PPQ,
+                MidiPpq = _sourceEvents.DeltaTicksPerQuarterNote,
+                Tempo = _tempo
+            };
+
             for (int track = 0; track < _sourceEvents.Tracks; track++)
             {
                 foreach(var te in _sourceEvents.GetTrackEvents(track))
@@ -142,7 +149,7 @@ namespace ClipPlayer
                         // Do some miscellaneous fixups.
 
                         // Scale tick to internal.
-                        int tick = (int)(te.AbsoluteTime * PPQ / _sourceEvents.DeltaTicksPerQuarterNote);
+                        int tick = mt.MidiToInternal(te.AbsoluteTime);
 
                         // Adjust channel for non-standard drums.
                         if (Common.Settings.DrumChannel > 0 && te.Channel == Common.Settings.DrumChannel)
@@ -175,14 +182,9 @@ namespace ClipPlayer
 
             State = RunState.Stopped;
 
-            // Calculate the actual period to tell the user.
-            double secPerBeat = 60.0 / _tempo;
-            _msecPerTick = 1000 * secPerBeat / PPQ;
-
-            int period = _msecPerTick > 1.0 ? (int)Math.Round(_msecPerTick) : 1;
-            float msecPerBeat = period * PPQ;
-            float actualBpm = 60.0f * 1000.0f / msecPerBeat;
-            Tell($"Period:{period} Goal_BPM:{_tempo:f2} Actual_BPM:{actualBpm:f2}");
+            // Calculate the actual period.
+            _msecPerTick = 60.0 / _tempo;
+            int period = mt.RoundedInternalPeriod();
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
