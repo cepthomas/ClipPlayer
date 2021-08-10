@@ -10,6 +10,9 @@ using NBagOfTricks.SimpleIpc;
 using NBagOfTricks;
 
 
+// TODO loop? 366_restart
+
+
 namespace ClipPlayer
 {
     public partial class Transport : Form
@@ -69,22 +72,26 @@ namespace ClipPlayer
             sldVolume.Value = Common.Settings.Volume;
             Location = Common.Settings.Position;
 
-            if(!Common.Settings.ShowLog)
-            {
-                ClientSize = new Size(ClientRectangle.Width, progress.Bottom + 5);
-            }
-
             // Create the playback devices.
             _midiPlayer = new MidiPlayer();
             _midiPlayer.StatusEvent += Player_StatusEvent;
             _wavePlayer = new WavePlayer();
             _wavePlayer.StatusEvent += Player_StatusEvent;
 
+            // Fill patch list.
+            foreach (var n in Enum.GetNames(typeof(MidiPlayer.InstrumentDef)))
+            {
+                cmbPatchList.Items.Add(n);
+            }
+            cmbPatchList.SelectedIndex = 0;
+
             // Hook up UI handlers.
-            pbPlay.Click += (_, __) => { _player.Play(); };
-            pbStop.Click += (_, __) => { _player.Stop(); };
+            chkPlay.CheckedChanged += Play_CheckedChanged;
             pbRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
+            chkPatch.CheckedChanged += (_, __) => { SetSize(); };
+
+            SetSize();
 
             // Go!
             ok = OpenFile();
@@ -140,6 +147,93 @@ namespace ClipPlayer
 
             base.Dispose(disposing);
         }
+        #endregion
+
+        #region UI handlers
+        /// <summary>
+        /// User wants to change the drum channel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void DrumChannel_TextChanged(object sender, EventArgs e)
+        {
+            // Check for valid number.
+            bool valid = int.TryParse(txtDrumChannel.Text, out int dch);
+            if (valid && dch >= 1 && dch <= 16)
+            {
+                _midiPlayer.DrumChannel = dch;
+            }
+            else
+            {
+                txtDrumChannel.Text = "";
+            }
+        }
+
+        /// <summary>
+        /// Validate selections and send patch now. TODO nice to have a restore old ones aka undo.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Patch_Click(object sender, EventArgs e)
+        {
+            bool valid = int.TryParse(txtPatchChannel.Text, out int pch);
+            if (valid && pch >= 1 && pch <= 16)
+            {
+                _midiPlayer.SendPatch(pch, cmbPatchList.SelectedIndex);
+            }
+            else
+            {
+                txtPatchChannel.Text = "";
+                ShowMessage("Invalid patch channel", false);
+            }
+        }
+        #endregion
+
+        #region Transport control
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Play_CheckedChanged(object sender, EventArgs e)
+        {
+            var _ = chkPlay.Checked ? Start() : Stop();
+        }
+
+        /// <summary>
+        /// Internal handler.
+        /// </summary>
+        /// <returns></returns>
+        bool Stop()
+        {
+            _player?.Stop();
+            SetPlayCheck(false);
+            return true;
+        }
+
+        /// <summary>
+        /// Internal handler.
+        /// </summary>
+        /// <returns></returns>
+        bool Start()
+        {
+            _player?.Rewind();
+            _player?.Play();
+            SetPlayCheck(true);
+            return true;
+        }
+
+        /// <summary>
+        /// Need to temporarily suppress CheckedChanged event.
+        /// </summary>
+        /// <param name="on"></param>
+        void SetPlayCheck(bool on)
+        {
+            chkPlay.CheckedChanged -= Play_CheckedChanged;
+            chkPlay.Checked = on;
+            chkPlay.CheckedChanged += Play_CheckedChanged;
+        }
+
         #endregion
 
         #region Play file
@@ -296,20 +390,37 @@ namespace ClipPlayer
                 };
 
                 // Detect changes of interest.
-                bool restart = false;
+                bool deviceChange = false;
+                bool midiPatchChange = false;
 
                 pg.PropertyValueChanged += (sdr, args) =>
                 {
-                    restart |= args.ChangedItem.PropertyDescriptor.Name.EndsWith("Device");
+                    switch (args.ChangedItem.PropertyDescriptor.Name)
+                    {
+                        case "MidiOutDevice":
+                        case "WavOutDevice":
+                            deviceChange = true;
+                            break;
+
+                        case "PatchChannel":
+                        case "PatchSub":
+                            midiPatchChange = true;
+                            break;
+                    }
                 };
 
                 f.Controls.Add(pg);
                 f.ShowDialog();
 
                 // Figure out what changed - each handled differently.
-                if(restart)
+                if(deviceChange)
                 {
                     MessageBox.Show("Restart required for device changes to take effect");
+                }
+
+                if(midiPatchChange && _player is MidiPlayer)
+                {
+                    _player.SettingsChanged();
                 }
 
                 Common.Settings.Save();
@@ -318,6 +429,18 @@ namespace ClipPlayer
         #endregion
 
         #region Private functions
+        /// <summary>
+        /// 
+        /// </summary>
+        void SetSize()
+        {
+            int width = chkPatch.Right;
+            int height = chkPatch.Checked ? btnPatch.Bottom : progress.Bottom;
+            //int width = chkPatch.Checked ? cmbPatchList.Right : chkPatch.Right;
+            //int height = chkLog.Checked ? 300 : progress.Bottom + 5;
+            ClientSize = new Size(width + 5, height + 5);
+        }
+
         /// <summary>
         /// Show message then optionally exit.
         /// </summary>

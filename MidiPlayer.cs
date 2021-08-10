@@ -24,8 +24,8 @@ namespace ClipPlayer
         /// <summary>Our ppq aka resolution.</summary>
         const int PPQ = 32;
 
-        /// <summary>The drum channel.</summary>
-        const int DRUM_CHANNEL = 10;
+        /// <summary>Normal drum channel.</summary>
+        public const int DEFAULT_DRUM_CHANNEL = 10;
         #endregion
 
         #region Fields
@@ -50,8 +50,29 @@ namespace ClipPlayer
         /// <summary>Current position in ticks.</summary>
         int _currentTick;
 
-        /// <summary>Current tempo.</summary>
+        /// <summary>Current tempo. Initialize to default in case the file doesn't supply one.</summary>
         int _tempo = Common.Settings.DefaultTempo;
+
+        /// <summary>The midi instrument definitions. Enum value is the actual patch number.</summary>
+        public enum InstrumentDef
+        {
+            AcousticGrandPiano = 0, BrightAcousticPiano, ElectricGrandPiano, HonkyTonkPiano, ElectricPiano1, ElectricPiano2,
+            Harpsichord, Clavinet, Celesta, Glockenspiel, MusicBox, Vibraphone, Marimba, Xylophone, TubularBells,
+            Dulcimer, DrawbarOrgan, PercussiveOrgan, RockOrgan, ChurchOrgan, ReedOrgan, Accordion, Harmonica,
+            TangoAccordion, AcousticGuitarNylon, AcousticGuitarSteel, ElectricGuitarJazz, ElectricGuitarClean,
+            ElectricGuitarMuted, OverdrivenGuitar, DistortionGuitar, GuitarHarmonics, AcousticBass, ElectricBassFinger,
+            ElectricBassPick, FretlessBass, SlapBass1, SlapBass2, SynthBass1, SynthBass2, Violin, Viola, Cello,
+            Contrabass, TremoloStrings, PizzicatoStrings, OrchestralHarp, Timpani, StringEnsemble1, StringEnsemble2,
+            SynthStrings1, SynthStrings2, ChoirAahs, VoiceOohs, SynthVoice, OrchestraHit, Trumpet, Trombone, Tuba,
+            MutedTrumpet, FrenchHorn, BrassSection, SynthBrass1, SynthBrass2, SopranoSax, AltoSax, TenorSax, BaritoneSax,
+            Oboe, EnglishHorn, Bassoon, Clarinet, Piccolo, Flute, Recorder, PanFlute, BlownBottle, Shakuhachi, Whistle,
+            Ocarina, Lead1Square, Lead2Sawtooth, Lead3Calliope, Lead4Chiff, Lead5Charang, Lead6Voice, Lead7Fifths,
+            Lead8BassAndLead, Pad1NewAge, Pad2Warm, Pad3Polysynth, Pad4Choir, Pad5Bowed, Pad6Metallic, Pad7Halo, Pad8Sweep,
+            Fx1Rain, Fx2Soundtrack, Fx3Crystal, Fx4Atmosphere, Fx5Brightness, Fx6Goblins, Fx7Echoes, Fx8SciFi, Sitar,
+            Banjo, Shamisen, Koto, Kalimba, BagPipe, Fiddle, Shanai, TinkleBell, Agogo, SteelDrums, Woodblock,
+            TaikoDrum, MelodicTom, SynthDrum, ReverseCymbal, GuitarFretNoise, BreathNoise, Seashore, BirdTweet,
+            TelephoneRing, Helicopter, Applause, Gunshot
+        }
         #endregion
 
         #region Properties - interface implementation
@@ -70,6 +91,11 @@ namespace ClipPlayer
             get { return new TimeSpan(0, 0, 0, 0, (int)(_currentTick * _msecPerTick)); }
             set { _currentTick = (int)(value.TotalMilliseconds / _msecPerTick); _currentTick = MathUtils.Constrain(_currentTick, 0, _totalTicks); }
         }
+        #endregion
+
+        #region Properties - other
+        /// <summary>Some midi files have drums on a different channel so allow the user to re-map.</summary>
+        public int DrumChannel { get; set; } = DEFAULT_DRUM_CHANNEL;
         #endregion
 
         #region Events - interface implementation
@@ -127,6 +153,7 @@ namespace ClipPlayer
 
             _currentTick = 0;
             _totalTicks = 0;
+            _playEvents.Clear();
 
             // Get events.
             var mfile = new MidiFile(fn, true);
@@ -150,12 +177,6 @@ namespace ClipPlayer
 
                         // Scale tick to internal.
                         int tick = mt.MidiToInternal(te.AbsoluteTime);
-
-                        // Adjust channel for non-standard drums.
-                        if (Common.Settings.DrumChannel > 0 && te.Channel == Common.Settings.DrumChannel)
-                        {
-                            te.Channel = DRUM_CHANNEL;
-                        }
 
                         // Other ops.
                         switch(te)
@@ -226,6 +247,24 @@ namespace ClipPlayer
         {
             _currentTick = 0;
         }
+
+        /// <inheritdoc />
+        public void SettingsChanged()
+        {
+        }
+        #endregion
+
+        #region Public Functions - other
+        /// <summary>
+        /// Send a patch.
+        /// </summary>
+        /// <param name="channel">Substitute patch for this channel.</param>
+        /// <param name="patch">Use this patch for Patch Channel.</param>
+        public void SendPatch(int channel, int patch)
+        {
+            PatchChangeEvent evt = new PatchChangeEvent(0, channel, patch);
+            MidiSend(evt);
+        }
         #endregion
 
         #region Private Functions
@@ -245,24 +284,27 @@ namespace ClipPlayer
                         {
                             // Adjust volume.
                             case NoteOnEvent evt:
-                                if (evt.Channel == DRUM_CHANNEL && evt.Velocity == 0)
+                                if (evt.Channel == DrumChannel && evt.Velocity == 0)
                                 {
-                                    // EXP - skip noteoffs as windows GM doesn't like them.
+                                    // Skip drum noteoffs as windows GM doesn't like them.
                                 }
                                 else
                                 {
-                                    double vel = evt.Velocity;
-                                    evt.Velocity = (int)(vel * Common.Settings.Volume);
-                                    MidiSend(evt);
-                                    // Need to restore.
-                                    evt.Velocity = (int)vel;
+                                    // Adjust volume and maybe drum channel. Also NAudio NoteLength bug.
+                                    NoteOnEvent ne = new NoteOnEvent(
+                                        evt.AbsoluteTime,
+                                        evt.Channel == DrumChannel ? DEFAULT_DRUM_CHANNEL : evt.Channel,
+                                        evt.NoteNumber,
+                                        (int)(evt.Velocity * Volume),
+                                        evt.OffEvent == null ? 0 : evt.NoteLength);
+                                    MidiSend(ne);
                                 }
                                 break;
 
                             case NoteEvent evt:
-                                if (evt.Channel == DRUM_CHANNEL)
+                                if(evt.Channel == DrumChannel)
                                 {
-                                    // EXP - skip noteoffs as windows GM doesn't like them.
+                                    // Skip drum noteoffs as windows GM doesn't like them.
                                 }
                                 else
                                 {

@@ -150,6 +150,12 @@ namespace ClipPlayer
                 Current = TimeSpan.Zero;
             }
         }
+
+        /// <inheritdoc />
+        public void SettingsChanged()
+        {
+            // nada
+        }
         #endregion
 
         #region Private functions

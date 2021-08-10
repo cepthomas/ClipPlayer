@@ -21,12 +21,6 @@ namespace ClipPlayer
         [Browsable(true)]
         public bool AutoClose { get; set; } = true;
 
-        [DisplayName("Show Log")]
-        [Description("Really only for debugging.")]
-        [Category("Navigator")]
-        [Browsable(true)]
-        public bool ShowLog { get; set; } = false;
-
         [DisplayName("Wave Output Device")]
         [Description("How to play the audio files.")]
         [Category("Audio")]
@@ -53,12 +47,6 @@ namespace ClipPlayer
         [Category("Midi")]
         [Browsable(true)]
         public int DefaultTempo { get; set; } = 100;
-
-        [DisplayName("Drum Channel")]
-        [Description("Some files have drums on other than channel 10 so map those from that channel.")]
-        [Category("Midi")]
-        [Browsable(true)]
-        public int DrumChannel { get; set; } = 1;
         #endregion
 
         #region Persisted Non-editable Properties
@@ -124,7 +112,10 @@ namespace ClipPlayer
             switch (context.PropertyDescriptor.Name)
             {
                 case "Latency":
-                    rec = new List<string>() { "25", "50", "100", "150", "200", "300", "400", "500" };
+                    rec = new List<string>()
+                    {
+                        "25", "50", "100", "150", "200", "300", "400", "500"
+                    };
                     break;
 
                 case "WavOutDevice":
