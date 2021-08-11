@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks.SimpleIpc;
+using NBagOfTricks.UI;
 using NBagOfTricks;
 
 
@@ -187,6 +188,18 @@ namespace ClipPlayer
                 ShowMessage("Invalid patch channel", false);
             }
         }
+
+        /// <summary>
+        /// Open the current log.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Log_Click(object sender, EventArgs e)
+        {
+            string lf = Common.LogFileName;
+
+            System.Diagnostics.Process.Start(lf);
+        }
         #endregion
 
         #region Transport control
@@ -357,7 +370,6 @@ namespace ClipPlayer
                         break;
 
                     case ServerStatus.Error:
-                        _log.Write($"Server error:{e.Message}", true);
                         ShowMessage($"Server error:{e.Message}", false);
                         break;
                 }
@@ -448,6 +460,7 @@ namespace ClipPlayer
         /// <param name="exit"></param>
         void ShowMessage(string msg, bool exit)
         {
+            _log.Write(msg, true);
             MessageBox.Show(msg);
             if(exit)
             {

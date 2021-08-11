@@ -29,6 +29,7 @@ namespace ClipPlayer
             this.txtPatchChannel = new System.Windows.Forms.TextBox();
             this.txtDrumChannel = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnLog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).BeginInit();
             this.SuspendLayout();
@@ -115,7 +116,7 @@ namespace ClipPlayer
             this.chkPatch.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPatch.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkPatch.Location = new System.Drawing.Point(275, 8);
+            this.chkPatch.Location = new System.Drawing.Point(275, -1);
             this.chkPatch.Name = "chkPatch";
             this.chkPatch.Size = new System.Drawing.Size(22, 22);
             this.chkPatch.TabIndex = 12;
@@ -177,11 +178,25 @@ namespace ClipPlayer
             this.label1.TabIndex = 76;
             this.label1.Text = "Drum Channel";
             // 
+            // btnLog
+            // 
+            this.btnLog.FlatAppearance.BorderSize = 0;
+            this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLog.Location = new System.Drawing.Point(275, 15);
+            this.btnLog.Name = "btnLog";
+            this.btnLog.Size = new System.Drawing.Size(22, 22);
+            this.btnLog.TabIndex = 81;
+            this.btnLog.Text = "L";
+            this.btnLog.UseVisualStyleBackColor = false;
+            this.btnLog.Click += new System.EventHandler(this.Log_Click);
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(354, 376);
+            this.Controls.Add(this.btnLog);
             this.Controls.Add(this.btnPatch);
             this.Controls.Add(this.cmbPatchList);
             this.Controls.Add(this.txtPatchChannel);
@@ -218,5 +233,6 @@ namespace ClipPlayer
         private System.Windows.Forms.TextBox txtPatchChannel;
         private System.Windows.Forms.TextBox txtDrumChannel;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnLog;
     }
 }
