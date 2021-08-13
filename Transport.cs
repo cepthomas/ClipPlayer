@@ -88,7 +88,7 @@ namespace ClipPlayer
 
             // Hook up UI handlers.
             chkPlay.CheckedChanged += Play_CheckedChanged;
-            pbRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
+            btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
             chkPatch.CheckedChanged += (_, __) => { SetSize(); };
 

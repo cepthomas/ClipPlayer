@@ -18,9 +18,7 @@ namespace ClipPlayer
         {
             this.components = new System.ComponentModel.Container();
             this.progress = new NBagOfTricks.UI.Meter();
-            this.pbRewind = new System.Windows.Forms.PictureBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.pbSettings = new System.Windows.Forms.PictureBox();
             this.sldVolume = new NBagOfTricks.UI.Slider();
             this.chkPlay = new System.Windows.Forms.CheckBox();
             this.chkPatch = new System.Windows.Forms.CheckBox();
@@ -30,8 +28,8 @@ namespace ClipPlayer
             this.txtDrumChannel = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnLog = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).BeginInit();
+            this.btnRewind = new System.Windows.Forms.Button();
+            this.btnSettings = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // progress
@@ -39,44 +37,21 @@ namespace ClipPlayer
             this.progress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.progress.DrawColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.progress.Label = "";
-            this.progress.Location = new System.Drawing.Point(124, 3);
+            this.progress.Location = new System.Drawing.Point(128, 3);
             this.progress.Maximum = 100D;
             this.progress.MeterType = NBagOfTricks.UI.MeterType.Linear;
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.progress.Size = new System.Drawing.Size(110, 32);
+            this.progress.Size = new System.Drawing.Size(110, 36);
             this.progress.TabIndex = 3;
             this.toolTip.SetToolTip(this.progress, "Progress");
             this.progress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseDown);
             this.progress.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseMove);
             // 
-            // pbRewind
-            // 
-            this.pbRewind.BackgroundImage = global::ClipPlayer.Properties.Resources.glyphicons_173_rewind;
-            this.pbRewind.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.pbRewind.Location = new System.Drawing.Point(40, 3);
-            this.pbRewind.Name = "pbRewind";
-            this.pbRewind.Size = new System.Drawing.Size(32, 32);
-            this.pbRewind.TabIndex = 6;
-            this.pbRewind.TabStop = false;
-            this.toolTip.SetToolTip(this.pbRewind, "Go back Jack");
-            // 
             // toolTip
             // 
             this.toolTip.AutomaticDelay = 50;
-            // 
-            // pbSettings
-            // 
-            this.pbSettings.BackgroundImage = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
-            this.pbSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.pbSettings.Location = new System.Drawing.Point(240, 3);
-            this.pbSettings.Name = "pbSettings";
-            this.pbSettings.Size = new System.Drawing.Size(32, 32);
-            this.pbSettings.TabIndex = 8;
-            this.pbSettings.TabStop = false;
-            this.toolTip.SetToolTip(this.pbSettings, "How do you like it");
-            this.pbSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
             // sldVolume
             // 
@@ -84,13 +59,13 @@ namespace ClipPlayer
             this.sldVolume.DecPlaces = 1;
             this.sldVolume.DrawColor = System.Drawing.Color.Pink;
             this.sldVolume.Label = "";
-            this.sldVolume.Location = new System.Drawing.Point(78, 3);
+            this.sldVolume.Location = new System.Drawing.Point(80, 3);
             this.sldVolume.Maximum = 1D;
             this.sldVolume.Minimum = 0D;
             this.sldVolume.Name = "sldVolume";
             this.sldVolume.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.sldVolume.ResetValue = 0D;
-            this.sldVolume.Size = new System.Drawing.Size(40, 32);
+            this.sldVolume.Size = new System.Drawing.Size(44, 36);
             this.sldVolume.TabIndex = 9;
             this.toolTip.SetToolTip(this.sldVolume, "Volume");
             this.sldVolume.Value = 0.5D;
@@ -98,13 +73,12 @@ namespace ClipPlayer
             // chkPlay
             // 
             this.chkPlay.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkPlay.FlatAppearance.BorderSize = 0;
             this.chkPlay.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPlay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPlay.Image = global::ClipPlayer.Properties.Resources.glyphicons_174_play;
             this.chkPlay.Location = new System.Drawing.Point(2, 3);
             this.chkPlay.Name = "chkPlay";
-            this.chkPlay.Size = new System.Drawing.Size(32, 32);
+            this.chkPlay.Size = new System.Drawing.Size(36, 36);
             this.chkPlay.TabIndex = 10;
             this.toolTip.SetToolTip(this.chkPlay, "Start or stop");
             this.chkPlay.UseVisualStyleBackColor = true;
@@ -116,7 +90,7 @@ namespace ClipPlayer
             this.chkPatch.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPatch.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkPatch.Location = new System.Drawing.Point(275, -1);
+            this.chkPatch.Location = new System.Drawing.Point(276, 1);
             this.chkPatch.Name = "chkPatch";
             this.chkPatch.Size = new System.Drawing.Size(22, 22);
             this.chkPatch.TabIndex = 12;
@@ -143,7 +117,7 @@ namespace ClipPlayer
             this.cmbPatchList.FormattingEnabled = true;
             this.cmbPatchList.Location = new System.Drawing.Point(116, 91);
             this.cmbPatchList.Name = "cmbPatchList";
-            this.cmbPatchList.Size = new System.Drawing.Size(131, 24);
+            this.cmbPatchList.Size = new System.Drawing.Size(179, 24);
             this.cmbPatchList.TabIndex = 79;
             this.toolTip.SetToolTip(this.cmbPatchList, "Patch name");
             // 
@@ -183,7 +157,7 @@ namespace ClipPlayer
             this.btnLog.FlatAppearance.BorderSize = 0;
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLog.Location = new System.Drawing.Point(275, 15);
+            this.btnLog.Location = new System.Drawing.Point(276, 17);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(22, 22);
             this.btnLog.TabIndex = 81;
@@ -191,11 +165,34 @@ namespace ClipPlayer
             this.btnLog.UseVisualStyleBackColor = false;
             this.btnLog.Click += new System.EventHandler(this.Log_Click);
             // 
+            // btnRewind
+            // 
+            this.btnRewind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRewind.Image = global::ClipPlayer.Properties.Resources.glyphicons_173_rewind;
+            this.btnRewind.Location = new System.Drawing.Point(41, 3);
+            this.btnRewind.Name = "btnRewind";
+            this.btnRewind.Size = new System.Drawing.Size(36, 36);
+            this.btnRewind.TabIndex = 82;
+            this.btnRewind.UseVisualStyleBackColor = true;
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
+            this.btnSettings.Location = new System.Drawing.Point(242, 3);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(36, 36);
+            this.btnSettings.TabIndex = 83;
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
+            // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(354, 376);
+            this.ClientSize = new System.Drawing.Size(307, 131);
+            this.Controls.Add(this.btnSettings);
+            this.Controls.Add(this.btnRewind);
             this.Controls.Add(this.btnLog);
             this.Controls.Add(this.btnPatch);
             this.Controls.Add(this.cmbPatchList);
@@ -205,16 +202,12 @@ namespace ClipPlayer
             this.Controls.Add(this.chkPatch);
             this.Controls.Add(this.chkPlay);
             this.Controls.Add(this.sldVolume);
-            this.Controls.Add(this.pbSettings);
-            this.Controls.Add(this.pbRewind);
             this.Controls.Add(this.progress);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Transport";
             this.Text = "Clip Player";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
             this.Load += new System.EventHandler(this.Transport_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbRewind)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -222,9 +215,7 @@ namespace ClipPlayer
 
         #endregion
         private NBagOfTricks.UI.Meter progress;
-        private System.Windows.Forms.PictureBox pbRewind;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.PictureBox pbSettings;
         private NBagOfTricks.UI.Slider sldVolume;
         private System.Windows.Forms.CheckBox chkPlay;
         private System.Windows.Forms.CheckBox chkPatch;
@@ -234,5 +225,7 @@ namespace ClipPlayer
         private System.Windows.Forms.TextBox txtDrumChannel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnLog;
+        private System.Windows.Forms.Button btnRewind;
+        private System.Windows.Forms.Button btnSettings;
     }
 }
