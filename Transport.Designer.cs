@@ -25,8 +25,8 @@ namespace ClipPlayer
             this.btnPatch = new System.Windows.Forms.Button();
             this.cmbPatchList = new System.Windows.Forms.ComboBox();
             this.txtPatchChannel = new System.Windows.Forms.TextBox();
-            this.txtDrumChannel = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.chkDrumsOn1 = new System.Windows.Forms.CheckBox();
+            this.chkLoop = new System.Windows.Forms.CheckBox();
             this.btnLog = new System.Windows.Forms.Button();
             this.btnRewind = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
@@ -90,7 +90,7 @@ namespace ClipPlayer
             this.chkPatch.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPatch.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkPatch.Location = new System.Drawing.Point(276, 1);
+            this.chkPatch.Location = new System.Drawing.Point(321, 1);
             this.chkPatch.Name = "chkPatch";
             this.chkPatch.Size = new System.Drawing.Size(22, 22);
             this.chkPatch.TabIndex = 12;
@@ -117,7 +117,7 @@ namespace ClipPlayer
             this.cmbPatchList.FormattingEnabled = true;
             this.cmbPatchList.Location = new System.Drawing.Point(116, 91);
             this.cmbPatchList.Name = "cmbPatchList";
-            this.cmbPatchList.Size = new System.Drawing.Size(179, 24);
+            this.cmbPatchList.Size = new System.Drawing.Size(205, 24);
             this.cmbPatchList.TabIndex = 79;
             this.toolTip.SetToolTip(this.cmbPatchList, "Patch name");
             // 
@@ -131,33 +131,37 @@ namespace ClipPlayer
             this.txtPatchChannel.TabIndex = 78;
             this.toolTip.SetToolTip(this.txtPatchChannel, "Patch channel number");
             // 
-            // txtDrumChannel
+            // chkDrumsOn1
             // 
-            this.txtDrumChannel.BackColor = System.Drawing.SystemColors.Control;
-            this.txtDrumChannel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtDrumChannel.Location = new System.Drawing.Point(110, 58);
-            this.txtDrumChannel.Name = "txtDrumChannel";
-            this.txtDrumChannel.Size = new System.Drawing.Size(25, 22);
-            this.txtDrumChannel.TabIndex = 77;
-            this.txtDrumChannel.Text = "10";
-            this.toolTip.SetToolTip(this.txtDrumChannel, "Reassign the drum channel");
-            this.txtDrumChannel.TextChanged += new System.EventHandler(this.DrumChannel_TextChanged);
+            this.chkDrumsOn1.AutoSize = true;
+            this.chkDrumsOn1.Location = new System.Drawing.Point(13, 57);
+            this.chkDrumsOn1.Name = "chkDrumsOn1";
+            this.chkDrumsOn1.Size = new System.Drawing.Size(138, 21);
+            this.chkDrumsOn1.TabIndex = 84;
+            this.chkDrumsOn1.Text = "Drums on chan 1";
+            this.toolTip.SetToolTip(this.chkDrumsOn1, "Drums on midi channel 1");
+            this.chkDrumsOn1.UseVisualStyleBackColor = true;
+            this.chkDrumsOn1.CheckedChanged += new System.EventHandler(this.DrumsOn1_CheckedChanged);
             // 
-            // label1
+            // chkLoop
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 60);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(98, 17);
-            this.label1.TabIndex = 76;
-            this.label1.Text = "Drum Channel";
+            this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkLoop.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_366_restart;
+            this.chkLoop.Location = new System.Drawing.Point(244, 3);
+            this.chkLoop.Name = "chkLoop";
+            this.chkLoop.Size = new System.Drawing.Size(36, 36);
+            this.chkLoop.TabIndex = 85;
+            this.toolTip.SetToolTip(this.chkLoop, "Go round and round");
+            this.chkLoop.UseVisualStyleBackColor = true;
             // 
             // btnLog
             // 
             this.btnLog.FlatAppearance.BorderSize = 0;
             this.btnLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLog.Location = new System.Drawing.Point(276, 17);
+            this.btnLog.Location = new System.Drawing.Point(321, 17);
             this.btnLog.Name = "btnLog";
             this.btnLog.Size = new System.Drawing.Size(22, 22);
             this.btnLog.TabIndex = 81;
@@ -179,7 +183,7 @@ namespace ClipPlayer
             // 
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
-            this.btnSettings.Location = new System.Drawing.Point(242, 3);
+            this.btnSettings.Location = new System.Drawing.Point(285, 3);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(36, 36);
             this.btnSettings.TabIndex = 83;
@@ -190,15 +194,15 @@ namespace ClipPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(307, 131);
+            this.ClientSize = new System.Drawing.Size(347, 131);
+            this.Controls.Add(this.chkLoop);
+            this.Controls.Add(this.chkDrumsOn1);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnRewind);
             this.Controls.Add(this.btnLog);
             this.Controls.Add(this.btnPatch);
             this.Controls.Add(this.cmbPatchList);
             this.Controls.Add(this.txtPatchChannel);
-            this.Controls.Add(this.txtDrumChannel);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.chkPatch);
             this.Controls.Add(this.chkPlay);
             this.Controls.Add(this.sldVolume);
@@ -222,10 +226,10 @@ namespace ClipPlayer
         private System.Windows.Forms.Button btnPatch;
         private System.Windows.Forms.ComboBox cmbPatchList;
         private System.Windows.Forms.TextBox txtPatchChannel;
-        private System.Windows.Forms.TextBox txtDrumChannel;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnLog;
         private System.Windows.Forms.Button btnRewind;
         private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.CheckBox chkDrumsOn1;
+        private System.Windows.Forms.CheckBox chkLoop;
     }
 }

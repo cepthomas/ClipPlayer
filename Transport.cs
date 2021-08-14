@@ -11,9 +11,6 @@ using NBagOfTricks.UI;
 using NBagOfTricks;
 
 
-// TODO loop? 366_restart
-
-
 namespace ClipPlayer
 {
     public partial class Transport : Form
@@ -152,26 +149,17 @@ namespace ClipPlayer
 
         #region UI handlers
         /// <summary>
-        /// User wants to change the drum channel.
+        /// User wants to change the midi drum channel.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void DrumChannel_TextChanged(object sender, EventArgs e)
+        private void DrumsOn1_CheckedChanged(object sender, EventArgs e)
         {
-            // Check for valid number.
-            bool valid = int.TryParse(txtDrumChannel.Text, out int dch);
-            if (valid && dch >= 1 && dch <= 16)
-            {
-                _midiPlayer.DrumChannel = dch;
-            }
-            else
-            {
-                txtDrumChannel.Text = "";
-            }
+            _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
         }
 
         /// <summary>
-        /// Validate selections and send patch now. TODO nice to have a restore old ones aka undo.
+        /// Validate selections and send patch now.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -343,9 +331,17 @@ namespace ClipPlayer
                     }
                     else
                     {
-                        _player.State = RunState.Stopped;
                         _player.Current = TimeSpan.Zero;
                         progress.AddValue(0);
+                        
+                        if (chkLoop.Checked)
+                        {
+                            _player.Play();
+                        }
+                        else
+                        {
+                            _player.State = RunState.Stopped;
+                        }
                     }
                     break;
             }

@@ -21,7 +21,7 @@ namespace ClipPlayer
         /// <summary>Only 4/4 time supported.</summary>
         const int BEATS_PER_BAR = 4;
 
-        /// <summary>Our ppq aka resolution.</summary>
+        /// <summary>Our internal ppq aka resolution.</summary>
         const int PPQ = 32;
 
         /// <summary>Normal drum channel.</summary>
@@ -36,19 +36,19 @@ namespace ClipPlayer
         MmTimerEx _mmTimer = new MmTimerEx();
 
         /// <summary>Period.</summary>
-        double _msecPerTick = 0;
+        double _msecPerSubdiv = 0;
 
         /// <summary>Midi events from the input file.</summary>
         MidiEventCollection _sourceEvents = null;
 
-        ///<summary>The internal collection of events. The key is the subbeat/tick to send the list.</summary>
+        ///<summary>The internal collection of events. The key is the subdiv/time to send the list.</summary>
         readonly Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
 
-        /// <summary>Total length in ticks.</summary>
-        int _totalTicks;
+        /// <summary>Total length in subdivs.</summary>
+        int _totalSubdivs;
 
-        /// <summary>Current position in ticks.</summary>
-        int _currentTick;
+        /// <summary>Current position in subdivs.</summary>
+        int _currentSubdiv;
 
         /// <summary>Current tempo. Initialize to default in case the file doesn't supply one.</summary>
         int _tempo = Common.Settings.DefaultTempo;
@@ -80,7 +80,7 @@ namespace ClipPlayer
         public RunState State { get; set; } = RunState.Stopped;
 
         /// <inheritdoc />
-        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerTick)); } }
+        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalSubdivs * _msecPerSubdiv)); } }
 
         /// <inheritdoc />
         public double Volume { get; set; }
@@ -88,8 +88,8 @@ namespace ClipPlayer
         /// <inheritdoc />
         public TimeSpan Current
         {
-            get { return new TimeSpan(0, 0, 0, 0, (int)(_currentTick * _msecPerTick)); }
-            set { _currentTick = (int)(value.TotalMilliseconds / _msecPerTick); _currentTick = MathUtils.Constrain(_currentTick, 0, _totalTicks); }
+            get { return new TimeSpan(0, 0, 0, 0, (int)(_currentSubdiv * _msecPerSubdiv)); }
+            set { _currentSubdiv = (int)(value.TotalMilliseconds / _msecPerSubdiv); _currentSubdiv = MathUtils.Constrain(_currentSubdiv, 0, _totalSubdivs); }
         }
         #endregion
 
@@ -151,15 +151,15 @@ namespace ClipPlayer
         {
             _mmTimer.Stop();
 
-            _currentTick = 0;
-            _totalTicks = 0;
+            _currentSubdiv = 0;
+            _totalSubdivs = 0;
             _playEvents.Clear();
 
             // Get events.
             var mfile = new MidiFile(fn, true);
             _sourceEvents = mfile.Events;
 
-            // Scale ticks to internal ppq.
+            // Scale to internal ppq.
             MidiTime mt = new MidiTime()
             {
                 InternalPpq = PPQ,
@@ -175,8 +175,8 @@ namespace ClipPlayer
                     {
                         // Do some miscellaneous fixups.
 
-                        // Scale tick to internal.
-                        int tick = mt.MidiToInternal(te.AbsoluteTime);
+                        // Scale to internal.
+                        int subdiv = mt.MidiToInternal(te.AbsoluteTime);
 
                         // Other ops.
                         switch(te)
@@ -190,13 +190,13 @@ namespace ClipPlayer
                         }
 
                         // Add to our collection.
-                        if (!_playEvents.ContainsKey(tick))
+                        if (!_playEvents.ContainsKey(subdiv))
                         {
-                            _playEvents.Add(tick, new List<MidiEvent>());
+                            _playEvents.Add(subdiv, new List<MidiEvent>());
                         }
 
-                        _playEvents[tick].Add(te);
-                        _totalTicks = Math.Max(_totalTicks, tick);
+                        _playEvents[subdiv].Add(te);
+                        _totalSubdivs = Math.Max(_totalSubdivs, subdiv);
                     }
                 };
             }
@@ -204,8 +204,12 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Calculate the actual period.
-            _msecPerTick = 60.0 / _tempo;
+            _msecPerSubdiv = 60.0 / _tempo;
             int period = mt.RoundedInternalPeriod();
+
+            // Round length up to bar.
+            int floor = _totalSubdivs / (PPQ * 4); // 4/4 only.
+            _totalSubdivs = (floor + 1) * (PPQ * 4);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
@@ -217,11 +221,11 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            int bars = _totalTicks / BEATS_PER_BAR / PPQ;
-            int beats = _totalTicks / PPQ % BEATS_PER_BAR;
-            int ticks = _totalTicks % PPQ;
+            int bars = _totalSubdivs / BEATS_PER_BAR / PPQ;
+            int beats = _totalSubdivs / PPQ % BEATS_PER_BAR;
+            int subdivs = _totalSubdivs % PPQ;
 
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{ticks}";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{subdivs}";
             return s;
         }
 
@@ -245,7 +249,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Rewind()
         {
-            _currentTick = 0;
+            _currentSubdiv = 0;
         }
 
         /// <inheritdoc />
@@ -276,9 +280,9 @@ namespace ClipPlayer
             if (State == RunState.Playing)
             {
                 // Process any sequence steps.
-                if(_playEvents.ContainsKey(_currentTick))
+                if(_playEvents.ContainsKey(_currentSubdiv))
                 {
-                    foreach (var mevt in _playEvents[_currentTick])
+                    foreach (var mevt in _playEvents[_currentSubdiv])
                     {
                         switch (mevt)
                         {
@@ -321,11 +325,11 @@ namespace ClipPlayer
                 }
 
                 // Bump time. Check for end of play. Client will take care of transport control.
-                _currentTick += 1;
-                if (_currentTick >= _totalTicks)
+                _currentSubdiv += 1;
+                if (_currentSubdiv >= _totalSubdivs)
                 {
                     State = RunState.Complete;
-                    _currentTick = 0;
+                    _currentSubdiv = 0;
                 }
 
                 DoUpdate();
@@ -358,7 +362,7 @@ namespace ClipPlayer
         {
             StatusEvent.Invoke(this, new StatusEventArgs()
             {
-                Progress = _currentTick < _totalTicks ? 100 * _currentTick / _totalTicks : 100
+                Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
             });
         }
 
