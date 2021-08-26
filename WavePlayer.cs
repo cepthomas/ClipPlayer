@@ -54,6 +54,21 @@ namespace ClipPlayer
         /// </summary>
         public WavePlayer()
         {
+            // Create output device.
+            for (int id = -1; id < WaveOut.DeviceCount; id++)
+            {
+                var cap = WaveOut.GetCapabilities(id);
+                if (Common.Settings.WavOutDevice == cap.ProductName)
+                {
+                    _waveOut = new WaveOut
+                    {
+                        DeviceNumber = id,
+                        DesiredLatency = int.Parse(Common.Settings.Latency)
+                    };
+                    _waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -76,42 +91,21 @@ namespace ClipPlayer
         {
             bool ok = true;
 
-            // Create output device.
-            for (int id = -1; id < WaveOut.DeviceCount; id++)
-            {
-                var cap = WaveOut.GetCapabilities(id);
-                if (Common.Settings.WavOutDevice == cap.ProductName)
-                {
-                    _waveOut = new WaveOut
-                    {
-                        DeviceNumber = id,
-                        DesiredLatency = int.Parse(Common.Settings.Latency)
-                    };
-                    _waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
-                    break;
-                }
-            }
-
             // Create input device.
-            if (_waveOut != null)
-            {
-                _audioFileReader = new AudioFileReader(fn);
+            _audioFileReader?.Dispose(); //old one
 
-                Length = _audioFileReader.TotalTime;
-                //_current = TimeSpan.Zero;
+            _audioFileReader = new AudioFileReader(fn);
 
-                // Create reader.
-                var sampleChannel = new SampleChannel(_audioFileReader, false);
-                sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
-                var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
-                //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
-                _waveOut.Init(postVolumeMeter);
-                _waveOut.Volume = (float)Common.Settings.Volume;
-            }
-            else
-            {
-                ok = false;
-            }
+            Length = _audioFileReader.TotalTime;
+            //_current = TimeSpan.Zero;
+
+            // Create reader.
+            var sampleChannel = new SampleChannel(_audioFileReader, false);
+            sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
+            var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
+            //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
+            _waveOut.Init(postVolumeMeter);
+            _waveOut.Volume = (float)Common.Settings.Volume;
 
             return ok;
         }

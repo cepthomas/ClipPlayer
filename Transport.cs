@@ -253,7 +253,7 @@ namespace ClipPlayer
                 switch (Path.GetExtension(_fn).ToLower())
                 {
                     case ".mid":
-                    case ".sty":
+                    // case ".sty": Use ClipExplorer for these 
                         _player = _midiPlayer;
                         break;
 
