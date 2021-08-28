@@ -47,6 +47,12 @@ namespace ClipPlayer
         [Category("Midi")]
         [Browsable(true)]
         public int DefaultTempo { get; set; } = 100;
+
+        [DisplayName("Control Color")]
+        [Description("Pick what you like.")]
+        [Category("Cosmetics")]
+        [Browsable(true)]
+        public Color ControlColor { get; set; } = Color.MediumOrchid;
         #endregion
 
         #region Persisted Non-editable Properties

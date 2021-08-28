@@ -154,7 +154,6 @@ namespace ClipPlayer
             _currentSubdiv = 0;
             _totalSubdivs = 0;
             _playEvents.Clear();
-            DrumChannel = DEFAULT_DRUM_CHANNEL;
 
             // Get events.
             var mfile = new MidiFile(fn, true);

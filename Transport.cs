@@ -70,6 +70,13 @@ namespace ClipPlayer
             sldVolume.Value = Common.Settings.Volume;
             Location = Common.Settings.Position;
 
+            progress.DrawColor = Common.Settings.ControlColor;
+            sldVolume.DrawColor = Common.Settings.ControlColor;
+            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            chkPatch.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            chkDrumsOn1.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+
             // Create the playback devices.
             _midiPlayer = new MidiPlayer();
             _midiPlayer.StatusEvent += Player_StatusEvent;

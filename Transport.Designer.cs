@@ -35,7 +35,7 @@ namespace ClipPlayer
             // progress
             // 
             this.progress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.progress.DrawColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.progress.DrawColor = System.Drawing.Color.White;
             this.progress.Label = "";
             this.progress.Location = new System.Drawing.Point(128, 3);
             this.progress.Maximum = 100D;
@@ -60,7 +60,7 @@ namespace ClipPlayer
             // 
             this.sldVolume.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.sldVolume.DecPlaces = 1;
-            this.sldVolume.DrawColor = System.Drawing.Color.Pink;
+            this.sldVolume.DrawColor = System.Drawing.Color.White;
             this.sldVolume.Label = "";
             this.sldVolume.Location = new System.Drawing.Point(80, 3);
             this.sldVolume.Maximum = 1D;
@@ -76,7 +76,6 @@ namespace ClipPlayer
             // chkPlay
             // 
             this.chkPlay.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkPlay.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPlay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPlay.Image = global::ClipPlayer.Properties.Resources.glyphicons_174_play;
             this.chkPlay.Location = new System.Drawing.Point(2, 3);
@@ -90,7 +89,6 @@ namespace ClipPlayer
             // 
             this.chkPatch.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkPatch.FlatAppearance.BorderSize = 0;
-            this.chkPatch.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkPatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPatch.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkPatch.Location = new System.Drawing.Point(321, 1);
@@ -137,9 +135,10 @@ namespace ClipPlayer
             // chkDrumsOn1
             // 
             this.chkDrumsOn1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkDrumsOn1.Location = new System.Drawing.Point(5, 57);
+            this.chkDrumsOn1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkDrumsOn1.Location = new System.Drawing.Point(5, 52);
             this.chkDrumsOn1.Name = "chkDrumsOn1";
-            this.chkDrumsOn1.Size = new System.Drawing.Size(36, 24);
+            this.chkDrumsOn1.Size = new System.Drawing.Size(36, 29);
             this.chkDrumsOn1.TabIndex = 84;
             this.chkDrumsOn1.Text = "D1";
             this.toolTip.SetToolTip(this.chkDrumsOn1, "Drums on midi channel 1");
@@ -149,7 +148,6 @@ namespace ClipPlayer
             // chkLoop
             // 
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkLoop.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_366_restart;
             this.chkLoop.Location = new System.Drawing.Point(244, 3);
