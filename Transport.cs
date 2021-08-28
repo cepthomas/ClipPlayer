@@ -245,7 +245,7 @@ namespace ClipPlayer
         bool OpenFile()
         {
             bool ok = true;
-
+            chkDrumsOn1.Checked = false;
             _player?.Stop();
 
             try

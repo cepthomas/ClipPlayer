@@ -39,7 +39,7 @@ namespace ClipPlayer
         public double Volume
         {
             get { return _volume; }
-            set { _volume = MathUtils.Constrain(value, 0, 1); if (_waveOut != null) _waveOut.Volume = (float)_volume; }
+            set { _volume = MathUtils.Constrain(value, 0, 1); _waveOut.Volume = (float)_volume; }
         }
         #endregion
 
@@ -102,8 +102,10 @@ namespace ClipPlayer
             // Create reader.
             var sampleChannel = new SampleChannel(_audioFileReader, false);
             sampleChannel.PreVolumeMeter += SampleChannel_PreVolumeMeter;
+
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
+            
             _waveOut.Init(postVolumeMeter);
             _waveOut.Volume = (float)Common.Settings.Volume;
 
@@ -119,7 +121,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Play()
         {
-            if (_waveOut != null && _audioFileReader != null)
+            if (_audioFileReader != null)
             {
                 _waveOut.Play();
                 State = RunState.Playing;
@@ -129,7 +131,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Stop()
         {
-            if (_waveOut != null && _audioFileReader != null)
+            if (_audioFileReader != null)
             {
                 _waveOut.Pause(); // or Stop?
                 State = RunState.Stopped;
@@ -139,7 +141,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Rewind()
         {
-            if (_waveOut != null && _audioFileReader != null)
+            if (_audioFileReader != null)
             {
                 Current = TimeSpan.Zero;
             }

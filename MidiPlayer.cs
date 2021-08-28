@@ -154,6 +154,7 @@ namespace ClipPlayer
             _currentSubdiv = 0;
             _totalSubdivs = 0;
             _playEvents.Clear();
+            DrumChannel = DEFAULT_DRUM_CHANNEL;
 
             // Get events.
             var mfile = new MidiFile(fn, true);
@@ -169,7 +170,7 @@ namespace ClipPlayer
 
             for (int track = 0; track < _sourceEvents.Tracks; track++)
             {
-                foreach(var te in _sourceEvents.GetTrackEvents(track))
+                foreach (var te in _sourceEvents.GetTrackEvents(track))
                 {
                     if (te.Channel - 1 < NUM_CHANNELS) // midi is one-based
                     {
@@ -179,7 +180,7 @@ namespace ClipPlayer
                         int subdiv = mt.MidiToInternal(te.AbsoluteTime);
 
                         // Other ops.
-                        switch(te)
+                        switch (te)
                         {
                             case NoteOnEvent non:
                                 break;
@@ -279,9 +280,9 @@ namespace ClipPlayer
         {
             if (State == RunState.Playing)
             {
-                // Process any sequence steps.
-                if(_playEvents.ContainsKey(_currentSubdiv))
+                if (_playEvents.ContainsKey(_currentSubdiv))
                 {
+                    // Process any sequence steps.
                     foreach (var mevt in _playEvents[_currentSubdiv])
                     {
                         switch (mevt)
@@ -306,7 +307,7 @@ namespace ClipPlayer
                                 break;
 
                             case NoteEvent evt:
-                                if(evt.Channel == DrumChannel)
+                                if (evt.Channel == DrumChannel)
                                 {
                                     // Skip drum noteoffs as windows GM doesn't like them.
                                 }
