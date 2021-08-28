@@ -52,6 +52,9 @@ namespace ClipPlayer
             // toolTip
             // 
             this.toolTip.AutomaticDelay = 50;
+            this.toolTip.AutoPopDelay = 5000;
+            this.toolTip.InitialDelay = 50;
+            this.toolTip.ReshowDelay = 10;
             // 
             // sldVolume
             // 
@@ -100,11 +103,11 @@ namespace ClipPlayer
             // 
             // btnPatch
             // 
-            this.btnPatch.Location = new System.Drawing.Point(9, 92);
+            this.btnPatch.Location = new System.Drawing.Point(263, 56);
             this.btnPatch.Name = "btnPatch";
-            this.btnPatch.Size = new System.Drawing.Size(57, 23);
+            this.btnPatch.Size = new System.Drawing.Size(40, 24);
             this.btnPatch.TabIndex = 80;
-            this.btnPatch.Text = "Patch";
+            this.btnPatch.Text = "->";
             this.toolTip.SetToolTip(this.btnPatch, "Send the patch to channel");
             this.btnPatch.UseVisualStyleBackColor = true;
             this.btnPatch.Click += new System.EventHandler(this.Patch_Click);
@@ -115,7 +118,7 @@ namespace ClipPlayer
             this.cmbPatchList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPatchList.DropDownWidth = 150;
             this.cmbPatchList.FormattingEnabled = true;
-            this.cmbPatchList.Location = new System.Drawing.Point(116, 91);
+            this.cmbPatchList.Location = new System.Drawing.Point(55, 57);
             this.cmbPatchList.Name = "cmbPatchList";
             this.cmbPatchList.Size = new System.Drawing.Size(205, 24);
             this.cmbPatchList.TabIndex = 79;
@@ -125,20 +128,20 @@ namespace ClipPlayer
             // 
             this.txtPatchChannel.BackColor = System.Drawing.SystemColors.Control;
             this.txtPatchChannel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtPatchChannel.Location = new System.Drawing.Point(74, 92);
+            this.txtPatchChannel.Location = new System.Drawing.Point(309, 57);
             this.txtPatchChannel.Name = "txtPatchChannel";
-            this.txtPatchChannel.Size = new System.Drawing.Size(34, 22);
+            this.txtPatchChannel.Size = new System.Drawing.Size(32, 22);
             this.txtPatchChannel.TabIndex = 78;
             this.toolTip.SetToolTip(this.txtPatchChannel, "Patch channel number");
             // 
             // chkDrumsOn1
             // 
-            this.chkDrumsOn1.AutoSize = true;
-            this.chkDrumsOn1.Location = new System.Drawing.Point(13, 57);
+            this.chkDrumsOn1.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkDrumsOn1.Location = new System.Drawing.Point(5, 57);
             this.chkDrumsOn1.Name = "chkDrumsOn1";
-            this.chkDrumsOn1.Size = new System.Drawing.Size(138, 21);
+            this.chkDrumsOn1.Size = new System.Drawing.Size(36, 24);
             this.chkDrumsOn1.TabIndex = 84;
-            this.chkDrumsOn1.Text = "Drums on chan 1";
+            this.chkDrumsOn1.Text = "D1";
             this.toolTip.SetToolTip(this.chkDrumsOn1, "Drums on midi channel 1");
             this.chkDrumsOn1.UseVisualStyleBackColor = true;
             this.chkDrumsOn1.CheckedChanged += new System.EventHandler(this.DrumsOn1_CheckedChanged);
@@ -166,6 +169,7 @@ namespace ClipPlayer
             this.btnLog.Size = new System.Drawing.Size(22, 22);
             this.btnLog.TabIndex = 81;
             this.btnLog.Text = "L";
+            this.toolTip.SetToolTip(this.btnLog, "Show log info");
             this.btnLog.UseVisualStyleBackColor = false;
             this.btnLog.Click += new System.EventHandler(this.Log_Click);
             // 
@@ -177,6 +181,7 @@ namespace ClipPlayer
             this.btnRewind.Name = "btnRewind";
             this.btnRewind.Size = new System.Drawing.Size(36, 36);
             this.btnRewind.TabIndex = 82;
+            this.toolTip.SetToolTip(this.btnRewind, "Go back jack");
             this.btnRewind.UseVisualStyleBackColor = true;
             // 
             // btnSettings
@@ -187,6 +192,7 @@ namespace ClipPlayer
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(36, 36);
             this.btnSettings.TabIndex = 83;
+            this.toolTip.SetToolTip(this.btnSettings, "Your settings");
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
@@ -194,7 +200,7 @@ namespace ClipPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(347, 131);
+            this.ClientSize = new System.Drawing.Size(347, 93);
             this.Controls.Add(this.chkLoop);
             this.Controls.Add(this.chkDrumsOn1);
             this.Controls.Add(this.btnSettings);
