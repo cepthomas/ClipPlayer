@@ -121,7 +121,7 @@ namespace ClipPlayer
             }
             _midiOut = new MidiOut(devIndex);
 
-            if (_midiOut == null)
+            if (_midiOut is null)
             {
                 Tell($"Invalid midi device: {Common.Settings.MidiOutDevice}");
             }
@@ -300,7 +300,7 @@ namespace ClipPlayer
                                         evt.Channel == DrumChannel ? DEFAULT_DRUM_CHANNEL : evt.Channel,
                                         evt.NoteNumber,
                                         (int)(evt.Velocity * Volume),
-                                        evt.OffEvent == null ? 0 : evt.NoteLength);
+                                        evt.OffEvent is null ? 0 : evt.NoteLength);
                                     MidiSend(ne);
                                 }
                                 break;

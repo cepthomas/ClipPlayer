@@ -29,7 +29,7 @@ namespace ClipPlayer
                 // Ensure only one playing at a time.
                 if (procs.Length == 1)
                 {
-                    _log.Write($"===============================================================================");
+                    _log.Write($"================================== {DateTime.Now} =============================================");
                     _log.Write($"main thread enter");
 
                     // I'm the first, start normally by passing the file name.
