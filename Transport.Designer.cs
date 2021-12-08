@@ -17,9 +17,9 @@ namespace ClipPlayer
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.progress = new NBagOfTricks.UI.Meter();
+            this.progress = new NBagOfUis.Meter();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.sldVolume = new NBagOfTricks.UI.Slider();
+            this.sldVolume = new NBagOfUis.Slider();
             this.chkPlay = new System.Windows.Forms.CheckBox();
             this.chkPatch = new System.Windows.Forms.CheckBox();
             this.btnPatch = new System.Windows.Forms.Button();
@@ -39,7 +39,7 @@ namespace ClipPlayer
             this.progress.Label = "";
             this.progress.Location = new System.Drawing.Point(128, 3);
             this.progress.Maximum = 100D;
-            this.progress.MeterType = NBagOfTricks.UI.MeterType.Linear;
+            this.progress.MeterType = NBagOfUis.MeterType.Linear;
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -76,6 +76,7 @@ namespace ClipPlayer
             // chkPlay
             // 
             this.chkPlay.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkPlay.FlatAppearance.BorderSize = 0;
             this.chkPlay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkPlay.Image = global::ClipPlayer.Properties.Resources.glyphicons_174_play;
             this.chkPlay.Location = new System.Drawing.Point(2, 3);
@@ -148,6 +149,7 @@ namespace ClipPlayer
             // chkLoop
             // 
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkLoop.FlatAppearance.BorderSize = 0;
             this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_366_restart;
             this.chkLoop.Location = new System.Drawing.Point(244, 3);
@@ -173,6 +175,7 @@ namespace ClipPlayer
             // 
             // btnRewind
             // 
+            this.btnRewind.FlatAppearance.BorderSize = 0;
             this.btnRewind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRewind.Image = global::ClipPlayer.Properties.Resources.glyphicons_173_rewind;
             this.btnRewind.Location = new System.Drawing.Point(41, 3);
@@ -184,6 +187,7 @@ namespace ClipPlayer
             // 
             // btnSettings
             // 
+            this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
             this.btnSettings.Location = new System.Drawing.Point(285, 3);
@@ -222,9 +226,9 @@ namespace ClipPlayer
         }
 
         #endregion
-        private NBagOfTricks.UI.Meter progress;
+        private NBagOfUis.Meter progress;
         private System.Windows.Forms.ToolTip toolTip;
-        private NBagOfTricks.UI.Slider sldVolume;
+        private NBagOfUis.Slider sldVolume;
         private System.Windows.Forms.CheckBox chkPlay;
         private System.Windows.Forms.CheckBox chkPatch;
         private System.Windows.Forms.Button btnPatch;

@@ -45,12 +45,8 @@
     <Reference Include="NBagOfTricks">
       <HintPath>lib\NBagOfTricks.dll</HintPath>
     </Reference>
-    <Reference Include="NBagOfTricks.SimpleIpc">
-      <HintPath>lib\NBagOfTricks.SimpleIpc.dll</HintPath>
-    </Reference>
-    <Reference Include="NBagOfTricks.UI, Version=0.9.7865.18683, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\NBagOfTricks.UI.dll</HintPath>
+    <Reference Include="NBagOfUis">
+      <HintPath>lib\NBagOfUis.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>

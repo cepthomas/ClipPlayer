@@ -6,9 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NBagOfTricks.SimpleIpc;
-using NBagOfTricks.UI;
 using NBagOfTricks;
+using NBagOfUis;
 
 
 namespace ClipPlayer
@@ -29,10 +28,10 @@ namespace ClipPlayer
         IPlayer _player = null;
 
         /// <summary>Listen for new instances.</summary>
-        Server _server = null;
+        NBagOfTricks.SimpleIpc.Server _server = null;
 
         /// <summary>My logger.</summary>
-        readonly MpLog _log = new MpLog(Common.LogFileName, "TRNS");
+        readonly NBagOfTricks.SimpleIpc.MpLog _log = new NBagOfTricks.SimpleIpc.MpLog(Common.LogFileName, "TRNS");
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
@@ -104,7 +103,7 @@ namespace ClipPlayer
             if(ok)
             {
                 // Start listening for new app instances.
-                _server = new Server(Common.PipeName, Common.LogFileName);
+                _server = new NBagOfTricks.SimpleIpc.Server(Common.PipeName, Common.LogFileName);
                 _server.ServerEvent += Server_IpcEvent;
                 _server.Start();
             }
@@ -146,7 +145,7 @@ namespace ClipPlayer
             _wavePlayer.Dispose();
             _wavePlayer = null;
 
-            _server.Kill();
+            _server.Stop();
             _server.Dispose();
             _server = null;
 
@@ -362,20 +361,18 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcEvent(object sender, ServerEventArgs e)
+        void Server_IpcEvent(object sender, NBagOfTricks.SimpleIpc.ServerEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
-                switch (e.Status)
+                if(e.Error)
                 {
-                    case ServerStatus.Message:
-                        _fn = e.Message;
-                        OpenFile();
-                        break;
-
-                    case ServerStatus.Error:
-                        ShowMessage($"Server error:{e.Message}", false);
-                        break;
+                    ShowMessage($"Server error:{e.Message}", false);
+                }
+                else
+                {
+                    _fn = e.Message;
+                    OpenFile();
                 }
             });
         }
