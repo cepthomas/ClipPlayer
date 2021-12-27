@@ -72,9 +72,8 @@ namespace ClipPlayer
             progress.DrawColor = Common.Settings.ControlColor;
             sldVolume.DrawColor = Common.Settings.ControlColor;
             chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-            chkPatch.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-            chkDrumsOn1.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
             chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            chkDrumsOn1.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
 
             // Create the playback devices.
             _midiPlayer = new MidiPlayer();
@@ -82,20 +81,10 @@ namespace ClipPlayer
             _wavePlayer = new WavePlayer();
             _wavePlayer.StatusEvent += Player_StatusEvent;
 
-            // Fill patch list.
-            foreach (var n in Enum.GetNames(typeof(MidiPlayer.InstrumentDef)))
-            {
-                cmbPatchList.Items.Add(n);
-            }
-            cmbPatchList.SelectedIndex = 0;
-
             // Hook up UI handlers.
             chkPlay.CheckedChanged += Play_CheckedChanged;
             btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
-            chkPatch.CheckedChanged += (_, __) => { SetSize(); };
-
-            SetSize();
 
             // Go!
             ok = OpenFile();
@@ -162,37 +151,6 @@ namespace ClipPlayer
         private void DrumsOn1_CheckedChanged(object sender, EventArgs e)
         {
             _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
-        }
-
-        /// <summary>
-        /// Validate selections and send patch now.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Patch_Click(object sender, EventArgs e)
-        {
-            bool valid = int.TryParse(txtPatchChannel.Text, out int pch);
-            if (valid && pch >= 1 && pch <= 16)
-            {
-                _midiPlayer.SendPatch(pch, cmbPatchList.SelectedIndex);
-            }
-            else
-            {
-                txtPatchChannel.Text = "";
-                ShowMessage("Invalid patch channel", false);
-            }
-        }
-
-        /// <summary>
-        /// Open the current log.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Log_Click(object sender, EventArgs e)
-        {
-            string lf = Common.LogFileName;
-
-            System.Diagnostics.Process.Start(lf);
         }
         #endregion
 
@@ -404,7 +362,6 @@ namespace ClipPlayer
 
                 // Detect changes of interest.
                 bool deviceChange = false;
-                bool midiPatchChange = false;
 
                 pg.PropertyValueChanged += (sdr, args) =>
                 {
@@ -413,11 +370,6 @@ namespace ClipPlayer
                         case "MidiOutDevice":
                         case "WavOutDevice":
                             deviceChange = true;
-                            break;
-
-                        case "PatchChannel":
-                        case "PatchSub":
-                            midiPatchChange = true;
                             break;
                     }
                 };
@@ -431,29 +383,12 @@ namespace ClipPlayer
                     MessageBox.Show("Restart required for device changes to take effect");
                 }
 
-                if(midiPatchChange && _player is MidiPlayer)
-                {
-                    _player.SettingsChanged();
-                }
-
                 Common.Settings.Save();
             }
         }
         #endregion
 
         #region Private functions
-        /// <summary>
-        /// 
-        /// </summary>
-        void SetSize()
-        {
-            int width = chkPatch.Right;
-            int height = chkPatch.Checked ? btnPatch.Bottom : progress.Bottom;
-            //int width = chkPatch.Checked ? cmbPatchList.Right : chkPatch.Right;
-            //int height = chkLog.Checked ? 300 : progress.Bottom + 5;
-            ClientSize = new Size(width + 5, height + 5);
-        }
-
         /// <summary>
         /// Show message then optionally exit.
         /// </summary>
