@@ -204,7 +204,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Calculate the actual period.
-            _msecPerSubdiv = 60.0 / _tempo;
+            _msecPerSubdiv = mt.InternalToMsec(1);
             int period = mt.RoundedInternalPeriod();
 
             // Round length up to bar.
@@ -225,7 +225,7 @@ namespace ClipPlayer
             int beats = _totalSubdivs / PPQ % BEATS_PER_BAR;
             int subdivs = _totalSubdivs % PPQ;
 
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} {bars + 1}:{beats + 1}:{subdivs}";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bars + 1}:{beats + 1}:{subdivs})";
             return s;
         }
 
