@@ -101,7 +101,7 @@ namespace ClipPlayer
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkLoop.FlatAppearance.BorderSize = 0;
             this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_366_restart;
+            this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_82_refresh;
             this.chkLoop.Location = new System.Drawing.Point(244, 3);
             this.chkLoop.Name = "chkLoop";
             this.chkLoop.Size = new System.Drawing.Size(36, 36);
