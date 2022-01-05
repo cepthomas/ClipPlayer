@@ -219,7 +219,7 @@ namespace ClipPlayer
         {
             for (int i = 0; i < NUM_CHANNELS; i++)
             {
-                Kill(i);
+                Kill(i + 1);
             }
 
             State = RunState.Stopped;
@@ -327,10 +327,10 @@ namespace ClipPlayer
         /// <summary>
         /// Send all notes off.
         /// </summary>
-        /// <param name="channel"></param>
+        /// <param name="channel">1-based channel</param>
         void Kill(int channel)
         {
-            ControlChangeEvent nevt = new ControlChangeEvent(0, channel + 1, MidiController.AllNotesOff, 0);
+            ControlChangeEvent nevt = new ControlChangeEvent(0, channel, MidiController.AllNotesOff, 0);
             MidiSend(nevt);
         }
 
