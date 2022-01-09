@@ -19,19 +19,19 @@ namespace ClipPlayer
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        WavePlayer _wavePlayer = null;
+        WavePlayer? _wavePlayer = null;
 
         /// <summary>Midi device.</summary>
-        MidiPlayer _midiPlayer = null;
+        MidiPlayer? _midiPlayer = null;
 
         /// <summary>Current play device.</summary>
-        IPlayer _player = null;
+        IPlayer? _player = null;
 
         /// <summary>Listen for new instances.</summary>
-        NBagOfTricks.SimpleIpc.Server _server = null;
+        NBagOfTricks.SimpleIpc.Server? _server = null;
 
         /// <summary>My logger.</summary>
-        readonly NBagOfTricks.SimpleIpc.MpLog _log = new NBagOfTricks.SimpleIpc.MpLog(Common.LogFileName, "TRNS");
+        readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
@@ -52,7 +52,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Transport_Load(object sender, EventArgs e)
+        void Transport_Load(object? sender, EventArgs e)
         {
             Icon = Properties.Resources.croco;
             bool ok = true;
@@ -63,11 +63,12 @@ namespace ClipPlayer
 
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-            DirectoryInfo di = new DirectoryInfo(appDir);
+            DirectoryInfo di = new(appDir);
             di.Create();
             UserSettings.Load(appDir);
             sldVolume.Value = Common.Settings.Volume;
-            Location = Common.Settings.Position;
+            var pos = Common.Settings.Position;
+            Location = new((int)pos.X, (int)pos.Y);
 
             progress.DrawColor = Common.Settings.ControlColor;
             sldVolume.DrawColor = Common.Settings.ControlColor;
@@ -83,8 +84,8 @@ namespace ClipPlayer
 
             // Hook up UI handlers.
             chkPlay.CheckedChanged += Play_CheckedChanged;
-            btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
-            sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; _player.Volume = sldVolume.Value; };
+            btnRewind.Click += (_, __) => { _player?.Rewind(); progress.AddValue(0); };
+            sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; if(_player is not null) _player.Volume = sldVolume.Value; };
 
             // Go!
             ok = OpenFile();
@@ -109,7 +110,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Transport_FormClosing(object sender, FormClosingEventArgs e)
+        void Transport_FormClosing(object? sender, FormClosingEventArgs e)
         {
             Common.Settings.Position = Location;
             Common.Settings.Save();
@@ -126,17 +127,14 @@ namespace ClipPlayer
                 components.Dispose();
             }
 
-            _midiPlayer.Stop();
-            _midiPlayer.Dispose();
-            _midiPlayer = null;
+            _midiPlayer?.Stop();
+            _midiPlayer?.Dispose();
 
-            _wavePlayer.Stop();
-            _wavePlayer.Dispose();
-            _wavePlayer = null;
+            _wavePlayer?.Stop();
+            _wavePlayer?.Dispose();
 
-            _server.Stop();
-            _server.Dispose();
-            _server = null;
+            _server?.Stop();
+            _server?.Dispose();
 
             base.Dispose(disposing);
         }
@@ -148,9 +146,12 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DrumsOn1_CheckedChanged(object sender, EventArgs e)
+        private void DrumsOn1_CheckedChanged(object? sender, EventArgs e)
         {
-            _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
+            if(_midiPlayer is not null)
+            {
+                _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
+            }
         }
         #endregion
 
@@ -160,7 +161,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Play_CheckedChanged(object sender, EventArgs e)
+        void Play_CheckedChanged(object? sender, EventArgs e)
         {
             var _ = chkPlay.Checked ? Start() : Stop();
         }
@@ -237,7 +238,7 @@ namespace ClipPlayer
 
                 if(ok)
                 {
-                    if (_player.OpenFile(_fn))
+                    if (_player!.OpenFile(_fn))
                     {
                         Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
                         _player.Volume = sldVolume.Value;
@@ -272,14 +273,14 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Player_StatusEvent(object sender, StatusEventArgs e)
+        void Player_StatusEvent(object? sender, StatusEventArgs e)
         {
             if (e.Message != "")
             {
                 _log.Write(e.Message);
             }
 
-            switch (_player.State)
+            switch (_player!.State)
             {
                 case RunState.Playing:
                     progress.AddValue(e.Progress);
@@ -319,7 +320,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcEvent(object sender, NBagOfTricks.SimpleIpc.ServerEventArgs e)
+        void Server_IpcEvent(object? sender, NBagOfTricks.SimpleIpc.ServerEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
@@ -340,9 +341,9 @@ namespace ClipPlayer
         /// <summary>
         /// Edit the common options in a property grid.
         /// </summary>
-        void Settings_Click(object sender, EventArgs e)
+        void Settings_Click(object? sender, EventArgs e)
         {
-            using (Form f = new Form()
+            using Form f = new()
             {
                 Text = "User Settings",
                 Size = new Size(300, 350),
@@ -351,40 +352,39 @@ namespace ClipPlayer
                 FormBorderStyle = FormBorderStyle.FixedToolWindow,
                 ShowIcon = false,
                 ShowInTaskbar = false
-            })
+            };
+
+            PropertyGrid pg = new()
             {
-                PropertyGrid pg = new PropertyGrid()
+                Dock = DockStyle.Fill,
+                PropertySort = PropertySort.Categorized,
+                SelectedObject = Common.Settings
+            };
+
+            // Detect changes of interest.
+            bool deviceChange = false;
+
+            pg.PropertyValueChanged += (sdr, args) =>
+            {
+                switch (args.ChangedItem.PropertyDescriptor.Name)
                 {
-                    Dock = DockStyle.Fill,
-                    PropertySort = PropertySort.Categorized,
-                    SelectedObject = Common.Settings
-                };
-
-                // Detect changes of interest.
-                bool deviceChange = false;
-
-                pg.PropertyValueChanged += (sdr, args) =>
-                {
-                    switch (args.ChangedItem.PropertyDescriptor.Name)
-                    {
-                        case "MidiOutDevice":
-                        case "WavOutDevice":
-                            deviceChange = true;
-                            break;
-                    }
-                };
-
-                f.Controls.Add(pg);
-                f.ShowDialog();
-
-                // Figure out what changed - each handled differently.
-                if(deviceChange)
-                {
-                    MessageBox.Show("Restart required for device changes to take effect");
+                    case "MidiOutDevice":
+                    case "WavOutDevice":
+                        deviceChange = true;
+                        break;
                 }
+            };
 
-                Common.Settings.Save();
+            f.Controls.Add(pg);
+            f.ShowDialog();
+
+            // Figure out what changed - each handled differently.
+            if (deviceChange)
+            {
+                MessageBox.Show("Restart required for device changes to take effect");
             }
+
+            Common.Settings.Save();
         }
         #endregion
 
@@ -409,17 +409,17 @@ namespace ClipPlayer
         /// <summary>
         /// Handle dragging.
         /// </summary>
-        void Progress_MouseDown(object sender, MouseEventArgs e)
+        void Progress_MouseDown(object? sender, MouseEventArgs e)
         {
             TimeSpan ts = GetTimeFromMouse(e.X);
-            _player.Current = ts;
+            _player!.Current = ts;
             Invalidate();
         }
 
         /// <summary>
         /// Handle mouse position changes.
         /// </summary>
-        void Progress_MouseMove(object sender, MouseEventArgs e)
+        void Progress_MouseMove(object? sender, MouseEventArgs e)
         {
             if (e.X != _lastXPos)
             {
@@ -435,7 +435,7 @@ namespace ClipPlayer
         /// <param name="x"></param>
         TimeSpan GetTimeFromMouse(int x)
         {
-            int msec = x * (int)_player.Length.TotalMilliseconds / progress.Width;
+            int msec = x * (int)_player!.Length.TotalMilliseconds / progress.Width;
             msec = MathUtils.Constrain(msec, 0, (int)_player.Length.TotalMilliseconds);
             return new TimeSpan(0, 0, 0, 0, msec);
         }

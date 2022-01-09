@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NAudio.Wave;
 using NAudio.Midi;
+using NBagOfTricks;
 
 
 namespace ClipPlayer
@@ -52,12 +54,14 @@ namespace ClipPlayer
         [Description("Pick what you like.")]
         [Category("Cosmetics")]
         [Browsable(true)]
+        [JsonConverter(typeof(JsonColorConverter))]
         public Color ControlColor { get; set; } = Color.MediumOrchid;
         #endregion
 
         #region Persisted Non-editable Properties
         [Browsable(false)]
-        public Point Position { get; set; } = new Point(50, 50);
+        [JsonConverter(typeof(JsonPointFConverter))]
+        public PointF Position { get; set; } = new(50, 50);
 
         [Browsable(false)]
         public double Volume { get; set; } = 0.7;
@@ -74,7 +78,8 @@ namespace ClipPlayer
         {
             if(File.Exists(_fn))
             {
-                string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+                JsonSerializerOptions opts = new() { WriteIndented = true };
+                string json = JsonSerializer.Serialize(this, opts);
                 File.WriteAllText(_fn, json);
             }
         }
@@ -82,14 +87,13 @@ namespace ClipPlayer
         /// <summary>Create object from file.</summary>
         public static void Load(string appDir)
         {
-            Common.Settings = null;
             string fn = Path.Combine(appDir, "settings.json");
 
             if (File.Exists(fn))
             {
                 string json = File.ReadAllText(fn);
-                Common.Settings = JsonConvert.DeserializeObject<UserSettings>(json);
-
+                UserSettings? set = JsonSerializer.Deserialize<UserSettings>(json);
+                Common.Settings = set ?? new();
                 Common.Settings._fn = fn;
             }
             else
@@ -113,7 +117,7 @@ namespace ClipPlayer
         // Get the specific list based on the property name.
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> rec = null;
+            List<string>? rec = null;
 
             switch (context.PropertyDescriptor.Name)
             {

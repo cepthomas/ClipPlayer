@@ -30,19 +30,19 @@ namespace ClipPlayer
 
         #region Fields
         /// <summary>Midi output device.</summary>
-        MidiOut _midiOut = null;
+        MidiOut? _midiOut = null;
 
         /// <summary>The fast timer.</summary>
-        MmTimerEx _mmTimer = new MmTimerEx();
+        readonly MmTimerEx _mmTimer = new();
 
         /// <summary>Period.</summary>
         double _msecPerSubdiv = 0;
 
         /// <summary>Midi events from the input file.</summary>
-        MidiEventCollection _sourceEvents = null;
+        MidiEventCollection? _sourceEvents = null;
 
         ///<summary>The internal collection of events. The key is the subdiv/time to send the list.</summary>
-        readonly Dictionary<int, List<MidiEvent>> _playEvents = new Dictionary<int, List<MidiEvent>>();
+        readonly Dictionary<int, List<MidiEvent>> _playEvents = new();
 
         /// <summary>Total length in subdivs.</summary>
         int _totalSubdivs;
@@ -79,7 +79,7 @@ namespace ClipPlayer
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusEventArgs> StatusEvent;
+        public event EventHandler<StatusEventArgs>? StatusEvent;
         #endregion
 
         #region Lifecycle
@@ -118,9 +118,8 @@ namespace ClipPlayer
             _midiOut?.Dispose();
             _midiOut = null;
 
-            _mmTimer?.Stop();
-            _mmTimer?.Dispose();
-            _mmTimer = null;
+            _mmTimer.Stop();
+            _mmTimer.Dispose();
         }
         #endregion
 
@@ -139,7 +138,7 @@ namespace ClipPlayer
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.
-            MidiTime mt = new MidiTime()
+            MidiTime mt = new()
             {
                 InternalPpq = PPQ,
                 MidiPpq = _sourceEvents.DeltaTicksPerQuarterNote,
@@ -245,7 +244,7 @@ namespace ClipPlayer
         /// <param name="patch">Use this patch for Patch Channel.</param>
         public void SendPatch(int channel, int patch)
         {
-            PatchChangeEvent evt = new PatchChangeEvent(0, channel, patch);
+            PatchChangeEvent evt = new(0, channel, patch);
             MidiSend(evt);
         }
         #endregion
@@ -274,7 +273,7 @@ namespace ClipPlayer
                                 else
                                 {
                                     // Adjust volume and maybe drum channel. Also NAudio NoteLength bug.
-                                    NoteOnEvent ne = new NoteOnEvent(
+                                    NoteOnEvent ne = new(
                                         evt.AbsoluteTime,
                                         evt.Channel == DrumChannel ? DEFAULT_DRUM_CHANNEL : evt.Channel,
                                         evt.NoteNumber,
@@ -321,7 +320,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void MidiSend(MidiEvent evt)
         {
-            _midiOut.Send(evt.GetAsShortMessage());
+            _midiOut?.Send(evt.GetAsShortMessage());
         }
 
         /// <summary>
@@ -330,7 +329,7 @@ namespace ClipPlayer
         /// <param name="channel">1-based channel</param>
         void Kill(int channel)
         {
-            ControlChangeEvent nevt = new ControlChangeEvent(0, channel, MidiController.AllNotesOff, 0);
+            ControlChangeEvent nevt = new(0, channel, MidiController.AllNotesOff, 0);
             MidiSend(nevt);
         }
 
@@ -339,7 +338,7 @@ namespace ClipPlayer
         /// </summary>
         void DoUpdate()
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()
+            StatusEvent?.Invoke(this, new StatusEventArgs()
             {
                 Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
             });
@@ -351,7 +350,7 @@ namespace ClipPlayer
         /// <param name="msg"></param>
         void Tell(string msg)
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()
+            StatusEvent?.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,
                 Message = msg

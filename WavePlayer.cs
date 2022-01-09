@@ -11,10 +11,10 @@ namespace ClipPlayer
     {
         #region Fields
         /// <summary>Wave output play device.</summary>
-        WaveOut _waveOut = null;
+        readonly WaveOut? _waveOut = null;
 
         /// <summary>Input device for playing wav file.</summary>
-        AudioFileReader _audioFileReader = null;
+        AudioFileReader? _audioFileReader = null;
 
         /// <summary>Current volume.</summary>
         double _volume = 0.5;
@@ -31,21 +31,21 @@ namespace ClipPlayer
         /// <inheritdoc />
         public TimeSpan Current
         {
-            get { return _audioFileReader.CurrentTime; }
-            set { _audioFileReader.CurrentTime = value < Length ? value : Length; }
+            get { return _audioFileReader is null ? new() : _audioFileReader.CurrentTime; }
+            set { if (_audioFileReader is not null) _audioFileReader.CurrentTime = value < Length ? value : Length; }
         }
 
         /// <inheritdoc />
         public double Volume
         {
             get { return _volume; }
-            set { _volume = MathUtils.Constrain(value, 0, 1); _waveOut.Volume = (float)_volume; }
+            set { _volume = MathUtils.Constrain(value, 0, 1); if(_waveOut is not null) _waveOut.Volume = (float)_volume; }
         }
         #endregion
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusEventArgs> StatusEvent;
+        public event EventHandler<StatusEventArgs>? StatusEvent;
         #endregion
 
         #region Lifecycle
@@ -78,10 +78,8 @@ namespace ClipPlayer
         {
             _waveOut?.Stop();
             _waveOut?.Dispose();
-            _waveOut = null;
 
             _audioFileReader?.Dispose();
-            _audioFileReader = null;
         }
         #endregion
 
@@ -106,8 +104,11 @@ namespace ClipPlayer
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
             
-            _waveOut.Init(postVolumeMeter);
-            _waveOut.Volume = (float)Common.Settings.Volume;
+            if (_waveOut is not null)
+            {
+                _waveOut.Init(postVolumeMeter);
+                _waveOut.Volume = (float)Common.Settings.Volume;
+            }
 
             return ok;
         }
@@ -123,7 +124,7 @@ namespace ClipPlayer
         {
             if (_audioFileReader != null)
             {
-                _waveOut.Play();
+                _waveOut?.Play();
                 State = RunState.Playing;
             }
         }
@@ -133,7 +134,7 @@ namespace ClipPlayer
         {
             if (_audioFileReader != null)
             {
-                _waveOut.Pause(); // or Stop?
+                _waveOut?.Pause(); // or Stop?
                 State = RunState.Stopped;
             }
         }
@@ -160,7 +161,7 @@ namespace ClipPlayer
         /// </summary>
         void DoUpdate()
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()
+            StatusEvent?.Invoke(this, new StatusEventArgs()
             {
                 Progress = Current < Length ? 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds : 100
             });
@@ -172,7 +173,7 @@ namespace ClipPlayer
         /// <param name="msg"></param>
         void Tell(string msg)
         {
-            StatusEvent.Invoke(this, new StatusEventArgs()
+            StatusEvent?.Invoke(this, new StatusEventArgs()
             {
                 Progress = 0,
                 Message = msg
@@ -186,7 +187,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void WaveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        void WaveOut_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
             if (e.Exception != null)
             {
@@ -204,7 +205,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void SampleChannel_PreVolumeMeter(object sender, StreamVolumeEventArgs e)
+        void SampleChannel_PreVolumeMeter(object? sender, StreamVolumeEventArgs e)
         {
             DoUpdate();
         }
