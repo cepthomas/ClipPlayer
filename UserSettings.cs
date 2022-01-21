@@ -99,7 +99,7 @@ namespace ClipPlayer
             else
             {
                 // Doesn't exist, create a new one.
-                Common.Settings = new UserSettings
+                Common.Settings = new()
                 {
                     _fn = fn
                 };
