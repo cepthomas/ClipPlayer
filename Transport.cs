@@ -89,8 +89,8 @@ namespace ClipPlayer
             chkDrumsOn1.CheckedChanged += (_, __) => { if (_midiPlayer is not null) { _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10; } };
 
             btnSettings.Click += Settings_Click;
-            MouseDown += Progress_MouseDown;
-            MouseMove += Progress_MouseMove;
+            progress!.MouseDown += Progress_MouseDown;
+            progress!.MouseMove += Progress_MouseMove;
 
             // Go!
             ok = OpenFile();
@@ -145,78 +145,6 @@ namespace ClipPlayer
         }
         #endregion
 
-        #region UI handlers
-        ///// <summary>
-        ///// User wants to change the midi drum channel.
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void DrumsOn1_CheckedChanged(object? sender, EventArgs e)
-        //{
-        //    if(_midiPlayer is not null)
-        //    {
-        //        _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
-        //    }
-        //}
-        #endregion
-
-        #region Transport control
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //void Play_CheckedChanged(object? sender, EventArgs e)
-        //{
-        //    //var _ = chkPlay.Checked ? Start() : Stop();
-
-        //    if(chkPlay.Checked)
-        //    {
-        //        _player?.Play();
-
-        //    }
-        //    else
-        //    {
-        //        _player?.Stop();
-
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Internal handler.
-        ///// </summary>
-        ///// <returns></returns>
-        //bool Stop()
-        //{
-        //    _player?.Stop();
-        //    SetPlayCheck(false);
-        //    return true;
-        //}
-
-        ///// <summary>
-        ///// Internal handler.
-        ///// </summary>
-        ///// <returns></returns>
-        //bool Start()
-        //{
-        //    _player?.Rewind();
-        //    _player?.Play();
-        //    SetPlayCheck(true);
-        //    return true;
-        //}
-
-        ///// <summary>
-        ///// Need to temporarily suppress CheckedChanged event.
-        ///// </summary>
-        ///// <param name="on"></param>
-        //void SetPlayCheck(bool on)
-        //{
-        //    chkPlay.CheckedChanged -= Play_CheckedChanged;
-        //    chkPlay.Checked = on;
-        //    chkPlay.CheckedChanged += Play_CheckedChanged;
-        //}
-        #endregion
-
         #region Play file
         /// <summary>
         /// Open the file to play. Caller has already set _fn to requested file name.
@@ -226,7 +154,7 @@ namespace ClipPlayer
         {
             bool ok = true;
             chkDrumsOn1.Checked = false;
-            _player?.Stop();
+            chkPlay.Checked = false;
 
             try
             {
@@ -260,7 +188,6 @@ namespace ClipPlayer
                         _player.Rewind();
                         // Make it go.
                         chkPlay.Checked = true;
-                        //_player.Play();
                     }
                     else
                     {
@@ -316,14 +243,13 @@ namespace ClipPlayer
                     {
                         _player.Current = TimeSpan.Zero;
                         progress.AddValue(0);
-                        
                         if (chkLoop.Checked)
                         {
                             _player.Play();
                         }
                         else
                         {
-                            _player.State = RunState.Stopped;
+                            chkPlay.Checked = false;
                         }
                     }
                     break;
@@ -428,10 +354,10 @@ namespace ClipPlayer
         /// </summary>
         void Progress_MouseDown(object? sender, MouseEventArgs e)
         {
+            progress.AddValue(e.X * 100 / progress.Width);
+
             TimeSpan ts = GetTimeFromMouse(e.X);
             _player!.Current = ts;
-
-            progress.
             Invalidate();
         }
 
