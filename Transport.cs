@@ -83,9 +83,14 @@ namespace ClipPlayer
             _wavePlayer.StatusEvent += Player_StatusEvent;
 
             // Hook up UI handlers.
-            chkPlay.CheckedChanged += Play_CheckedChanged;
+            chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player?.Play() : _player?.Stop(); };
             btnRewind.Click += (_, __) => { _player?.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; if(_player is not null) _player.Volume = sldVolume.Value; };
+            chkDrumsOn1.CheckedChanged += (_, __) => { if (_midiPlayer is not null) { _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10; } };
+
+            btnSettings.Click += Settings_Click;
+            MouseDown += Progress_MouseDown;
+            MouseMove += Progress_MouseMove;
 
             // Go!
             ok = OpenFile();
@@ -141,65 +146,75 @@ namespace ClipPlayer
         #endregion
 
         #region UI handlers
-        /// <summary>
-        /// User wants to change the midi drum channel.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DrumsOn1_CheckedChanged(object? sender, EventArgs e)
-        {
-            if(_midiPlayer is not null)
-            {
-                _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
-            }
-        }
+        ///// <summary>
+        ///// User wants to change the midi drum channel.
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //private void DrumsOn1_CheckedChanged(object? sender, EventArgs e)
+        //{
+        //    if(_midiPlayer is not null)
+        //    {
+        //        _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10;
+        //    }
+        //}
         #endregion
 
         #region Transport control
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Play_CheckedChanged(object? sender, EventArgs e)
-        {
-            var _ = chkPlay.Checked ? Start() : Stop();
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //void Play_CheckedChanged(object? sender, EventArgs e)
+        //{
+        //    //var _ = chkPlay.Checked ? Start() : Stop();
 
-        /// <summary>
-        /// Internal handler.
-        /// </summary>
-        /// <returns></returns>
-        bool Stop()
-        {
-            _player?.Stop();
-            SetPlayCheck(false);
-            return true;
-        }
+        //    if(chkPlay.Checked)
+        //    {
+        //        _player?.Play();
 
-        /// <summary>
-        /// Internal handler.
-        /// </summary>
-        /// <returns></returns>
-        bool Start()
-        {
-            _player?.Rewind();
-            _player?.Play();
-            SetPlayCheck(true);
-            return true;
-        }
+        //    }
+        //    else
+        //    {
+        //        _player?.Stop();
 
-        /// <summary>
-        /// Need to temporarily suppress CheckedChanged event.
-        /// </summary>
-        /// <param name="on"></param>
-        void SetPlayCheck(bool on)
-        {
-            chkPlay.CheckedChanged -= Play_CheckedChanged;
-            chkPlay.Checked = on;
-            chkPlay.CheckedChanged += Play_CheckedChanged;
-        }
+        //    }
+        //}
 
+        ///// <summary>
+        ///// Internal handler.
+        ///// </summary>
+        ///// <returns></returns>
+        //bool Stop()
+        //{
+        //    _player?.Stop();
+        //    SetPlayCheck(false);
+        //    return true;
+        //}
+
+        ///// <summary>
+        ///// Internal handler.
+        ///// </summary>
+        ///// <returns></returns>
+        //bool Start()
+        //{
+        //    _player?.Rewind();
+        //    _player?.Play();
+        //    SetPlayCheck(true);
+        //    return true;
+        //}
+
+        ///// <summary>
+        ///// Need to temporarily suppress CheckedChanged event.
+        ///// </summary>
+        ///// <param name="on"></param>
+        //void SetPlayCheck(bool on)
+        //{
+        //    chkPlay.CheckedChanged -= Play_CheckedChanged;
+        //    chkPlay.Checked = on;
+        //    chkPlay.CheckedChanged += Play_CheckedChanged;
+        //}
         #endregion
 
         #region Play file
@@ -243,7 +258,9 @@ namespace ClipPlayer
                         Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
                         _player.Volume = sldVolume.Value;
                         _player.Rewind();
-                        _player.Play();
+                        // Make it go.
+                        chkPlay.Checked = true;
+                        //_player.Play();
                     }
                     else
                     {
@@ -413,6 +430,8 @@ namespace ClipPlayer
         {
             TimeSpan ts = GetTimeFromMouse(e.X);
             _player!.Current = ts;
+
+            progress.
             Invalidate();
         }
 

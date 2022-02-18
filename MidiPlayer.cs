@@ -208,13 +208,14 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
-        public void Play()
+        public RunState Play()
         {
             State = RunState.Playing;
+            return State;
         }
 
         /// <inheritdoc />
-        public void Stop()
+        public RunState Stop()
         {
             for (int i = 0; i < NUM_CHANNELS; i++)
             {
@@ -222,6 +223,7 @@ namespace ClipPlayer
             }
 
             State = RunState.Stopped;
+            return State;
         }
 
         /// <inheritdoc />

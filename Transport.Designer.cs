@@ -41,8 +41,6 @@ namespace ClipPlayer
             this.progress.Size = new System.Drawing.Size(110, 36);
             this.progress.TabIndex = 3;
             this.toolTip.SetToolTip(this.progress, "Progress");
-            this.progress.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseDown);
-            this.progress.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Progress_MouseMove);
             // 
             // toolTip
             // 
@@ -94,7 +92,6 @@ namespace ClipPlayer
             this.chkDrumsOn1.Text = "D1";
             this.toolTip.SetToolTip(this.chkDrumsOn1, "Drums on midi channel 1");
             this.chkDrumsOn1.UseVisualStyleBackColor = true;
-            this.chkDrumsOn1.CheckedChanged += new System.EventHandler(this.DrumsOn1_CheckedChanged);
             // 
             // chkLoop
             // 
@@ -132,7 +129,6 @@ namespace ClipPlayer
             this.btnSettings.TabIndex = 83;
             this.toolTip.SetToolTip(this.btnSettings, "Your settings");
             this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
             // Transport
             // 

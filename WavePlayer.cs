@@ -120,23 +120,25 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
-        public void Play()
+        public RunState Play()
         {
             if (_audioFileReader != null)
             {
                 _waveOut?.Play();
                 State = RunState.Playing;
             }
+            return State;
         }
 
         /// <inheritdoc />
-        public void Stop()
+        public RunState Stop()
         {
             if (_audioFileReader != null)
             {
                 _waveOut?.Pause(); // or Stop?
                 State = RunState.Stopped;
             }
+            return State;
         }
 
         /// <inheritdoc />

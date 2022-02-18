@@ -57,10 +57,10 @@ namespace ClipPlayer
         string GetInfo();
 
         /// <summary>Start playback.</summary>
-        void Play();
+        RunState Play();
 
         /// <summary>Stop playback.</summary>
-        void Stop();
+        RunState Stop();
 
         /// <summary>Return to beginning.</summary>
         void Rewind();
