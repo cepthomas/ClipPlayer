@@ -122,7 +122,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Play()
         {
-            if (_audioFileReader != null)
+            if (_audioFileReader is not null)
             {
                 _waveOut?.Play();
                 State = RunState.Playing;
@@ -133,7 +133,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            if (_audioFileReader != null)
+            if (_audioFileReader is not null)
             {
                 _waveOut?.Pause(); // or Stop?
                 State = RunState.Stopped;
@@ -144,7 +144,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Rewind()
         {
-            if (_audioFileReader != null)
+            if (_audioFileReader is not null)
             {
                 Current = TimeSpan.Zero;
             }
@@ -191,7 +191,7 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void WaveOut_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            if (e.Exception != null)
+            if (e.Exception is not null)
             {
                 Tell(e.Exception.Message);
             }
