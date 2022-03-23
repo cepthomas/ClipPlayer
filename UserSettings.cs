@@ -9,12 +9,13 @@ using System.Text.Json.Serialization;
 using NAudio.Wave;
 using NAudio.Midi;
 using NBagOfTricks;
+using NBagOfUis;
 
 
 namespace ClipPlayer
 {
     [Serializable]
-    public class UserSettings
+    public class UserSettings : Settings
     {
         #region Persisted editable properties
         [DisplayName("Auto Close")]
@@ -60,51 +61,7 @@ namespace ClipPlayer
 
         #region Persisted Non-editable Properties
         [Browsable(false)]
-        [JsonConverter(typeof(JsonPointFConverter))]
-        public PointF Position { get; set; } = new(50, 50);
-
-        [Browsable(false)]
         public double Volume { get; set; } = 0.7;
-        #endregion
-
-        #region Fields
-        /// <summary>The file name.</summary>
-        string _fn = "???";
-        #endregion
-
-        #region Persistence
-        /// <summary>Save object to file.</summary>
-        public void Save()
-        {
-            if(File.Exists(_fn))
-            {
-                JsonSerializerOptions opts = new() { WriteIndented = true };
-                string json = JsonSerializer.Serialize(this, opts);
-                File.WriteAllText(_fn, json);
-            }
-        }
-
-        /// <summary>Create object from file.</summary>
-        public static void Load(string appDir)
-        {
-            string fn = Path.Combine(appDir, "settings.json");
-
-            if (File.Exists(fn))
-            {
-                string json = File.ReadAllText(fn);
-                UserSettings? set = JsonSerializer.Deserialize<UserSettings>(json);
-                Common.Settings = set ?? new();
-                Common.Settings._fn = fn;
-            }
-            else
-            {
-                // Doesn't exist, create a new one.
-                Common.Settings = new()
-                {
-                    _fn = fn
-                };
-            }
-        }
         #endregion
     }
 
@@ -112,6 +69,7 @@ namespace ClipPlayer
     public class FixedListTypeConverter : TypeConverter
     {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
+
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
 
         // Get the specific list based on the property name.

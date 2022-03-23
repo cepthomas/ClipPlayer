@@ -63,12 +63,10 @@ namespace ClipPlayer
 
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-            DirectoryInfo di = new(appDir);
-            di.Create();
-            UserSettings.Load(appDir);
+            Common.Settings = (UserSettings)Settings.Load(appDir, typeof(UserSettings));
             sldVolume.Value = Common.Settings.Volume;
-            var pos = Common.Settings.Position;
-            Location = new((int)pos.X, (int)pos.Y);
+            var pos = Common.Settings.FormGeometry;
+            Location = new(pos.X, pos.Y);
 
             progress.DrawColor = Common.Settings.ControlColor;
             sldVolume.DrawColor = Common.Settings.ControlColor;
@@ -117,7 +115,7 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void Transport_FormClosing(object? sender, FormClosingEventArgs e)
         {
-            Common.Settings.Position = Location;
+            Common.Settings.FormGeometry = new(Location, Size);
             Common.Settings.Save();
         }
 
@@ -286,42 +284,17 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
-            using Form f = new()
-            {
-                Text = "User Settings",
-                Size = new Size(300, 350),
-                StartPosition = FormStartPosition.Manual,
-                Location = new Point(200, 200),
-                FormBorderStyle = FormBorderStyle.FixedToolWindow,
-                ShowIcon = false,
-                ShowInTaskbar = false
-            };
-
-            PropertyGridEx pg = new()
-            {
-                Dock = DockStyle.Fill,
-                PropertySort = PropertySort.Categorized,
-                SelectedObject = Common.Settings
-            };
+            var changes = Common.Settings.Edit("User Settings");
 
             // Detect changes of interest.
             bool deviceChange = false;
 
-            pg.PropertyValueChanged += (sdr, args) =>
-            {
-                switch (args.ChangedItem.PropertyDescriptor.Name)
-                {
-                    case "MidiOutDevice":
-                    case "WavOutDevice":
-                        deviceChange = true;
-                        break;
-                }
-            };
-
-            f.Controls.Add(pg);
-            f.ShowDialog();
-
             // Figure out what changed - each handled differently.
+            foreach (var (name, cat) in changes)
+            {
+                deviceChange |= name.EndsWith("Device");
+            }
+
             if (deviceChange)
             {
                 MessageBox.Show("Restart required for device changes to take effect");
