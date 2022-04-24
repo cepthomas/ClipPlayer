@@ -185,9 +185,9 @@ namespace ClipPlayer
             _msecPerSubdiv = mt.InternalToMsec(1);
             int period = mt.RoundedInternalPeriod();
 
-            // Round length up to bar.
-            int floor = _totalSubdivs / (PPQ * 4); // 4/4 only.
-            _totalSubdivs = (floor + 1) * (PPQ * 4);
+            //// Round length up to bar.
+            //int floor = _totalSubdivs / (PPQ * 4); // 4/4 only.
+            //_totalSubdivs = (floor + 1) * (PPQ * 4);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);

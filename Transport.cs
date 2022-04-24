@@ -217,41 +217,44 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void Player_StatusEvent(object? sender, StatusEventArgs e)
         {
-            if (e.Message != "")
+            this.InvokeIfRequired(_ =>
             {
-                _log.Write(e.Message);
-            }
+                if (e.Message != "")
+                {
+                    _log.Write(e.Message);
+                }
 
-            switch (_player!.State)
-            {
-                case RunState.Playing:
-                    progress.AddValue(e.Progress);
-                    break;
+                switch (_player!.State)
+                {
+                    case RunState.Playing:
+                        progress.AddValue(e.Progress);
+                        break;
 
-                case RunState.Stopped:
-                    progress.AddValue(e.Progress);
-                    break;
+                    case RunState.Stopped:
+                        progress.AddValue(e.Progress);
+                        break;
 
-                case RunState.Complete:
-                    if (Common.Settings.AutoClose)
-                    {
-                        Environment.Exit(Environment.ExitCode);
-                    }
-                    else
-                    {
-                        _player.Current = TimeSpan.Zero;
-                        progress.AddValue(0);
-                        if (chkLoop.Checked)
+                    case RunState.Complete:
+                        if (Common.Settings.AutoClose)
                         {
-                            _player.Play();
+                            Environment.Exit(Environment.ExitCode);
                         }
                         else
                         {
-                            chkPlay.Checked = false;
+                            _player.Current = TimeSpan.Zero;
+                            progress.AddValue(0);
+                            if (chkLoop.Checked)
+                            {
+                                _player.Play();
+                            }
+                            else
+                            {
+                                chkPlay.Checked = false;
+                            }
                         }
-                    }
-                    break;
-            }
+                        break;
+                }
+            });
         }
         #endregion
 
