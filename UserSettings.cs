@@ -51,6 +51,12 @@ namespace ClipPlayer
         [Browsable(true)]
         public int DefaultTempo { get; set; } = 100;
 
+        [DisplayName("Time is 0-based")]
+        [Description("Engineers prefer this to musician style.")]
+        [Category("Midi")]
+        [Browsable(true)]
+        public bool ZeroBased { get; set; } = false;
+
         [DisplayName("Control Color")]
         [Description("Pick what you like.")]
         [Category("Cosmetics")]

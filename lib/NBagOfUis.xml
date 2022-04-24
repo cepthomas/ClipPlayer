@@ -34,6 +34,9 @@
         <member name="F:NBagOfUis.BarBar._format">
             <summary>For drawing text.</summary>
         </member>
+        <member name="P:NBagOfUis.BarBar.ZeroBased">
+            <summary>Option for engineers, not musicians.</summary>
+        </member>
         <member name="P:NBagOfUis.BarBar.BeatsPerBar">
             <summary>Our signature. Only tested with 4.</summary>
         </member>
@@ -106,6 +109,7 @@
             <summary>
             
             </summary>
+            <param name="num">Subdivs/ticks.</param>
         </member>
         <member name="M:NBagOfUis.BarBar.GetSubdivFromMouse(System.Int32)">
             <summary>
@@ -186,7 +190,7 @@
             <summary>
             
             </summary>
-            <param name="num"></param>
+            <param name="num">Subdivs/ticks.</param>
         </member>
         <member name="M:NBagOfUis.BarSpan.DoSnap(System.Int32)">
             <summary>
@@ -194,9 +198,16 @@
             </summary>
             <param name="subdiv"></param>
         </member>
+        <member name="M:NBagOfUis.BarSpan.Format(System.Boolean)">
+            <summary>
+            Format a readable string.
+            </summary>
+            <param name="zeroBased"></param>
+            <returns></returns>
+        </member>
         <member name="M:NBagOfUis.BarSpan.ToString">
             <summary>
-            
+            Format a readable string.
             </summary>
             <returns></returns>
         </member>

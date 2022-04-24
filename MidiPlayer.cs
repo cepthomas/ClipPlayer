@@ -102,7 +102,11 @@ namespace ClipPlayer
 
             if (_midiOut is null)
             {
-                Tell($"Invalid midi device: {Common.Settings.MidiOutDevice}");
+                StatusEvent?.Invoke(this, new StatusEventArgs()
+                {
+                    Progress = 0,
+                    Message = $"Invalid midi device: {Common.Settings.MidiOutDevice}"
+                });
             }
         }
 
@@ -203,7 +207,8 @@ namespace ClipPlayer
             int beats = _totalSubdivs / PPQ % BEATS_PER_BAR;
             int subdivs = _totalSubdivs % PPQ;
 
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bars + 1}:{beats + 1}:{subdivs})";
+            int inc = Common.Settings.ZeroBased ? 0 : 1;
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bars + inc}:{beats + inc}:{subdivs + inc:00})";
             return s;
         }
 
@@ -312,7 +317,10 @@ namespace ClipPlayer
                     _currentSubdiv = 0;
                 }
 
-                DoUpdate();
+                StatusEvent?.Invoke(this, new StatusEventArgs()
+                {
+                    Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
+                });
             }
         }
 
@@ -333,30 +341,6 @@ namespace ClipPlayer
         {
             ControlChangeEvent nevt = new(0, channel, MidiController.AllNotesOff, 0);
             MidiSend(nevt);
-        }
-
-        /// <summary>
-        /// Tell the mothership.
-        /// </summary>
-        void DoUpdate()
-        {
-            StatusEvent?.Invoke(this, new StatusEventArgs()
-            {
-                Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
-            });
-        }
-
-        /// <summary>
-        /// Tell the mothership.
-        /// </summary>
-        /// <param name="msg"></param>
-        void Tell(string msg)
-        {
-            StatusEvent?.Invoke(this, new StatusEventArgs()
-            {
-                Progress = 0,
-                Message = msg
-            });
         }
         #endregion
     }

@@ -109,7 +109,7 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// 
+        /// Goodbye.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
