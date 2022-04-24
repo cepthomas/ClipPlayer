@@ -287,15 +287,16 @@ namespace ClipPlayer
             var changes = Common.Settings.Edit("User Settings");
 
             // Detect changes of interest.
-            bool deviceChange = false;
+            bool restart = false;
 
-            // Figure out what changed - each handled differently.
             foreach (var (name, cat) in changes)
             {
-                deviceChange |= name.EndsWith("Device");
+                restart |= name.EndsWith("Device");
+                restart |= name == "Latency";
+                restart |= cat == "Cosmetics";
             }
 
-            if (deviceChange)
+            if (restart)
             {
                 MessageBox.Show("Restart required for device changes to take effect");
             }

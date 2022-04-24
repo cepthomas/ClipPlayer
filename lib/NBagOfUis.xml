@@ -1045,7 +1045,7 @@
             Edit the properties in a dialog.
             </summary>
             <param name="title">To show.</param>
-            <returns>List of tuples of name,ccategory.</returns>
+            <returns>List of tuples of name, category.</returns>
         </member>
         <member name="M:NBagOfUis.Settings.Cleanup">
             <summary>
@@ -1149,6 +1149,9 @@
             <summary>Limit the size. Set to 0 to disable.</summary>
         </member>
         <member name="P:NBagOfUis.TextViewer.BackColor">
+            <summary>Cosmetics.</summary>
+        </member>
+        <member name="P:NBagOfUis.TextViewer.Font">
             <summary>Cosmetics.</summary>
         </member>
         <member name="P:NBagOfUis.TextViewer.WordWrap">
