@@ -52,7 +52,7 @@ namespace ClipPlayer
             // sldVolume
             // 
             this.sldVolume.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.sldVolume.DecPlaces = 1;
+            this.sldVolume.Resolution = 0.05D;
             this.sldVolume.DrawColor = System.Drawing.Color.White;
             this.sldVolume.Label = "";
             this.sldVolume.Location = new System.Drawing.Point(80, 3);
@@ -60,7 +60,6 @@ namespace ClipPlayer
             this.sldVolume.Minimum = 0D;
             this.sldVolume.Name = "sldVolume";
             this.sldVolume.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.sldVolume.ResetValue = 0D;
             this.sldVolume.Size = new System.Drawing.Size(44, 36);
             this.sldVolume.TabIndex = 9;
             this.toolTip.SetToolTip(this.sldVolume, "Volume");
