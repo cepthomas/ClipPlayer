@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>ClipPlayer</AssemblyName>
     <Deterministic>False</Deterministic>
-    <Version>1.2.3</Version>
+    <Version>$([System.DateTime]::UtcNow.ToString(yy.MM.dd))</Version> 
     <Description>ClipPlayer application</Description>
     <Copyright>MIT License</Copyright>
     <OutputPath>bin\</OutputPath>
