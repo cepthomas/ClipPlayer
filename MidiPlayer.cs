@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NAudio.Midi;
 using NBagOfTricks;
+using MidiLib;
 
 
 namespace ClipPlayer
