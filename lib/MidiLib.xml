@@ -981,7 +981,7 @@
             Constructor.
             </summary>
         </member>
-        <member name="M:MidiLib.VirtualKeyboard.Keyboard_Resize(System.Object,System.EventArgs)">
+        <member name="M:MidiLib.VirtualKeyboard.OnResize(System.EventArgs)">
             <summary>
             
             </summary>
@@ -1006,14 +1006,14 @@
             Create the midi note/keyboard mapping.
             </summary>
         </member>
-        <member name="M:MidiLib.VirtualKeyboard.Keyboard_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+        <member name="M:MidiLib.VirtualKeyboard.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
             <summary>
             Use alpha keyboard to drive piano.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:MidiLib.VirtualKeyboard.Keyboard_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
+        <member name="M:MidiLib.VirtualKeyboard.OnKeyUp(System.Windows.Forms.KeyEventArgs)">
             <summary>
             Use alpha keyboard to drive piano.
             </summary>
