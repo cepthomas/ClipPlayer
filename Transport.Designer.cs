@@ -17,7 +17,7 @@ namespace ClipPlayer
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.progress = new NBagOfUis.Meter();
+            this.progress = new AudioLib.Meter();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.sldVolume = new NBagOfUis.Slider();
             this.chkPlay = new System.Windows.Forms.CheckBox();
@@ -34,7 +34,7 @@ namespace ClipPlayer
             this.progress.Label = "";
             this.progress.Location = new System.Drawing.Point(128, 3);
             this.progress.Maximum = 100D;
-            this.progress.MeterType = NBagOfUis.MeterType.Linear;
+            this.progress.MeterType = AudioLib.MeterType.Linear;
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -144,14 +144,12 @@ namespace ClipPlayer
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Transport";
             this.Text = "Clip Player";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Transport_FormClosing);
-            this.Load += new System.EventHandler(this.Transport_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        private NBagOfUis.Meter progress;
+        private AudioLib.Meter progress;
         private System.Windows.Forms.ToolTip toolTip;
         private NBagOfUis.Slider sldVolume;
         private System.Windows.Forms.CheckBox chkPlay;

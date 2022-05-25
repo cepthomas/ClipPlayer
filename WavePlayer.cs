@@ -54,7 +54,7 @@ namespace ClipPlayer
         /// </summary>
         public WavePlayer()
         {
-            // Create output device.
+            // Create output device. –1 indicates the default output device, while 0 is the first output device
             for (int id = -1; id < WaveOut.DeviceCount; id++)
             {
                 var cap = WaveOut.GetCapabilities(id);
@@ -109,6 +109,10 @@ namespace ClipPlayer
                 _waveOut.Init(postVolumeMeter);
                 _waveOut.Volume = (float)Common.Settings.Volume;
             }
+            else
+            {
+                ok = false;
+            }
 
             return ok;
         }
@@ -122,10 +126,13 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Play()
         {
-            if (_audioFileReader is not null)
+            if (_audioFileReader is not null && _waveOut is not null)
             {
-                _waveOut?.Play();
-                State = RunState.Playing;
+                _waveOut.Play();
+                if(_waveOut.PlaybackState == PlaybackState.Playing)
+                {
+                    State = RunState.Playing;
+                }
             }
             return State;
         }
@@ -133,9 +140,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            if (_audioFileReader is not null)
+            if (_audioFileReader is not null && _waveOut is not null)
             {
-                _waveOut?.Pause(); // or Stop?
+                _waveOut.Pause(); // or Stop?
                 State = RunState.Stopped;
             }
             return State;
@@ -144,10 +151,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public void Rewind()
         {
-            if (_audioFileReader is not null)
-            {
-                Current = TimeSpan.Zero;
-            }
+            Current = TimeSpan.Zero;
         }
 
         /// <inheritdoc />

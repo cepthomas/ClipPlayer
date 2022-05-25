@@ -45,15 +45,7 @@ namespace ClipPlayer
         {
             _fn = fn;
             InitializeComponent();
-        }
 
-        /// <summary>
-        /// Initializer.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Transport_Load(object? sender, EventArgs e)
-        {
             Icon = Properties.Resources.croco;
             bool ok = true;
 
@@ -113,7 +105,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Transport_FormClosing(object? sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             Common.Settings.FormGeometry = new(Location, Size);
             Common.Settings.Save();
