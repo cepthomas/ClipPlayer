@@ -1,0 +1,603 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AudioLib</name>
+    </assembly>
+    <members>
+        <member name="T:AudioLib.AudioPlayer">
+            <summary>
+            A simple audio file player.
+            </summary>
+        </member>
+        <member name="F:AudioLib.AudioPlayer._waveOut">
+            <summary>Wave output play device.</summary>
+        </member>
+        <member name="F:AudioLib.AudioPlayer.READ_BUFF_SIZE">
+            <summary>Stream read chunk.</summary>
+        </member>
+        <member name="F:AudioLib.AudioPlayer._volume">
+            <summary>The volume.</summary>
+        </member>
+        <member name="E:AudioLib.AudioPlayer.PlaybackStopped">
+            <summary>Wave playing done.</summary>
+        </member>
+        <member name="P:AudioLib.AudioPlayer.Valid">
+            <summary>Are we ok?</summary>
+        </member>
+        <member name="P:AudioLib.AudioPlayer.Volume">
+            <summary>Volume.</summary>
+        </member>
+        <member name="P:AudioLib.AudioPlayer.Playing">
+            <summary>State.</summary>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.#ctor(System.String,System.Int32)">
+            <summary>
+            Normal constructor.
+            </summary>
+            <param name="wavOutDevice">Device name.</param>
+            <param name="latency">How slow.</param>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.Dispose">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.Init(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Bind the source to output.
+            </summary>
+            <param name="smpl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.Run(System.Boolean)">
+            <summary>
+            Start/stop everything.
+            </summary>
+            <param name="go">Or no.</param>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.Rewind">
+            <summary>
+            Go back jack.
+            </summary>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.Export(System.String,NAudio.Wave.AudioFileReader)">
+            <summary>
+            Export wave data to text file. TODO This doesn't really belong here, but ok for now.
+            </summary>
+            <param name="exportFileName"></param>
+            <param name="rdr">Data source.</param>
+        </member>
+        <member name="M:AudioLib.AudioPlayer.WaveOut_PlaybackStopped(System.Object,NAudio.Wave.StoppedEventArgs)">
+            <summary>
+            Usually end of file but could be error. Client can handle.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:AudioLib.MeterType">
+            <summary>Display types.</summary>
+        </member>
+        <member name="T:AudioLib.Meter">
+            <summary>
+            Implements a rudimentary volume meter.
+            </summary>
+        </member>
+        <member name="F:AudioLib.Meter._buff">
+            <summary>Storage.</summary>
+        </member>
+        <member name="F:AudioLib.Meter._buffIndex">
+            <summary>Storage.</summary>
+        </member>
+        <member name="F:AudioLib.Meter._pen">
+            <summary>The pen.</summary>
+        </member>
+        <member name="F:AudioLib.Meter._brush">
+            <summary>The brush.</summary>
+        </member>
+        <member name="F:AudioLib.Meter._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="P:AudioLib.Meter.Label">
+            <summary>Optional label.</summary>
+        </member>
+        <member name="P:AudioLib.Meter.DrawColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.Meter.MeterType">
+            <summary>How the meter responds.</summary>
+        </member>
+        <member name="P:AudioLib.Meter.Minimum">
+            <summary>Minimum value. If Log type, this is in db - usually -60;</summary>
+        </member>
+        <member name="P:AudioLib.Meter.Maximum">
+            <summary>Maximum value. If Log type, this is in db - usually +18.</summary>
+        </member>
+        <member name="P:AudioLib.Meter.Orientation">
+            <summary>Meter orientation.</summary>
+        </member>
+        <member name="M:AudioLib.Meter.#ctor">
+            <summary>
+            Basic volume meter.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Meter.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.Meter.AddValue(System.Double)">
+            <summary>
+            Add a new data point. If Log, this will convert for you.
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:AudioLib.Meter.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paints the volume meter.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Meter.OnResize(System.EventArgs)">
+            <summary>
+            Update drawing area.
+            </summary>
+        </member>
+        <member name="T:AudioLib.Pan">
+            <summary>
+            Pan slider control
+            </summary>
+        </member>
+        <member name="F:AudioLib.Pan._value">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pan._brush">
+            <summary>The brush.</summary>
+        </member>
+        <member name="F:AudioLib.Pan._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="P:AudioLib.Pan.Value">
+            <summary>The current Pan setting.</summary>
+        </member>
+        <member name="P:AudioLib.Pan.DrawColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="E:AudioLib.Pan.ValueChanged">
+            <summary>True when pan value changed.</summary>
+        </member>
+        <member name="M:AudioLib.Pan.#ctor">
+            <summary>
+            Creates a new Pan control.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pan.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.Pan.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draw control.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pan.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pan.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pan.SetValueFromMouse(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Calculate position.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:AudioLib.Pan.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handle the nudge key.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="T:AudioLib.Taper">
+            <summary></summary>
+        </member>
+        <member name="T:AudioLib.Pot">
+            <summary>
+            Control potentiometer.
+            </summary>
+        </member>
+        <member name="F:AudioLib.Pot._minimum">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._maximum">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._value">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._resolution">
+            <summary>Restrict to discrete steps.</summary>
+        </member>
+        <member name="F:AudioLib.Pot._resetVal">
+            <summary>If user resets. This is the first value assigned to Value.</summary>
+        </member>
+        <member name="F:AudioLib.Pot._beginDragValue">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._beginDragY">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._dragging">
+            <summary> </summary>
+        </member>
+        <member name="F:AudioLib.Pot._pen">
+            <summary>For drawing.</summary>
+        </member>
+        <member name="F:AudioLib.Pot._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.DrawColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Label">
+            <summary>Name etc.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Taper">
+            <summary>Taper.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Resolution">
+            <summary>Per step resolution of this slider.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Minimum">
+            <summary>Minimum Value of the slider.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Maximum">
+            <summary>Maximum Value of the slider.</summary>
+        </member>
+        <member name="P:AudioLib.Pot.Value">
+            <summary>The current value of the slider.</summary>
+        </member>
+        <member name="E:AudioLib.Pot.ValueChanged">
+            <summary>Value changed event.</summary>
+        </member>
+        <member name="M:AudioLib.Pot.#ctor">
+            <summary>
+            Creates a new pot control.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.Pot.Rescale">
+            <summary>
+            If min or max or resolution changed by client.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draws the control.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse down event to allow changing value by dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse up event to allow changing value by dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse down event to allow changing value by dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Pot.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handle the nudge key.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="T:AudioLib.TimeBar">
+            <summary>The control.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._length">
+            <summary>Total length.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._current">
+            <summary>Current time/position.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._start">
+            <summary>One marker.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._end">
+            <summary>Other marker.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._lastXPos">
+            <summary>For tracking mouse moves.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._toolTip">
+            <summary>Tooltip for mousing.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._brush">
+            <summary>The brush.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._penMarker">
+            <summary>The pen.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar.LARGE_CHANGE">
+            <summary>Constant.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar.SMALL_CHANGE">
+            <summary>Constant.</summary>
+        </member>
+        <member name="F:AudioLib.TimeBar.TS_FORMAT">
+            <summary>For viewing purposes.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.Current">
+            <summary>Where we be now.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.Length">
+            <summary>Total length.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.Start">
+            <summary>One marker.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.End">
+            <summary>Other marker.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.SnapMsec">
+            <summary>Snap to this increment value.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.ProgressColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.MarkerColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.FontLarge">
+            <summary>Big font.</summary>
+        </member>
+        <member name="P:AudioLib.TimeBar.FontSmall">
+            <summary>Baby font.</summary>
+        </member>
+        <member name="E:AudioLib.TimeBar.CurrentTimeChanged">
+            <summary>Value changed by user.</summary>
+        </member>
+        <member name="M:AudioLib.TimeBar.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:AudioLib.TimeBar.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.TimeBar.IncrementCurrent(System.Int32)">
+            <summary>
+            Update current time.
+            </summary>
+            <param name="msec"></param>
+        </member>
+        <member name="M:AudioLib.TimeBar.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draw the slider.
+            </summary>
+        </member>
+        <member name="M:AudioLib.TimeBar.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handle selection operations.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:AudioLib.TimeBar.OnPreviewKeyDown(System.Windows.Forms.PreviewKeyDownEventArgs)">
+            <summary>
+            Hook to intercept keys.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:AudioLib.TimeBar.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle mouse position changes.
+            </summary>
+        </member>
+        <member name="M:AudioLib.TimeBar.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.TimeBar.GetTimeFromMouse(System.Int32)">
+            <summary>
+            Convert x pos to TimeSpan.
+            </summary>
+            <param name="x"></param>
+        </member>
+        <member name="M:AudioLib.TimeBar.DoSnap(System.Int32)">
+            <summary>
+            Snap to user preference.
+            </summary>
+            <param name="msec"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeBar.Constrain(System.TimeSpan,System.TimeSpan,System.TimeSpan)">
+            <summary>
+            Utility helper function.
+            </summary>
+            <param name="val"></param>
+            <param name="lower"></param>
+            <param name="upper"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeBar.Scale(System.TimeSpan)">
+            <summary>
+            Map from time to UI pixels.
+            </summary>
+            <param name="val"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AudioLib.Volume">
+            <summary>
+            Volume control.
+            </summary>
+        </member>
+        <member name="F:AudioLib.Volume._value">
+            <summary>Current value.</summary>
+        </member>
+        <member name="F:AudioLib.Volume._brush">
+            <summary>The brush.</summary>
+        </member>
+        <member name="F:AudioLib.Volume._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="P:AudioLib.Volume.Label">
+            <summary>Optional label.</summary>
+        </member>
+        <member name="P:AudioLib.Volume.DrawColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.Volume.Orientation">
+            <summary>Fader orientation</summary>
+        </member>
+        <member name="P:AudioLib.Volume.Value">
+            <summary>The current value of the slider.</summary>
+        </member>
+        <member name="E:AudioLib.Volume.ValueChanged">
+            <summary>Volume value changed event.</summary>
+        </member>
+        <member name="M:AudioLib.Volume.#ctor">
+            <summary>
+            Creates a new Volume control.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Volume.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Volume.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draw the slider.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Volume.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Volume.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.Volume.SetValueFromMouse(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            ommon updater.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:AudioLib.Volume.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handle the nudge key.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:AudioLib.WaveViewer._rawVals">
+            <summary>From client.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._rawMax">
+            <summary>Maximum value of _rawVals (+-).</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._scaledBuff">
+            <summary>Storage for display.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._penDraw">
+            <summary>For drawing.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._penMarker">
+            <summary>For drawing.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._textFont">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._smplPerPixel">
+            <summary>Ratio of data point to visual point.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.DrawColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.MarkerColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.Mode">
+            <summary>How to draw.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.Marker1">
+            <summary>Marker 1 data index or -1 to disable.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.Marker2">
+            <summary>Marker 2 data index or -1 to disable.</summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Init(System.Single[],System.Single)">
+            <summary>
+            Populate with data.
+            </summary>
+            <param name="vals"></param>
+            <param name="max"></param>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Reset">
+            <summary>
+            Hard reset.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paints the waveform.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Rescale">
+            <summary>
+            Scale raw values to fit in available space.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.OnResize(System.EventArgs)">
+            <summary>
+            Update drawing area.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Dump(System.Single[],System.String)">
+            <summary>
+            Simple utility.
+            </summary>
+            <param name="data"></param>
+            <param name="fn"></param>
+        </member>
+    </members>
+</doc>
