@@ -143,13 +143,7 @@ namespace ClipPlayer
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.
-            MidiTime mt = new()
-            {
-                InternalPpq = PPQ,
-                MidiPpq = _sourceEvents.DeltaTicksPerQuarterNote,
-                Tempo = _tempo
-            };
-
+            MidiTimeConverter mt = new(_sourceEvents.DeltaTicksPerQuarterNote, _tempo);
             for (int track = 0; track < _sourceEvents.Tracks; track++)
             {
                 foreach (var te in _sourceEvents.GetTrackEvents(track))

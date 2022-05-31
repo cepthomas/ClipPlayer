@@ -174,17 +174,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:MidiLib.BarSpan.#ctor(MidiLib.BarSpan)">
-            <summary>
-            Copy constructor.
-            </summary>
-        </member>
-        <member name="M:MidiLib.BarSpan.#ctor(System.Double)">
-            <summary>
-            Constructor from Beat.Subdiv representation as a double. TODOX this is broken for 32 discrete values.
-            </summary>
-            <param name="tts"></param>
-        </member>
         <member name="T:MidiLib.Channel">
             <summary>Describes one midi channel.</summary>
         </member>
@@ -193,6 +182,9 @@
         </member>
         <member name="F:MidiLib.Channel._volume">
             <summary>Backing.</summary>
+        </member>
+        <member name="P:MidiLib.Channel.ChannelName">
+            <summary>UI label and script reference.</summary>
         </member>
         <member name="P:MidiLib.Channel.ChannelNumber">
             <summary>Actual 1-based midi channel number.</summary>
