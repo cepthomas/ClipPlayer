@@ -183,9 +183,6 @@
         <member name="F:MidiLib.Channel._volume">
             <summary>Backing.</summary>
         </member>
-        <member name="P:MidiLib.Channel.ChannelName">
-            <summary>UI label and script reference.</summary>
-        </member>
         <member name="P:MidiLib.Channel.ChannelNumber">
             <summary>Actual 1-based midi channel number.</summary>
         </member>
@@ -250,7 +247,7 @@
             Clean the channels.
             </summary>
         </member>
-        <member name="M:MidiLib.ChannelCollection.Bind(System.Int32,MidiLib.ChannelControl)">
+        <member name="M:MidiLib.ChannelCollection.Bind(System.Int32,MidiLib.PlayerControl)">
             <summary>
             Opaque binder.
             </summary>
@@ -306,64 +303,30 @@
             <returns>Enumerator</returns>
         </member>
         <member name="T:MidiLib.ChannelControl">
-            <summary>Channel events and other properties.</summary>
-        </member>
-        <member name="E:MidiLib.ChannelControl.ChannelChange">
-            <summary>Notify host of asynchronous changes from user.</summary>
-        </member>
-        <member name="P:MidiLib.ChannelControl.Channel">
-            <summary>Bound object.</summary>
+            <summary>A simple channel UI component.</summary>
         </member>
         <member name="P:MidiLib.ChannelControl.ChannelNumber">
-            <summary>Actual 1-based midi channel number for UI.</summary>
+            <summary>Actual 1-based midi channel number.</summary>
         </member>
-        <member name="P:MidiLib.ChannelControl.State">
-            <summary>For muting/soloing.</summary>
+        <member name="P:MidiLib.ChannelControl.DeviceNumber">
+            <summary>Actual 1-based midi device number. Client responsible.</summary>
         </member>
         <member name="P:MidiLib.ChannelControl.Patch">
             <summary>Current patch.</summary>
         </member>
         <member name="P:MidiLib.ChannelControl.Volume">
-            <summary>Current volume. Channel.Volume performs the constraints.</summary>
+            <summary>Current volume.</summary>
         </member>
-        <member name="P:MidiLib.ChannelControl.MaxSubdiv">
-            <summary>The duration of the whole channel.</summary>
+        <member name="P:MidiLib.ChannelControl.ControlColor">
+            <summary>Cosmetics.</summary>
         </member>
-        <member name="P:MidiLib.ChannelControl.IsDrums">
-            <summary>Drum channel changed.</summary>
-        </member>
-        <member name="P:MidiLib.ChannelControl.Selected">
-            <summary>User has selected this channel.</summary>
-        </member>
-        <member name="P:MidiLib.ChannelControl.SelectedColor">
-            <summary>Indicate user selected.</summary>
-        </member>
-        <member name="P:MidiLib.ChannelControl.UnselectedColor">
-            <summary>Indicate user not selected.</summary>
+        <member name="E:MidiLib.ChannelControl.PatchChange">
+            <summary>Notify host of asynchronous changes from user.</summary>
         </member>
         <member name="M:MidiLib.ChannelControl.#ctor">
             <summary>
             Normal constructor.
             </summary>
-        </member>
-        <member name="M:MidiLib.ChannelControl.Volume_ValueChanged(System.Object,System.EventArgs)">
-            <summary>
-            
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
-        </member>
-        <member name="M:MidiLib.ChannelControl.SoloMute_Click(System.Object,System.EventArgs)">
-            <summary>
-            Handles solo and mute.
-            </summary>
-        </member>
-        <member name="M:MidiLib.ChannelControl.Patch_Click(System.Object,System.EventArgs)">
-            <summary>
-            User wants to change the patch.
-            </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
         </member>
         <member name="M:MidiLib.ChannelControl.ChannelNumber_Click(System.Object,System.EventArgs)">
             <summary>
@@ -372,16 +335,12 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:MidiLib.ChannelControl.UpdateUi">
+        <member name="M:MidiLib.ChannelControl.Patch_Click(System.Object,System.EventArgs)">
             <summary>
-            Draw mode checkboxes etc.
+            User wants to change the patch.
             </summary>
-        </member>
-        <member name="M:MidiLib.ChannelControl.ToString">
-            <summary>
-            
-            </summary>
-            <returns></returns>
+            <param name="sender"></param>
+            <param name="e"></param>
         </member>
         <member name="F:MidiLib.ChannelControl.components">
             <summary> 
@@ -418,41 +377,16 @@
         <member name="F:MidiLib.InternalDefs.SUBDIVS_PER_BAR">
             <summary>Convenience.</summary>
         </member>
+        <member name="T:MidiLib.MidiSettings">
+            <summary>
+            Global things.
+            </summary>
+        </member>
         <member name="P:MidiLib.MidiSettings.ZeroBased">
             <summary>Option for engineers instead of musicians.</summary>
         </member>
         <member name="P:MidiLib.MidiSettings.Snap">
             <summary>How to snap.</summary>
-        </member>
-        <member name="T:MidiLib.MidiEventArgs">
-            <summary>
-            Midi has received something. It's up to the client to make sense of it.
-            Property value of -1 indicates invalid or not pertinent e.g a controller event doesn't have velocity.
-            </summary>
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.Channel">
-            <summary>Channel number.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.Note">
-            <summary>The note number to play.</summary>%
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.Velocity">
-            <summary>The volume.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.ControllerId">
-            <summary>Specific controller.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.ControllerValue">
-            <summary>The controller payload.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventArgs.ErrorInfo">
-            <summary>Something to tell the client.</summary>
-        </member>
-        <member name="F:MidiLib.MidiEventArgs.PITCH_CONTROL">
-            <summary>Special id to carry pitch info.</summary>
-        </member>
-        <member name="M:MidiLib.MidiEventArgs.ToString">
-            <summary>Read me.</summary>
         </member>
         <member name="T:MidiLib.EventDesc">
             <summary>
@@ -594,7 +528,7 @@
             <summary>
             Export the contents in a csv readable form. This is as the events appear in the original file.
             </summary>
-            <param name="exportPath">Where to boss?</param>
+            <param name="outPath">Where to boss?</param>
             <param name="channels">Specific channnels or all if empty.</param>
             <returns>File name of dump file.</returns>
         </member>
@@ -602,7 +536,7 @@
             <summary>
             Makes csv dumps of some events grouped by pattern/channel. This is as the events appear in the original file.
             </summary>
-            <param name="exportPath">Where to boss?</param>
+            <param name="outPath">Where to boss?</param>
             <param name="patternName">Specific pattern.</param>
             <param name="channels">Specific channnels or all if empty.</param>
             <param name="includeOther">false if just notes or true if everything.</param>
@@ -612,7 +546,7 @@
             <summary>
             Export pattern parts to individual midi files. This is as the events appear in the original file.
             </summary>
-            <param name="exportPath">Where to boss?</param>
+            <param name="outPath">Where to boss?</param>
             <param name="patternName">Specific pattern.</param>
             <param name="channels">Specific channnels or all if empty.</param>
             <param name="ppq">Export at this resolution.</param>
@@ -752,6 +686,36 @@
             </summary>
             <param name="evt"></param>
         </member>
+        <member name="T:MidiLib.MidiEventArgs">
+            <summary>
+            Midi has received something. It's up to the client to make sense of it.
+            Property value of -1 indicates invalid or not pertinent e.g a controller event doesn't have velocity.
+            </summary>
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.Channel">
+            <summary>Channel number.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.Note">
+            <summary>The note number to play.</summary>%
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.Velocity">
+            <summary>The volume.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.ControllerId">
+            <summary>Specific controller.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.ControllerValue">
+            <summary>The controller payload.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventArgs.ErrorInfo">
+            <summary>Something to tell the client.</summary>
+        </member>
+        <member name="F:MidiLib.MidiEventArgs.PITCH_CONTROL">
+            <summary>Special id to carry pitch info.</summary>
+        </member>
+        <member name="M:MidiLib.MidiEventArgs.ToString">
+            <summary>Read me.</summary>
+        </member>
         <member name="T:MidiLib.MidiPlayer">
             <summary>
             A "good enough" midi player.
@@ -827,6 +791,55 @@
             </summary>
         </member>
         <member name="M:MidiLib.MidiPlayer.MidiSend(NAudio.Midi.MidiEvent)">
+            <summary>
+            Send midi.
+            </summary>
+            <param name="evt"></param>
+        </member>
+        <member name="T:MidiLib.MidiSender">
+            <summary>
+            A simple midi output device.
+            </summary>
+        </member>
+        <member name="F:MidiLib.MidiSender._midiOut">
+            <summary>Midi output device.</summary>
+        </member>
+        <member name="F:MidiLib.MidiSender._midiLogFile">
+            <summary>Where to log to.</summary>
+        </member>
+        <member name="P:MidiLib.MidiSender.Valid">
+            <summary>Are we ok?</summary>
+        </member>
+        <member name="P:MidiLib.MidiSender.Volume">
+            <summary>Current master volume.</summary>
+        </member>
+        <member name="P:MidiLib.MidiSender.LogMidi">
+            <summary>Log outbound traffic. Warning - can get busy.</summary>
+        </member>
+        <member name="M:MidiLib.MidiSender.#ctor(System.String,System.String)">
+            <summary>
+            Normal constructor.
+            </summary>
+            <param name="midiDevice">Client supplies name of device.</param>
+            <param name="midiLogPath">Where to log wire events (optional).</param>
+        </member>
+        <member name="M:MidiLib.MidiSender.Dispose">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:MidiLib.MidiSender.Kill(System.Int32)">
+            <summary>
+            Send all notes off.
+            </summary>
+            <param name="channelNumber">1-based channel</param>
+        </member>
+        <member name="M:MidiLib.MidiSender.KillAll">
+            <summary>
+            Send all notes off.
+            </summary>
+        </member>
+        <member name="M:MidiLib.MidiSender.MidiSend(NAudio.Midi.MidiEvent)">
             <summary>
             Send midi.
             </summary>
@@ -919,6 +932,101 @@
             <summary>Readable version.</summary>
             <returns></returns>
         </member>
+        <member name="T:MidiLib.PlayerControl">
+            <summary>Channel events and other properties.</summary>
+        </member>
+        <member name="E:MidiLib.PlayerControl.ChannelChange">
+            <summary>Notify host of asynchronous changes from user.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.Channel">
+            <summary>Bound object.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.ChannelNumber">
+            <summary>Actual 1-based midi channel number for UI.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.State">
+            <summary>For muting/soloing.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.Patch">
+            <summary>Current patch.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.Volume">
+            <summary>Current volume. Channel.Volume performs the constraints.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.MaxSubdiv">
+            <summary>The duration of the whole channel.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.IsDrums">
+            <summary>Drum channel changed.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.Selected">
+            <summary>User has selected this channel.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.SelectedColor">
+            <summary>Indicate user selected.</summary>
+        </member>
+        <member name="P:MidiLib.PlayerControl.UnselectedColor">
+            <summary>Indicate user not selected.</summary>
+        </member>
+        <member name="M:MidiLib.PlayerControl.#ctor">
+            <summary>
+            Normal constructor.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PlayerControl.Volume_ValueChanged(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.PlayerControl.SoloMute_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles solo and mute.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PlayerControl.Patch_Click(System.Object,System.EventArgs)">
+            <summary>
+            User wants to change the patch.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.PlayerControl.ChannelNumber_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handle selection.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.PlayerControl.UpdateUi">
+            <summary>
+            Draw mode checkboxes etc.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PlayerControl.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:MidiLib.PlayerControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PlayerControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:MidiLib.PlayerControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:MidiLib.VirtualKeyboard">
             <summary>
             Virtual keyboard control borrowed from Leslie Sanford with extras.
@@ -927,11 +1035,11 @@
         <member name="P:MidiLib.VirtualKeyboard.ShowNoteNames">
             <summary>Draw the names on the keys.</summary>
         </member>
+        <member name="P:MidiLib.VirtualKeyboard.KeySize">
+            <summary>Determines the overall size.</summary>
+        </member>
         <member name="T:MidiLib.VirtualKeyboard.KeyboardEventArgs">
             <summary>Device has received something.</summary>
-        </member>
-        <member name="P:MidiLib.VirtualKeyboard.KeyboardEventArgs.ChannelNumber">
-            <summary>Channel number. Client can set it.</summary>
         </member>
         <member name="P:MidiLib.VirtualKeyboard.KeyboardEventArgs.NoteId">
             <summary>Midi note id.</summary>
