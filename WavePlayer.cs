@@ -11,7 +11,7 @@ namespace ClipPlayer
     {
         #region Fields
         /// <summary>Wave output play device.</summary>
-        readonly WaveOut? _waveOut = null;
+        readonly WaveOut? _waveOut = null; //TODOX use AudioPlayer
 
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader? _audioFileReader = null;

@@ -15,23 +15,9 @@ namespace ClipPlayer
     /// </summary>
     public class MidiPlayer : IPlayer
     {
-        #region Constants
-        /// <summary>Midi caps.</summary>
-        public const int NUM_CHANNELS = 16;
-
-        /// <summary>Only 4/4 time supported.</summary>
-        const int BEATS_PER_BAR = 4;
-
-        /// <summary>Our internal ppq aka resolution.</summary>
-        const int PPQ = 32;
-
-        /// <summary>Normal drum channel.</summary>
-        public const int DEFAULT_DRUM_CHANNEL = 10;
-        #endregion
-
         #region Fields
         /// <summary>Midi output device.</summary>
-        MidiOut? _midiOut = null;
+        MidiOut? _midiOut = null; //TODOX use MidiSender or MidiPlayer
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -75,7 +61,7 @@ namespace ClipPlayer
 
         #region Properties - other
         /// <summary>Some midi files have drums on a different channel so allow the user to re-map.</summary>
-        public int DrumChannel { get; set; } = DEFAULT_DRUM_CHANNEL;
+        public int DrumChannel { get; set; } = MidiDefs.DEFAULT_DRUM_CHANNEL;
         #endregion
 
         #region Events - interface implementation
@@ -148,7 +134,7 @@ namespace ClipPlayer
             {
                 foreach (var te in _sourceEvents.GetTrackEvents(track))
                 {
-                    if (te.Channel - 1 < NUM_CHANNELS) // midi is one-based
+                    if (te.Channel - 1 < MidiDefs.NUM_CHANNELS) // midi is one-based
                     {
                         // Do some miscellaneous fixups.
 
@@ -198,9 +184,10 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            int bars = _totalSubdivs / BEATS_PER_BAR / PPQ;
-            int beats = _totalSubdivs / PPQ % BEATS_PER_BAR;
-            int subdivs = _totalSubdivs % PPQ;
+            //TODOX use BarSpan, MidiTimeConverter!
+            int bars = _totalSubdivs / InternalDefs.BEATS_PER_BAR / InternalDefs.SUBDIVS_PER_BEAT;
+            int beats = _totalSubdivs / InternalDefs.SUBDIVS_PER_BEAT % InternalDefs.BEATS_PER_BAR;
+            int subdivs = _totalSubdivs % InternalDefs.SUBDIVS_PER_BEAT;
 
             int inc = Common.Settings.ZeroBased ? 0 : 1;
             string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bars + inc}:{beats + inc}:{subdivs + inc:00})";
@@ -217,7 +204,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            for (int i = 0; i < NUM_CHANNELS; i++)
+            for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
             {
                 Kill(i + 1);
             }
@@ -277,7 +264,7 @@ namespace ClipPlayer
                                     // Adjust volume and maybe drum channel. Also NAudio NoteLength bug.
                                     NoteOnEvent ne = new(
                                         evt.AbsoluteTime,
-                                        evt.Channel == DrumChannel ? DEFAULT_DRUM_CHANNEL : evt.Channel,
+                                        evt.Channel == DrumChannel ? MidiDefs.DEFAULT_DRUM_CHANNEL : evt.Channel,
                                         evt.NoteNumber,
                                         (int)(evt.Velocity * Volume),
                                         evt.OffEvent is null ? 0 : evt.NoteLength);

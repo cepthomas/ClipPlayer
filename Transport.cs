@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using NBagOfTricks;
 using NBagOfUis;
 
+//TODOX make drums on 1 a dropdown.
 
 namespace ClipPlayer
 {
