@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NAudio.Midi;
 using NBagOfTricks;
+using NBagOfTricks.Slog;
 using MidiLib;
 
 
@@ -13,11 +14,14 @@ namespace ClipPlayer
     /// There are some limitations: Windows multimedia timer has 1 msec resolution at best. This causes a trade-off between
     /// ppq resolution and accuracy. The timer is also inherently wobbly.
     /// </summary>
-    public class MidiPlayer : IPlayer
+    public class MidiClipPlayer : IPlayer
     {
         #region Fields
+        /// <summary>My logger.</summary>
+        readonly Logger _logger = LogManager.CreateLogger("MidiClipPlayer");
+
         /// <summary>Midi output device.</summary>
-        MidiOut? _midiOut = null; //TODOX use MidiSender or MidiPlayer?
+        MidiSender _sender;
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -52,6 +56,9 @@ namespace ClipPlayer
         public double Volume { get; set; }
 
         /// <inheritdoc />
+        public bool Valid { get { return _sender.Valid; } }
+
+        /// <inheritdoc />
         public TimeSpan Current
         {
             get { return new TimeSpan(0, 0, 0, 0, (int)(_currentSubdiv * _msecPerSubdiv)); }
@@ -73,28 +80,10 @@ namespace ClipPlayer
         /// <summary>
         /// Normal constructor.
         /// </summary>
-        public MidiPlayer()
+        public MidiClipPlayer()
         {
-            // Figure out which midi output device.
-            int devIndex = -1;
-            for (int i = 0; i < MidiOut.NumberOfDevices; i++)
-            {
-                if (Common.Settings.MidiOutDevice == MidiOut.DeviceInfo(i).ProductName)
-                {
-                    devIndex = i;
-                    break;
-                }
-            }
-            _midiOut = new MidiOut(devIndex);
-
-            if (_midiOut is null)
-            {
-                StatusEvent?.Invoke(this, new StatusEventArgs()
-                {
-                    Progress = 0,
-                    Message = $"Invalid midi device: {Common.Settings.MidiOutDevice}"
-                });
-            }
+            _sender = new(Common.Settings.MidiOutDevice);
+            _sender.LogMidi = false;
         }
 
         /// <summary> 
@@ -106,8 +95,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            _midiOut?.Dispose();
-            _midiOut = null;
+            _sender.Dispose();
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -118,6 +106,8 @@ namespace ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
+            _logger.LogInfo($"Open file:{fn}");
+
             _mmTimer.Stop();
 
             _currentSubdiv = 0;
@@ -170,9 +160,10 @@ namespace ClipPlayer
             _msecPerSubdiv = mt.InternalToMsec(1);
             int period = mt.RoundedInternalPeriod();
 
-            //// Round length up to bar.
-            //int floor = _totalSubdivs / (PPQ * 4); // 4/4 only.
-            //_totalSubdivs = (floor + 1) * (PPQ * 4);
+            // Round total up to next beat.
+            BarSpan bs = new(0);
+            bs.SetRounded(_totalSubdivs, SnapType.Beat, true);
+            _totalSubdivs = Math.Max(_totalSubdivs, bs.TotalSubdivs);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
@@ -184,13 +175,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            //TODOX use BarSpan, MidiTimeConverter!
-            int bars = _totalSubdivs / InternalDefs.BEATS_PER_BAR / InternalDefs.SUBDIVS_PER_BEAT;
-            int beats = _totalSubdivs / InternalDefs.SUBDIVS_PER_BEAT % InternalDefs.BEATS_PER_BAR;
-            int subdivs = _totalSubdivs % InternalDefs.SUBDIVS_PER_BEAT;
-
+            BarSpan bs = new(_totalSubdivs);
             int inc = Common.Settings.ZeroBased ? 0 : 1;
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bars + inc}:{beats + inc}:{subdivs + inc:00})";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bs.Bar + inc}:{bs.Beat + inc}:{bs.Subdiv + inc:00})";
             return s;
         }
 
@@ -299,7 +286,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _midiOut?.Send(evt.GetAsShortMessage());
+            _sender.SendMidi(evt);
         }
 
         /// <summary>

@@ -20,9 +20,22 @@ namespace ClipPlayer
         #region Persisted editable properties
         [DisplayName("Auto Close")]
         [Description("Automatically close after playing the file.")]
-        [Category("Navigator")]
+        [Category("\tGeneral")]
         [Browsable(true)]
         public bool AutoClose { get; set; } = true;
+
+        [DisplayName("Control Color")]
+        [Description("Pick what you like.")]
+        [Category("\tGeneral")]
+        [Browsable(true)]
+        [JsonConverter(typeof(JsonColorConverter))]
+        public Color ControlColor { get; set; } = Color.MediumOrchid;
+
+        [DisplayName("Debug")]
+        [Description("Do not press this!!!")]
+        [Category("\tGeneral")]
+        [Browsable(true)]
+        public bool Debug { get; set; } = false;
 
         [DisplayName("Wave Output Device")]
         [Description("How to play the audio files.")]
@@ -56,13 +69,6 @@ namespace ClipPlayer
         [Category("Midi")]
         [Browsable(true)]
         public bool ZeroBased { get; set; } = false;
-
-        [DisplayName("Control Color")]
-        [Description("Pick what you like.")]
-        [Category("Cosmetics")]
-        [Browsable(true)]
-        [JsonConverter(typeof(JsonColorConverter))]
-        public Color ControlColor { get; set; } = Color.MediumOrchid;
         #endregion
 
         #region Persisted Non-editable Properties

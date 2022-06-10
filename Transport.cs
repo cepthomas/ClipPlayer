@@ -7,32 +7,37 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NBagOfTricks;
+using NBagOfTricks.Slog;
 using NBagOfUis;
 
 //TODOX make drums on 1 a dropdown.
+//TODOX audio glitches on complete -> start.
 
 namespace ClipPlayer
 {
     public partial class Transport : Form
     {
         #region Fields
+        /// <summary>My logger.</summary>
+        readonly Logger _logger = LogManager.CreateLogger("Transport");
+
         /// <summary>Current file.</summary>
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        WavePlayer? _wavePlayer = null;
+        readonly AudioClipPlayer _audioPlayer;
 
         /// <summary>Midi device.</summary>
-        MidiPlayer? _midiPlayer = null;
+        readonly MidiClipPlayer _midiPlayer;
 
         /// <summary>Current play device.</summary>
         IPlayer? _player = null;
 
         /// <summary>Listen for new instances.</summary>
-        NBagOfTricks.SimpleIpc.Server? _server = null;
+        NBagOfTricks.SimpleIpc.Server _server;
 
-        /// <summary>My logger.</summary>
-        readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
+        // /// <summary>My multiprocess logger for debug.</summary>
+        // readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
@@ -48,11 +53,6 @@ namespace ClipPlayer
             InitializeComponent();
 
             Icon = Properties.Resources.croco;
-            bool ok = true;
-
-            _log.Write($"CurrentDirectory:{Environment.CurrentDirectory}");
-            _log.Write($"ExecutablePath:{Application.ExecutablePath}");
-            _log.Write($"StartupPath:{Application.StartupPath}");
 
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
@@ -61,6 +61,12 @@ namespace ClipPlayer
             var pos = Common.Settings.FormGeometry;
             Location = new(pos.X, pos.Y);
 
+            // Init logging.
+            LogManager.MinLevelFile = Level.Debug;
+            LogManager.MinLevelNotif = Level.Trace;
+            LogManager.LogEvent += LogManager_LogEvent;
+            LogManager.Run();
+
             progress.DrawColor = Common.Settings.ControlColor;
             sldVolume.DrawColor = Common.Settings.ControlColor;
             chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
@@ -68,23 +74,57 @@ namespace ClipPlayer
             chkDrumsOn1.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
 
             // Create the playback devices.
-            _midiPlayer = new MidiPlayer();
+            _midiPlayer = new MidiClipPlayer();
             _midiPlayer.StatusEvent += Player_StatusEvent;
-            _wavePlayer = new WavePlayer();
-            _wavePlayer.StatusEvent += Player_StatusEvent;
+            _audioPlayer = new AudioClipPlayer();
+            _audioPlayer.StatusEvent += Player_StatusEvent;
 
             // Hook up UI handlers.
             chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player?.Play() : _player?.Stop(); };
             btnRewind.Click += (_, __) => { _player?.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; if(_player is not null) _player.Volume = sldVolume.Value; };
-            chkDrumsOn1.CheckedChanged += (_, __) => { if (_midiPlayer is not null) { _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10; } };
+            chkDrumsOn1.CheckedChanged += (_, __) => { _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10; };
 
             btnSettings.Click += Settings_Click;
             progress!.MouseDown += Progress_MouseDown;
             progress!.MouseMove += Progress_MouseMove;
 
-            // Go!
-            ok = OpenFile();
+            if(!Common.Settings.Debug)
+            {
+                ClientSize = new(ClientSize.Width, rtbLog.Top);
+            }
+        }
+
+        /// <summary>
+        /// Form is legal now. Init things that want to log.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnLoad(EventArgs e)
+        {
+            _logger.LogInfo($"OK to log now!!");
+            //_log.Write($"CurrentDirectory:{Environment.CurrentDirectory}");
+            //_log.Write($"ExecutablePath:{Application.ExecutablePath}");
+            //_log.Write($"StartupPath:{Application.StartupPath}");
+
+            bool ok = true;
+
+            if (!_audioPlayer.Valid)
+            {
+                MessageBox.Show($"Something wrong with your audio output device:{Common.Settings.WavOutDevice}");
+                ok = false;
+            }
+
+            if (!_midiPlayer.Valid)
+            {
+                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiOutDevice}");
+                ok = false;
+            }
+
+            if(ok)
+            {
+                // Go!
+                ok = OpenFile();
+            }
 
             if(ok)
             {
@@ -95,9 +135,9 @@ namespace ClipPlayer
             }
             else
             {
-                // Bail out.
-                Environment.ExitCode = 1;
-                Close();
+                //// Bail out?
+                //Environment.ExitCode = 1;
+                //Close();
             }
         }
 
@@ -110,6 +150,8 @@ namespace ClipPlayer
         {
             Common.Settings.FormGeometry = new(Location, Size);
             Common.Settings.Save();
+            LogManager.Stop();
+
             base.OnFormClosing(e);
         }
 
@@ -124,14 +166,14 @@ namespace ClipPlayer
                 components.Dispose();
             }
 
-            _midiPlayer?.Stop();
-            _midiPlayer?.Dispose();
+            _midiPlayer.Stop();
+            _midiPlayer.Dispose();
 
-            _wavePlayer?.Stop();
-            _wavePlayer?.Dispose();
+            _audioPlayer.Stop();
+            _audioPlayer.Dispose();
 
-            _server?.Stop();
-            _server?.Dispose();
+            _server.Stop();
+            _server.Dispose();
 
             base.Dispose(disposing);
         }
@@ -161,11 +203,11 @@ namespace ClipPlayer
                     case ".mp3":
                     case ".m4a":
                     case ".flac":
-                        _player = _wavePlayer;
+                        _player = _audioPlayer;
                         break;
 
                     default:
-                        ShowMessage($"Invalid file: {_fn}", true);
+                        MessageBox.Show($"Invalid file: {_fn}");
                         ok = false;
                         _fn = "";
                         break;
@@ -183,7 +225,7 @@ namespace ClipPlayer
                     }
                     else
                     {
-                        ShowMessage($"Couldn't open file", true);
+                        MessageBox.Show("Couldn't open file");
                         _fn = "";
                         ok = false;
                     }
@@ -191,14 +233,14 @@ namespace ClipPlayer
             }
             catch (Exception ex)
             {
-                ShowMessage($"Fail open file: {ex}", true);
+                MessageBox.Show($"Fail open file: {ex}");
                 _fn = "";
                 ok = false;
             }
 
             if (_fn != "")
             {
-                _log.Write($"File to play:{_fn}");
+                _logger.LogInfo($"File to play:{_fn}");
             }
 
             return ok;
@@ -213,11 +255,6 @@ namespace ClipPlayer
         {
             this.InvokeIfRequired(_ =>
             {
-                if (e.Message != "")
-                {
-                    _log.Write(e.Message);
-                }
-
                 switch (_player!.State)
                 {
                     case RunState.Playing:
@@ -264,7 +301,7 @@ namespace ClipPlayer
             {
                 if(e.Error)
                 {
-                    ShowMessage($"Server error:{e.Message}", false);
+                    _logger.LogWarn($"Server error:{e.Message}");
                 }
                 else
                 {
@@ -304,17 +341,20 @@ namespace ClipPlayer
 
         #region Private functions
         /// <summary>
-        /// Show message then optionally exit.
+        /// Show log events.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="exit"></param>
-        void ShowMessage(string msg, bool exit)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void LogManager_LogEvent(object? sender, LogEventArgs e)
         {
-            _log.Write(msg, true);
-            MessageBox.Show(msg);
-            if(exit)
+            // Usually come from a different thread.
+            if (IsHandleCreated)
             {
-                Environment.Exit(Environment.ExitCode);
+                this.InvokeIfRequired(_ =>
+                {
+                    rtbLog.AppendText($"> {e.Message}{Environment.NewLine}");
+                    rtbLog.ScrollToCaret();
+                });
             }
         }
         #endregion

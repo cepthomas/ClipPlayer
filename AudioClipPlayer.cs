@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NBagOfTricks;
+using NBagOfTricks.Slog;
+using AudioLib;
 
 
 namespace ClipPlayer
 {
-    public class WavePlayer : IPlayer
+    public class AudioClipPlayer : IPlayer
     {
         #region Fields
+        /// <summary>My logger.</summary>
+        readonly Logger _logger = LogManager.CreateLogger("AudioClipPlayer");
+
         /// <summary>Wave output play device.</summary>
-        readonly WaveOut? _waveOut = null; //TODOX use AudioPlayer
+        readonly AudioPlayer _player;
 
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader? _audioFileReader = null;
@@ -36,10 +41,13 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
+        public bool Valid { get { return _player.Valid; } }
+
+        /// <inheritdoc />
         public double Volume
         {
             get { return _volume; }
-            set { _volume = MathUtils.Constrain(value, 0, 1); if(_waveOut is not null) _waveOut.Volume = (float)_volume; }
+            set { _volume = MathUtils.Constrain(value, 0, 1); _player.Volume = (float)_volume; }
         }
         #endregion
 
@@ -52,23 +60,26 @@ namespace ClipPlayer
         /// <summary>
         /// Constructor.
         /// </summary>
-        public WavePlayer()
+        public AudioClipPlayer()
         {
-            // Create output device. –1 indicates the default output device, while 0 is the first output device
-            for (int id = -1; id < WaveOut.DeviceCount; id++)
+            // Create output device.
+            _player = new(Common.Settings.WavOutDevice, int.Parse(Common.Settings.Latency));
+            _player.PlaybackStopped += Player_PlaybackStopped;
+        }
+
+        /// <summary>
+        /// Usually end of file but could be error.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
+        {
+            if (e.Exception is not null)
             {
-                var cap = WaveOut.GetCapabilities(id);
-                if (Common.Settings.WavOutDevice == cap.ProductName)
-                {
-                    _waveOut = new WaveOut
-                    {
-                        DeviceNumber = id,
-                        DesiredLatency = int.Parse(Common.Settings.Latency)
-                    };
-                    _waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
-                    break;
-                }
+                _logger.LogException(e.Exception, "Other NAudio error");
             }
+
+            DoUpdate();
         }
 
         /// <summary>
@@ -76,8 +87,7 @@ namespace ClipPlayer
         /// </summary>
         public void Dispose()
         {
-            _waveOut?.Stop();
-            _waveOut?.Dispose();
+            _player.Dispose();
 
             _audioFileReader?.Dispose();
         }
@@ -91,11 +101,8 @@ namespace ClipPlayer
 
             // Create input device.
             _audioFileReader?.Dispose(); //old one
-
             _audioFileReader = new AudioFileReader(fn);
-
             Length = _audioFileReader.TotalTime;
-            //_current = TimeSpan.Zero;
 
             // Create reader.
             var sampleChannel = new SampleChannel(_audioFileReader, false);
@@ -103,16 +110,9 @@ namespace ClipPlayer
 
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
-            
-            if (_waveOut is not null)
-            {
-                _waveOut.Init(postVolumeMeter);
-                _waveOut.Volume = (float)Common.Settings.Volume;
-            }
-            else
-            {
-                ok = false;
-            }
+
+            _player.Init(postVolumeMeter);
+            _player.Volume = (float)Common.Settings.Volume;
 
             return ok;
         }
@@ -126,10 +126,10 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Play()
         {
-            if (_audioFileReader is not null && _waveOut is not null)
+            if (_audioFileReader is not null && _player.Valid)
             {
-                _waveOut.Play();
-                if(_waveOut.PlaybackState == PlaybackState.Playing)
+                _player.Run(true);
+                if (_player.Playing)
                 {
                     State = RunState.Playing;
                 }
@@ -140,9 +140,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            if (_audioFileReader is not null && _waveOut is not null)
+            if (_audioFileReader is not null && _player.Valid)
             {
-                _waveOut.Pause(); // or Stop?
+                _player.Run(false);
                 State = RunState.Stopped;
             }
             return State;
@@ -167,22 +167,21 @@ namespace ClipPlayer
         /// </summary>
         void DoUpdate()
         {
-            StatusEvent?.Invoke(this, new StatusEventArgs()
+            int prog;
+            if(Current < Length)
             {
-                Progress = Current < Length ? 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds : 100
-            });
-        }
+                prog = 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds;
 
-        /// <summary>
-        /// Tell the mothership.
-        /// </summary>
-        /// <param name="msg"></param>
-        void Tell(string msg)
-        {
+            }
+            else
+            {
+                prog = 100;
+                State = RunState.Complete;
+            }
+
             StatusEvent?.Invoke(this, new StatusEventArgs()
             {
-                Progress = 0,
-                Message = msg
+                Progress = prog
             });
         }
         #endregion
@@ -197,7 +196,7 @@ namespace ClipPlayer
         {
             if (e.Exception is not null)
             {
-                Tell(e.Exception.Message);
+                _logger.LogException(e.Exception, "Bad thing");
             }
             else
             {

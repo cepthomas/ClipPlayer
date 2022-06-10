@@ -29,8 +29,8 @@ namespace ClipPlayer
         /// <summary>0 -> 100</summary>
         public int Progress { get; set; } = 0;
 
-        /// <summary>Where we at.</summary>
-        public string Message { get; set; } = "";
+        ///// <summary>Where we at.</summary>
+        //public string Message { get; set; } = "";
     }
 
     interface IPlayer : IDisposable
@@ -46,6 +46,9 @@ namespace ClipPlayer
 
         /// <summary>Current volume.</summary>
         double Volume { get; set; }
+
+        /// <summary>Are we good to go.</summary>
+        bool Valid { get; }
 
         /// <summary>Something changed event.</summary>
         event EventHandler<StatusEventArgs> StatusEvent;
