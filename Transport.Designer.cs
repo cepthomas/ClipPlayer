@@ -21,11 +21,11 @@ namespace ClipPlayer
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.sldVolume = new NBagOfUis.Slider();
             this.chkPlay = new System.Windows.Forms.CheckBox();
-            this.chkDrumsOn1 = new System.Windows.Forms.CheckBox();
             this.chkLoop = new System.Windows.Forms.CheckBox();
             this.btnRewind = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
+            this.cmbDrumChannel = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // progress
@@ -82,21 +82,6 @@ namespace ClipPlayer
             this.toolTip.SetToolTip(this.chkPlay, "Start or stop");
             this.chkPlay.UseVisualStyleBackColor = true;
             // 
-            // chkDrumsOn1
-            // 
-            this.chkDrumsOn1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chkDrumsOn1.FlatAppearance.BorderSize = 0;
-            this.chkDrumsOn1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkDrumsOn1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.chkDrumsOn1.Location = new System.Drawing.Point(318, 6);
-            this.chkDrumsOn1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.chkDrumsOn1.Name = "chkDrumsOn1";
-            this.chkDrumsOn1.Size = new System.Drawing.Size(34, 36);
-            this.chkDrumsOn1.TabIndex = 84;
-            this.chkDrumsOn1.Text = "D1";
-            this.toolTip.SetToolTip(this.chkDrumsOn1, "Drums on midi channel 1");
-            this.chkDrumsOn1.UseVisualStyleBackColor = true;
-            // 
             // chkLoop
             // 
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
@@ -129,7 +114,7 @@ namespace ClipPlayer
             this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
-            this.btnSettings.Location = new System.Drawing.Point(285, 4);
+            this.btnSettings.Location = new System.Drawing.Point(279, 4);
             this.btnSettings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(36, 45);
@@ -145,18 +130,28 @@ namespace ClipPlayer
             this.rtbLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rtbLog.Location = new System.Drawing.Point(2, 56);
             this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(340, 263);
+            this.rtbLog.Size = new System.Drawing.Size(364, 263);
             this.rtbLog.TabIndex = 86;
             this.rtbLog.Text = "";
+            // 
+            // cmbDrumChannel
+            // 
+            this.cmbDrumChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDrumChannel.FormattingEnabled = true;
+            this.cmbDrumChannel.Location = new System.Drawing.Point(318, 13);
+            this.cmbDrumChannel.Name = "cmbDrumChannel";
+            this.cmbDrumChannel.Size = new System.Drawing.Size(42, 28);
+            this.cmbDrumChannel.TabIndex = 87;
+            this.toolTip.SetToolTip(this.cmbDrumChannel, "Drum channel if not default");
             // 
             // Transport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(347, 323);
+            this.ClientSize = new System.Drawing.Size(371, 323);
+            this.Controls.Add(this.cmbDrumChannel);
             this.Controls.Add(this.rtbLog);
             this.Controls.Add(this.chkLoop);
-            this.Controls.Add(this.chkDrumsOn1);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.btnRewind);
             this.Controls.Add(this.chkPlay);
@@ -177,8 +172,8 @@ namespace ClipPlayer
         private System.Windows.Forms.CheckBox chkPlay;
         private System.Windows.Forms.Button btnRewind;
         private System.Windows.Forms.Button btnSettings;
-        private System.Windows.Forms.CheckBox chkDrumsOn1;
         private System.Windows.Forms.CheckBox chkLoop;
         private System.Windows.Forms.RichTextBox rtbLog;
+        private System.Windows.Forms.ComboBox cmbDrumChannel;
     }
 }

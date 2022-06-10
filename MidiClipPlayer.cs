@@ -286,7 +286,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _sender.SendMidi(evt);
+            _sender.MidiSend(evt);
         }
 
         /// <summary>

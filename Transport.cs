@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MidiLib;
 using NBagOfTricks;
 using NBagOfTricks.Slog;
 using NBagOfUis;
@@ -34,7 +35,7 @@ namespace ClipPlayer
         IPlayer? _player = null;
 
         /// <summary>Listen for new instances.</summary>
-        NBagOfTricks.SimpleIpc.Server _server;
+        NBagOfTricks.SimpleIpc.Server? _server;
 
         // /// <summary>My multiprocess logger for debug.</summary>
         // readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
@@ -67,27 +68,34 @@ namespace ClipPlayer
             LogManager.LogEvent += LogManager_LogEvent;
             LogManager.Run();
 
-            progress.DrawColor = Common.Settings.ControlColor;
-            sldVolume.DrawColor = Common.Settings.ControlColor;
-            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-            chkDrumsOn1.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-
             // Create the playback devices.
             _midiPlayer = new MidiClipPlayer();
             _midiPlayer.StatusEvent += Player_StatusEvent;
             _audioPlayer = new AudioClipPlayer();
             _audioPlayer.StatusEvent += Player_StatusEvent;
 
+            // Cosmetics.
+            progress.DrawColor = Common.Settings.ControlColor;
+            sldVolume.DrawColor = Common.Settings.ControlColor;
+            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+
             // Hook up UI handlers.
             chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player?.Play() : _player?.Stop(); };
             btnRewind.Click += (_, __) => { _player?.Rewind(); progress.AddValue(0); };
             sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; if(_player is not null) _player.Volume = sldVolume.Value; };
-            chkDrumsOn1.CheckedChanged += (_, __) => { _midiPlayer.DrumChannel = chkDrumsOn1.Checked ? 1 : 10; };
-
             btnSettings.Click += Settings_Click;
             progress!.MouseDown += Progress_MouseDown;
             progress!.MouseMove += Progress_MouseMove;
+
+            // Drum channel selection.
+            cmbDrumChannel.BackColor = Common.Settings.ControlColor;
+            for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
+            {
+                cmbDrumChannel.Items.Add($"{i + 1}");
+            }
+            cmbDrumChannel.SelectedIndexChanged += (_, __) => { _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
+            cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
 
             if(!Common.Settings.Debug)
             {
@@ -172,8 +180,8 @@ namespace ClipPlayer
             _audioPlayer.Stop();
             _audioPlayer.Dispose();
 
-            _server.Stop();
-            _server.Dispose();
+            _server?.Stop();
+            _server?.Dispose();
 
             base.Dispose(disposing);
         }
@@ -187,8 +195,8 @@ namespace ClipPlayer
         bool OpenFile()
         {
             bool ok = true;
-            chkDrumsOn1.Checked = false;
             chkPlay.Checked = false;
+            cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1; // reset
 
             try
             {
