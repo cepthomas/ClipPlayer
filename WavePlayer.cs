@@ -72,7 +72,7 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// 
+        /// Shutdown.
         /// </summary>
         public void Dispose()
         {

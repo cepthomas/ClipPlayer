@@ -110,6 +110,7 @@ namespace ClipPlayer
         {
             Common.Settings.FormGeometry = new(Location, Size);
             Common.Settings.Save();
+            base.OnFormClosing(e);
         }
 
         /// <summary>

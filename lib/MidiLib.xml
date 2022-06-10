@@ -643,14 +643,14 @@
         <member name="F:MidiLib.MidiListener._midiIn">
             <summary>Midi input device.</summary>
         </member>
-        <member name="F:MidiLib.MidiListener._midiTraceFile">
-            <summary>Where to log to.</summary>
+        <member name="F:MidiLib.MidiListener._loggerListen">
+            <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiListener.Valid">
             <summary>Are we ok?</summary>
         </member>
         <member name="P:MidiLib.MidiListener.LogMidi">
-            <summary>Log outbound traffic. Warning - can get busy.</summary>
+            <summary>Log inbound traffic at Trace level.</summary>
         </member>
         <member name="P:MidiLib.MidiListener.Enable">
             <summary>Capture on/off.</summary>
@@ -658,12 +658,11 @@
         <member name="E:MidiLib.MidiListener.InputEvent">
             <summary>Handler for message arrived.</summary>
         </member>
-        <member name="M:MidiLib.MidiListener.#ctor(System.String,System.String)">
+        <member name="M:MidiLib.MidiListener.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="midiDevice">Client supplies name of device.</param>
-            <param name="midiTracePath">Where to log.</param>
         </member>
         <member name="M:MidiLib.MidiListener.Dispose">
             <summary>
@@ -730,8 +729,8 @@
         <member name="F:MidiLib.MidiPlayer._currentSubdiv">
             <summary>Backing.</summary>
         </member>
-        <member name="F:MidiLib.MidiPlayer._midiLogFile">
-            <summary>Where to log to.</summary>
+        <member name="F:MidiLib.MidiPlayer._loggerSend">
+            <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiPlayer.Valid">
             <summary>Are we ok?</summary>
@@ -746,15 +745,14 @@
             <summary>Current position in subdivs.</summary>
         </member>
         <member name="P:MidiLib.MidiPlayer.LogMidi">
-            <summary>Log outbound traffic. Warning - can get busy.</summary>
+            <summary>Log outbound traffic at Trace level. Warning - can get busy.</summary>
         </member>
-        <member name="M:MidiLib.MidiPlayer.#ctor(System.String,MidiLib.ChannelCollection,System.String)">
+        <member name="M:MidiLib.MidiPlayer.#ctor(System.String,MidiLib.ChannelCollection)">
             <summary>
             Normal constructor.
             </summary>
             <param name="midiDevice">Client supplies name of device.</param>
             <param name="channels">The actual channels.</param>
-            <param name="midiLogPath">Where to log wire events (optional).</param>
         </member>
         <member name="M:MidiLib.MidiPlayer.Dispose">
             <summary> 
@@ -804,8 +802,8 @@
         <member name="F:MidiLib.MidiSender._midiOut">
             <summary>Midi output device.</summary>
         </member>
-        <member name="F:MidiLib.MidiSender._midiLogFile">
-            <summary>Where to log to.</summary>
+        <member name="F:MidiLib.MidiSender._loggerSend">
+            <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiSender.Valid">
             <summary>Are we ok?</summary>
@@ -814,14 +812,13 @@
             <summary>Current master volume.</summary>
         </member>
         <member name="P:MidiLib.MidiSender.LogMidi">
-            <summary>Log outbound traffic. Warning - can get busy.</summary>
+            <summary>Log outbound traffic at Trace level. Warning - can get busy.</summary>
         </member>
-        <member name="M:MidiLib.MidiSender.#ctor(System.String,System.String)">
+        <member name="M:MidiLib.MidiSender.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="midiDevice">Client supplies name of device.</param>
-            <param name="midiLogPath">Where to log wire events (optional).</param>
         </member>
         <member name="M:MidiLib.MidiSender.Dispose">
             <summary> 

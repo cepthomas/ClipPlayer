@@ -17,7 +17,7 @@ namespace ClipPlayer
     {
         #region Fields
         /// <summary>Midi output device.</summary>
-        MidiOut? _midiOut = null; //TODOX use MidiSender or MidiPlayer
+        MidiOut? _midiOut = null; //TODOX use MidiSender or MidiPlayer?
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -225,19 +225,6 @@ namespace ClipPlayer
         }
         #endregion
 
-        #region Public Functions - other
-        /// <summary>
-        /// Send a patch.
-        /// </summary>
-        /// <param name="channel">Substitute patch for this channel.</param>
-        /// <param name="patch">Use this patch for Patch Channel.</param>
-        public void SendPatch(int channel, int patch)
-        {
-            PatchChangeEvent evt = new(0, channel, patch);
-            MidiSend(evt);
-        }
-        #endregion
-
         #region Private Functions
         /// <summary>
         /// Multimedia timer callback. Synchronously outputs the next midi events.
@@ -268,7 +255,7 @@ namespace ClipPlayer
                                         evt.NoteNumber,
                                         (int)(evt.Velocity * Volume),
                                         evt.OffEvent is null ? 0 : evt.NoteLength);
-                                    MidiSend(ne);
+                                    SendMidi(ne);
                                 }
                                 break;
 
@@ -279,13 +266,13 @@ namespace ClipPlayer
                                 }
                                 else
                                 {
-                                    MidiSend(evt);
+                                    SendMidi(evt);
                                 }
                                 break;
 
                             // No change.
                             default:
-                                MidiSend(mevt);
+                                SendMidi(mevt);
                                 break;
                         }
                     }
@@ -310,9 +297,20 @@ namespace ClipPlayer
         /// 
         /// </summary>
         /// <param name="evt"></param>
-        void MidiSend(MidiEvent evt)
+        void SendMidi(MidiEvent evt)
         {
             _midiOut?.Send(evt.GetAsShortMessage());
+        }
+
+        /// <summary>
+        /// Send a patch.
+        /// </summary>
+        /// <param name="channel">Substitute patch for this channel.</param>
+        /// <param name="patch">Use this patch for Patch Channel.</param>
+        void SendPatch(int channel, int patch)
+        {
+            PatchChangeEvent evt = new(0, channel, patch);
+            SendMidi(evt);
         }
 
         /// <summary>
@@ -322,7 +320,7 @@ namespace ClipPlayer
         void Kill(int channel)
         {
             ControlChangeEvent nevt = new(0, channel, MidiController.AllNotesOff, 0);
-            MidiSend(nevt);
+            SendMidi(nevt);
         }
         #endregion
     }
