@@ -11,7 +11,6 @@ using NBagOfTricks;
 using NBagOfTricks.Slog;
 using NBagOfUis;
 
-//TODOX make drums on 1 a dropdown.
 //TODOX audio glitches on complete -> start.
 
 namespace ClipPlayer
