@@ -303,13 +303,10 @@
             <returns>Enumerator</returns>
         </member>
         <member name="T:MidiLib.ChannelControl">
-            <summary>A simple channel UI component.</summary>
+            <summary>A simpler channel UI component.</summary>
         </member>
         <member name="P:MidiLib.ChannelControl.ChannelNumber">
             <summary>Actual 1-based midi channel number.</summary>
-        </member>
-        <member name="P:MidiLib.ChannelControl.DeviceNumber">
-            <summary>Actual 1-based midi device number. Client responsible.</summary>
         </member>
         <member name="P:MidiLib.ChannelControl.Patch">
             <summary>Current patch.</summary>
@@ -320,7 +317,7 @@
         <member name="P:MidiLib.ChannelControl.ControlColor">
             <summary>Cosmetics.</summary>
         </member>
-        <member name="E:MidiLib.ChannelControl.PatchChange">
+        <member name="E:MidiLib.ChannelControl.ChannelChangeEvent">
             <summary>Notify host of asynchronous changes from user.</summary>
         </member>
         <member name="M:MidiLib.ChannelControl.#ctor">
@@ -328,11 +325,10 @@
             Normal constructor.
             </summary>
         </member>
-        <member name="M:MidiLib.ChannelControl.ChannelNumber_Click(System.Object,System.EventArgs)">
+        <member name="M:MidiLib.ChannelControl.OnLoad(System.EventArgs)">
             <summary>
-            Handle selection.
+            
             </summary>
-            <param name="sender"></param>
             <param name="e"></param>
         </member>
         <member name="M:MidiLib.ChannelControl.Patch_Click(System.Object,System.EventArgs)">
@@ -367,6 +363,9 @@
         </member>
         <member name="T:MidiLib.NullMidiEvent">
             <summary>Placeholder to avoid handling null everywhere.</summary>
+        </member>
+        <member name="T:MidiLib.ChannelChangeEventArgs">
+            <summary>Notify host of asynchronous changes from user.</summary>
         </member>
         <member name="F:MidiLib.InternalDefs.BEATS_PER_BAR">
             <summary>Only 4/4 time supported.</summary>
@@ -643,7 +642,7 @@
         <member name="F:MidiLib.MidiListener._midiIn">
             <summary>Midi input device.</summary>
         </member>
-        <member name="F:MidiLib.MidiListener._loggerListen">
+        <member name="F:MidiLib.MidiListener._logger">
             <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiListener.Valid">
@@ -729,7 +728,7 @@
         <member name="F:MidiLib.MidiPlayer._currentSubdiv">
             <summary>Backing.</summary>
         </member>
-        <member name="F:MidiLib.MidiPlayer._loggerSend">
+        <member name="F:MidiLib.MidiPlayer._logger">
             <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiPlayer.Valid">
@@ -788,7 +787,7 @@
             Send all notes off.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiPlayer.MidiSend(NAudio.Midi.MidiEvent)">
+        <member name="M:MidiLib.MidiPlayer.SendMidi(NAudio.Midi.MidiEvent)">
             <summary>
             Send midi.
             </summary>
@@ -802,7 +801,7 @@
         <member name="F:MidiLib.MidiSender._midiOut">
             <summary>Midi output device.</summary>
         </member>
-        <member name="F:MidiLib.MidiSender._loggerSend">
+        <member name="F:MidiLib.MidiSender._logger">
             <summary>Midi send logging.</summary>
         </member>
         <member name="P:MidiLib.MidiSender.Valid">
@@ -836,7 +835,7 @@
             Send all notes off.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiSender.MidiSend(NAudio.Midi.MidiEvent)">
+        <member name="M:MidiLib.MidiSender.SendMidi(NAudio.Midi.MidiEvent)">
             <summary>
             Send midi.
             </summary>
@@ -904,6 +903,45 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:MidiLib.PatchPicker.PatchNumber">
+            <summary>User selection.</summary>
+        </member>
+        <member name="M:MidiLib.PatchPicker.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PatchPicker.List_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.PatchPicker.List_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Check for escape.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:MidiLib.PatchPicker.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PatchPicker.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:MidiLib.PatchPicker.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:MidiLib.PatternInfo">
             <summary>Properties associated with a pattern.</summary>
         </member>
@@ -932,7 +970,7 @@
         <member name="T:MidiLib.PlayerControl">
             <summary>Channel events and other properties.</summary>
         </member>
-        <member name="E:MidiLib.PlayerControl.ChannelChange">
+        <member name="E:MidiLib.PlayerControl.ChannelChangeEvent">
             <summary>Notify host of asynchronous changes from user.</summary>
         </member>
         <member name="P:MidiLib.PlayerControl.Channel">
@@ -1036,7 +1074,7 @@
             <summary>Determines the overall size.</summary>
         </member>
         <member name="T:MidiLib.VirtualKeyboard.KeyboardEventArgs">
-            <summary>Device has received something.</summary>
+            <summary>Key press info.</summary>
         </member>
         <member name="P:MidiLib.VirtualKeyboard.KeyboardEventArgs.NoteId">
             <summary>Midi note id.</summary>
