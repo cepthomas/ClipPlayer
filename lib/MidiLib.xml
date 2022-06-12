@@ -174,6 +174,55 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:MidiLib.BingBong">
+            <summary>
+            Experimental midi controller.
+            </summary>
+        </member>
+        <member name="F:MidiLib.BingBong._bmp">
+            <summary>Underlying image data.</summary>
+        </member>
+        <member name="F:MidiLib.BingBong.toolTip1">
+            <summary>Tool tip.</summary>
+        </member>
+        <member name="E:MidiLib.BingBong.DeviceEvent">
+            <summary>Click press info.</summary>
+        </member>
+        <member name="M:MidiLib.BingBong.#ctor">
+            <summary>
+            Constructor. Creates the color gradations.
+            </summary>
+        </member>
+        <member name="M:MidiLib.BingBong.OnLoad(System.EventArgs)">
+            <summary>
+            Init after properties set.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.BingBong.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:MidiLib.BingBong.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.BingBong.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Show the pixel info.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.BingBong.OnMouseClick(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Send info to client.
+            </summary>
+            <param name="e"></param>
+        </member>
         <member name="T:MidiLib.Channel">
             <summary>Describes one midi channel.</summary>
         </member>
@@ -386,6 +435,15 @@
         </member>
         <member name="P:MidiLib.MidiSettings.Snap">
             <summary>How to snap.</summary>
+        </member>
+        <member name="T:MidiLib.DeviceEventArgs">
+            <summary>Virtual device event info.</summary>
+        </member>
+        <member name="P:MidiLib.DeviceEventArgs.NoteId">
+            <summary>Midi note id.</summary>
+        </member>
+        <member name="P:MidiLib.DeviceEventArgs.Velocity">
+            <summary>Midi velocity. 0 means note off.</summary>
         </member>
         <member name="T:MidiLib.EventDesc">
             <summary>
@@ -903,6 +961,9 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="F:MidiLib.PatchPicker._lv">
+            <summary>Control.</summary>
+        </member>
         <member name="P:MidiLib.PatchPicker.PatchNumber">
             <summary>User selection.</summary>
         </member>
@@ -925,22 +986,11 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="F:MidiLib.PatchPicker.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
         <member name="M:MidiLib.PatchPicker.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:MidiLib.PatchPicker.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
         </member>
         <member name="T:MidiLib.PatternInfo">
             <summary>Properties associated with a pattern.</summary>
@@ -1073,14 +1123,8 @@
         <member name="P:MidiLib.VirtualKeyboard.KeySize">
             <summary>Determines the overall size.</summary>
         </member>
-        <member name="T:MidiLib.VirtualKeyboard.KeyboardEventArgs">
+        <member name="E:MidiLib.VirtualKeyboard.DeviceEvent">
             <summary>Key press info.</summary>
-        </member>
-        <member name="P:MidiLib.VirtualKeyboard.KeyboardEventArgs.NoteId">
-            <summary>Midi note id.</summary>
-        </member>
-        <member name="P:MidiLib.VirtualKeyboard.KeyboardEventArgs.Velocity">
-            <summary>Midi velocity. 0 means note off.</summary>
         </member>
         <member name="F:MidiLib.VirtualKeyboard._keys">
             <summary>All the created piano keys.</summary>
