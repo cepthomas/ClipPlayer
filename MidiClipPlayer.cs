@@ -106,7 +106,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
-            _logger.LogInfo($"Open file:{fn}");
+            _logger.Info($"Open file:{fn}");
 
             _mmTimer.Stop();
 

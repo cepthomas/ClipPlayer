@@ -62,8 +62,8 @@ namespace ClipPlayer
             Location = new(pos.X, pos.Y);
 
             // Init logging.
-            LogManager.MinLevelFile = Level.Debug;
-            LogManager.MinLevelNotif = Level.Trace;
+            LogManager.MinLevelFile = LogLevel.Debug;
+            LogManager.MinLevelNotif = LogLevel.Trace;
             LogManager.LogEvent += LogManager_LogEvent;
             LogManager.Run();
 
@@ -108,7 +108,7 @@ namespace ClipPlayer
         /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
-            _logger.LogInfo($"OK to log now!!");
+            _logger.Info($"OK to log now!!");
             //_log.Write($"CurrentDirectory:{Environment.CurrentDirectory}");
             //_log.Write($"ExecutablePath:{Application.ExecutablePath}");
             //_log.Write($"StartupPath:{Application.StartupPath}");
@@ -247,7 +247,7 @@ namespace ClipPlayer
 
             if (_fn != "")
             {
-                _logger.LogInfo($"File to play:{_fn}");
+                _logger.Info($"File to play:{_fn}");
             }
 
             return ok;
@@ -308,7 +308,7 @@ namespace ClipPlayer
             {
                 if(e.Error)
                 {
-                    _logger.LogWarn($"Server error:{e.Message}");
+                    _logger.Warn($"Server error:{e.Message}");
                 }
                 else
                 {

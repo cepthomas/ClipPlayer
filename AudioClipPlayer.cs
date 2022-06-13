@@ -76,7 +76,7 @@ namespace ClipPlayer
         {
             if (e.Exception is not null)
             {
-                _logger.LogException(e.Exception, "Other NAudio error");
+                _logger.Exception(e.Exception, "Other NAudio error");
             }
 
             DoUpdate();
@@ -196,7 +196,7 @@ namespace ClipPlayer
         {
             if (e.Exception is not null)
             {
-                _logger.LogException(e.Exception, "Bad thing");
+                _logger.Exception(e.Exception, "Bad thing");
             }
             else
             {
