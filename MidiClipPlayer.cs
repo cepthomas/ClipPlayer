@@ -14,14 +14,14 @@ namespace ClipPlayer
     /// There are some limitations: Windows multimedia timer has 1 msec resolution at best. This causes a trade-off between
     /// ppq resolution and accuracy. The timer is also inherently wobbly.
     /// </summary>
-    public class MidiClipPlayer : IPlayer
+    public sealed class MidiClipPlayer : IPlayer
     {
         #region Fields
         /// <summary>My logger.</summary>
         readonly Logger _logger = LogManager.CreateLogger("MidiClipPlayer");
 
         /// <summary>Midi output device.</summary>
-        MidiSender _sender;
+        readonly MidiSender _sender;
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -287,17 +287,6 @@ namespace ClipPlayer
         void SendMidi(MidiEvent evt)
         {
             _sender.SendMidi(evt);
-        }
-
-        /// <summary>
-        /// Send a patch.
-        /// </summary>
-        /// <param name="channel">Substitute patch for this channel.</param>
-        /// <param name="patch">Use this patch for Patch Channel.</param>
-        void SendPatch(int channel, int patch)
-        {
-            PatchChangeEvent evt = new(0, channel, patch);
-            SendMidi(evt);
         }
 
         /// <summary>

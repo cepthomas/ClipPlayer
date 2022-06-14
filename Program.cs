@@ -5,8 +5,10 @@ using System.Windows.Forms;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using System.Resources;
 using NBagOfTricks.SimpleIpc;
 using System.Threading;
+
 
 namespace ClipPlayer
 {
@@ -43,7 +45,7 @@ namespace ClipPlayer
                     // If this is the second instance, alert the primary by connecting and sending the new file name.
                     _log.Write($"sub thread enter");
 
-                    Client client = new Client(Common.PipeName, Common.LogFileName);
+                    Client client = new(Common.PipeName, Common.LogFileName);
                     var res = client.Send(fn, 1000);
 
                     switch (res)

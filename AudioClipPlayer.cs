@@ -9,7 +9,7 @@ using AudioLib;
 
 namespace ClipPlayer
 {
-    public class AudioClipPlayer : IPlayer
+    public sealed class AudioClipPlayer : IPlayer
     {
         #region Fields
         /// <summary>My logger.</summary>
