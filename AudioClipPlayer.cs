@@ -68,21 +68,6 @@ namespace ClipPlayer
         }
 
         /// <summary>
-        /// Usually end of file but could be error.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
-        {
-            if (e.Exception is not null)
-            {
-                _logger.Exception(e.Exception, "Other NAudio error");
-            }
-
-            DoUpdate();
-        }
-
-        /// <summary>
         /// Shutdown.
         /// </summary>
         public void Dispose()
@@ -161,48 +146,24 @@ namespace ClipPlayer
         }
         #endregion
 
-        #region Private functions
-        /// <summary>
-        /// Tell the mothership.
-        /// </summary>
-        void DoUpdate()
-        {
-            int prog;
-            if(Current < Length)
-            {
-                prog = 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds;
-
-            }
-            else
-            {
-                prog = 100;
-                State = RunState.Complete;
-            }
-
-            StatusEvent?.Invoke(this, new StatusEventArgs()
-            {
-                Progress = prog
-            });
-        }
-        #endregion
-
         #region Event Handlers
         /// <summary>
-        /// Usually end of file but could be error. Also when client tells it to Stop();
+        /// Usually end of file but could be error.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void WaveOut_PlaybackStopped(object? sender, StoppedEventArgs e)
+        void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
             if (e.Exception is not null)
             {
-                _logger.Exception(e.Exception, "Bad thing");
+                _logger.Exception(e.Exception, "Other NAudio error");
             }
-            else
+
+            State = RunState.Complete;
+            StatusEvent?.Invoke(this, new StatusEventArgs()
             {
-                State = RunState.Complete;
-                DoUpdate();
-            }
+                Progress = 100
+            });
         }
 
         /// <summary>
@@ -212,7 +173,11 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void SampleChannel_PreVolumeMeter(object? sender, StreamVolumeEventArgs e)
         {
-            DoUpdate();
+            int prog = 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds;
+            StatusEvent?.Invoke(this, new StatusEventArgs()
+            {
+                Progress = prog
+            });
         }
         #endregion
     }
