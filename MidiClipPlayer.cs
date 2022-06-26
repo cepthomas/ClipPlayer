@@ -82,8 +82,8 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _sender = new(Common.Settings.MidiOutDevice);
-            _sender.LogMidi = false;
+            _sender = new(Common.Settings.MidiOutDevice, "MidiOut1");
+            _sender.LogEnable = false;
         }
 
         /// <summary> 
@@ -161,9 +161,9 @@ namespace ClipPlayer
             int period = mt.RoundedInternalPeriod();
 
             // Round total up to next beat.
-            BarSpan bs = new(0);
-            bs.SetRounded(_totalSubdivs, SnapType.Beat, true);
-            _totalSubdivs = Math.Max(_totalSubdivs, bs.TotalSubdivs);
+            BarTime bt = new();
+            bt.SetRounded(_totalSubdivs, SnapType.Beat, true);
+            _totalSubdivs = Math.Max(_totalSubdivs, bt.TotalSubdivs);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
@@ -175,9 +175,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            BarSpan bs = new(_totalSubdivs);
+            BarTime bt = new(_totalSubdivs);
             int inc = Common.Settings.ZeroBased ? 0 : 1;
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bs.Bar + inc}:{bs.Beat + inc}:{bs.Subdiv + inc:00})";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar + inc}:{bt.Beat + inc}:{bt.Subdiv + inc:00})";
             return s;
         }
 
@@ -286,7 +286,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _sender.SendMidi(evt);
+            _sender.SendEvent(evt);
         }
 
         /// <summary>

@@ -12,7 +12,6 @@ using NBagOfTricks.Slog;
 using NBagOfUis;
 
 
-
 namespace ClipPlayer
 {
     public partial class Transport : Form
