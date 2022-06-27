@@ -152,7 +152,7 @@
         </member>
         <member name="M:MidiLib.BarTime.#ctor(System.Double)">
             <summary>
-            Constructor from Beat.Subdiv representation as a double. TODO1 a bit crude but other ways (e.g. string) clutter the syntax.
+            Constructor from Beat.Subdiv representation as a double. TODO1 a bit crude but other ways (e.g. string) clutter the syntax. !!
             </summary>
             <param name="tts"></param>
         </member>
@@ -599,20 +599,20 @@
         <member name="M:MidiLib.InputEventArgs.ToString">
             <summary>Read me.</summary>
         </member>
-        <member name="F:MidiLib.InternalDefs.VOLUME_MIN">
+        <member name="F:MidiLib.VolumeDefs.MIN">
             <summary>Corresponds to midi velocity = 0.</summary>
         </member>
-        <member name="F:MidiLib.InternalDefs.VOLUME_MAX">
+        <member name="F:MidiLib.VolumeDefs.MAX">
             <summary>Corresponds to midi velocity = 127.</summary>
         </member>
-        <member name="F:MidiLib.InternalDefs.GAIN_MAX">
-            <summary>Allow UI controls some more headroom.</summary>
-        </member>
-        <member name="F:MidiLib.InternalDefs.VOLUME_DEFAULT">
+        <member name="F:MidiLib.VolumeDefs.DEFAULT">
             <summary>Default value.</summary>
         </member>
-        <member name="F:MidiLib.InternalDefs.VOLUME_RESOLUTION">
+        <member name="F:MidiLib.VolumeDefs.STEP">
             <summary>UI control smoothness.</summary>
+        </member>
+        <member name="F:MidiLib.VolumeDefs.MAX_GAIN">
+            <summary>Allow UI controls some more headroom.</summary>
         </member>
         <member name="T:MidiLib.MidiEventDesc">
             <summary>
@@ -1114,13 +1114,13 @@
         <member name="M:MidiLib.MidiSender.SendEvent(NAudio.Midi.MidiEvent)">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiSettings.TheSettings">
-            <summary>Current midi user settings.</summary>
+        <member name="P:MidiLib.MidiSettings.LibSettings">
+            <summary>Current midi settings. Client must set this before accessing!</summary>
         </member>
         <member name="P:MidiLib.MidiSettings.Snap">
             <summary>How to snap.</summary>
         </member>
-        <member name="F:MidiLib.MidiSettings.BeatsPerBar">
+        <member name="P:MidiLib.MidiSettings.BeatsPerBar">
             <summary>Only 4/4 time supported.</summary>
         </member>
         <member name="P:MidiLib.MidiSettings.SubdivsPerBeat">

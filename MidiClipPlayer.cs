@@ -42,7 +42,7 @@ namespace ClipPlayer
         int _currentSubdiv;
 
         /// <summary>Current tempo. Initialize to default in case the file doesn't supply one.</summary>
-        int _tempo = Common.Settings.DefaultTempo;
+        int _tempo = Common.Settings.MidiSettings.DefaultTempo;
         #endregion
 
         #region Properties - interface implementation
@@ -82,7 +82,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _sender = new(Common.Settings.MidiOutDevice, "MidiOut1");
+            _sender = new(Common.Settings.MidiSettings.MidiOutDevice, "MidiOutDevice");
             _sender.LogEnable = false;
         }
 
@@ -176,7 +176,7 @@ namespace ClipPlayer
         public string GetInfo()
         {
             BarTime bt = new(_totalSubdivs);
-            int inc = Common.Settings.ZeroBased ? 0 : 1;
+            int inc = Common.Settings.MidiSettings.ZeroBased ? 0 : 1;
             string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar + inc}:{bt.Beat + inc}:{bt.Subdiv + inc:00})";
             return s;
         }

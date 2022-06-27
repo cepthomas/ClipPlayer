@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AudioLib;
 using MidiLib;
 using NBagOfTricks;
 using NBagOfTricks.Slog;
@@ -56,6 +57,10 @@ namespace ClipPlayer
             // Get the settings.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
             Common.Settings = (UserSettings)Settings.Load(appDir, typeof(UserSettings));
+            // Tell the libs about their settings.
+            MidiSettings.LibSettings = Common.Settings.MidiSettings;
+            AudioSettings.LibSettings = Common.Settings.AudioSettings;
+
             sldVolume.Value = Common.Settings.Volume;
             var pos = Common.Settings.FormGeometry;
             Location = new(pos.X, pos.Y);
@@ -116,13 +121,13 @@ namespace ClipPlayer
 
             if (!_audioPlayer.Valid)
             {
-                MessageBox.Show($"Something wrong with your audio output device:{Common.Settings.WavOutDevice}");
+                MessageBox.Show($"Something wrong with your audio output device:{Common.Settings.AudioSettings.WavOutDevice}");
                 ok = false;
             }
 
             if (!_midiPlayer.Valid)
             {
-                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiOutDevice}");
+                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiSettings.MidiOutDevice}");
                 ok = false;
             }
 
@@ -324,16 +329,25 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
-            var changes = Common.Settings.Edit("User Settings");
+            var changes = Common.Settings.Edit("User Settings", 450);
 
             // Detect changes of interest.
             bool restart = false;
 
             foreach (var (name, cat) in changes)
             {
-                restart |= name.EndsWith("Device");
-                restart |= name == "Latency";
-                restart |= cat == "Cosmetics";
+                switch (name)
+                {
+                    case "WavOutDevice":
+                    case "Latency":
+                    case "MidiInDevice":
+                    case "MidiOutDevice":
+                    case "InternalTimeResolution":
+                    case "PPQ":
+                    case "ControlColor":
+                        restart = true;
+                        break;
+                }
             }
 
             if (restart)

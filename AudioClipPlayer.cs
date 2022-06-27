@@ -63,7 +63,7 @@ namespace ClipPlayer
         public AudioClipPlayer()
         {
             // Create output device.
-            _player = new(Common.Settings.WavOutDevice, int.Parse(Common.Settings.Latency));
+            _player = new(Common.Settings.AudioSettings.WavOutDevice, int.Parse(Common.Settings.AudioSettings.Latency));
             _player.PlaybackStopped += Player_PlaybackStopped;
         }
 

@@ -4,6 +4,21 @@
         <name>AudioLib</name>
     </assembly>
     <members>
+        <member name="F:AudioLib.VolumeDefs.MIN">
+            <summary>Corresponds to midi velocity = 0.</summary>
+        </member>
+        <member name="F:AudioLib.VolumeDefs.MAX">
+            <summary>Corresponds to midi velocity = 127.</summary>
+        </member>
+        <member name="F:AudioLib.VolumeDefs.DEFAULT">
+            <summary>Default value.</summary>
+        </member>
+        <member name="F:AudioLib.VolumeDefs.STEP">
+            <summary>UI control smoothness.</summary>
+        </member>
+        <member name="F:AudioLib.VolumeDefs.MAX_GAIN">
+            <summary>Allow UI controls some more headroom.</summary>
+        </member>
         <member name="T:AudioLib.AudioPlayer">
             <summary>
             A simple audio file player.
@@ -11,9 +26,6 @@
         </member>
         <member name="F:AudioLib.AudioPlayer._waveOut">
             <summary>Wave output play device.</summary>
-        </member>
-        <member name="F:AudioLib.AudioPlayer.READ_BUFF_SIZE">
-            <summary>Stream read chunk.</summary>
         </member>
         <member name="F:AudioLib.AudioPlayer._volume">
             <summary>The volume.</summary>
@@ -60,19 +72,25 @@
             Go back jack.
             </summary>
         </member>
-        <member name="M:AudioLib.AudioPlayer.Export(System.String,NAudio.Wave.AudioFileReader)">
-            <summary>
-            Export wave data to text file. TODO This doesn't really belong here, but ok for now.
-            </summary>
-            <param name="exportFileName"></param>
-            <param name="rdr">Data source.</param>
-        </member>
         <member name="M:AudioLib.AudioPlayer.WaveOut_PlaybackStopped(System.Object,NAudio.Wave.StoppedEventArgs)">
             <summary>
             Usually end of file but could be error. Client can handle.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
+        </member>
+        <member name="P:AudioLib.AudioSettings.LibSettings">
+            <summary>Current audio settings. Client must set this before accessing!</summary>
+        </member>
+        <member name="T:AudioLib.FixedListTypeConverter">
+            <summary>Converter for selecting property value from known lists.</summary>
+        </member>
+        <member name="M:AudioLib.AudioUtils.Export(System.String,NAudio.Wave.AudioFileReader)">
+            <summary>
+            Export wave data to text file.
+            </summary>
+            <param name="exportFileName"></param>
+            <param name="rdr">Data source.</param>
         </member>
         <member name="T:AudioLib.MeterType">
             <summary>Display types.</summary>
