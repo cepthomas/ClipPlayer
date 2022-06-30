@@ -152,7 +152,7 @@
         </member>
         <member name="M:MidiLib.BarTime.#ctor(System.Double)">
             <summary>
-            Constructor from Beat.Subdiv representation as a double. TODO1 a bit crude but other ways (e.g. string) clutter the syntax. !!
+            Constructor from Beat.Subdiv representation as a double.
             </summary>
             <param name="tts"></param>
         </member>
@@ -331,7 +331,7 @@
         </member>
         <member name="M:MidiLib.Channel.SetEvents(System.Collections.Generic.IEnumerable{MidiLib.MidiEventDesc})">
             <summary>
-            Set the events for the channel.
+            Set the time-ordered events for the channel.
             </summary>
             <param name="events"></param>
         </member>
@@ -384,13 +384,12 @@
             <param name="chnum">From this channel...</param>
             <param name="control">...to this control.</param>
         </member>
-        <member name="M:MidiLib.ChannelCollection.SetEvents(System.Int32,System.Collections.Generic.IEnumerable{MidiLib.MidiEventDesc},MidiLib.MidiTimeConverter)">
+        <member name="M:MidiLib.ChannelCollection.SetEvents(System.Int32,System.Collections.Generic.IEnumerable{MidiLib.MidiEventDesc})">
             <summary>
             Set events for channel.
             </summary>
             <param name="channelNumber"></param>
             <param name="events"></param>
-            <param name="mt"></param>
         </member>
         <member name="M:MidiLib.ChannelCollection.SetChannelState(System.Int32,MidiLib.ChannelState)">
             <summary>
@@ -415,7 +414,7 @@
         </member>
         <member name="M:MidiLib.ChannelCollection.GetChannel(System.Int32)">
             <summary>
-            Get channel object for channelNumber. Throws an exception for invalid values.
+            Get channel object for channelNumber. Does checking for invalid values.
             </summary>
             <param name="channelNumber"></param>
             <returns>The channel</returns>
@@ -491,9 +490,6 @@
         <member name="P:MidiLib.IMidiInputDevice.DeviceName">
             <summary>Device name as defined by the system.</summary>
         </member>
-        <member name="P:MidiLib.IMidiInputDevice.DeviceId">
-            <summary>Device id for internal use.</summary>
-        </member>
         <member name="P:MidiLib.IMidiInputDevice.Valid">
             <summary>Are we ok?</summary>
         </member>
@@ -511,9 +507,6 @@
         </member>
         <member name="P:MidiLib.IMidiOutputDevice.DeviceName">
             <summary>Device name as defined by the system.</summary>
-        </member>
-        <member name="P:MidiLib.IMidiOutputDevice.DeviceId">
-            <summary>Device id for internal use.</summary>
         </member>
         <member name="P:MidiLib.IMidiOutputDevice.Valid">
             <summary>Are we ok?</summary>
@@ -614,64 +607,44 @@
         <member name="F:MidiLib.VolumeDefs.MAX_GAIN">
             <summary>Allow UI controls some more headroom.</summary>
         </member>
-        <member name="T:MidiLib.MidiEventDesc">
+        <member name="T:MidiLib.MidiDataFile">
             <summary>
-            Internal representation of one midi event.
-            </summary>
-        </member>
-        <member name="P:MidiLib.MidiEventDesc.ChannelNumber">
-            <summary>One-based channel number.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventDesc.AbsoluteTime">
-            <summary>Time (subdivs) from original file.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventDesc.ScaledTime">
-            <summary>Time (subdivs) scaled to internal units using send PPQ.</summary>
-        </member>
-        <member name="P:MidiLib.MidiEventDesc.MidiEvent">
-            <summary>The raw midi event.</summary>
-        </member>
-        <member name="M:MidiLib.MidiEventDesc.#ctor(NAudio.Midi.MidiEvent)">
-            <summary>Normal constructor.</summary>
-        </member>
-        <member name="T:MidiLib.MidiData">
-            <summary>
-            Represents one complete collection of midi events.
+            Represents one complete collection of midi events, usually from a midi file.
             Reads and processes standard midi or yamaha style files.
             Writes subsets to various output formats.
             </summary>
         </member>
-        <member name="F:MidiLib.MidiData._allChannels">
-            <summary>The internal channel objects.</summary>
-        </member>
-        <member name="F:MidiLib.MidiData._includeNoisy">
+        <member name="F:MidiLib.MidiDataFile._includeNoisy">
             <summary>Include events like controller changes, pitch wheel, ...</summary>
         </member>
-        <member name="F:MidiLib.MidiData._lastStreamPos">
+        <member name="F:MidiLib.MidiDataFile._lastStreamPos">
             <summary>Save this for logging/debugging.</summary>
         </member>
-        <member name="F:MidiLib.MidiData._patterns">
+        <member name="F:MidiLib.MidiDataFile._patterns">
             <summary>All file pattern sections. Plain midi files will have only one, unnamed.</summary>
         </member>
-        <member name="F:MidiLib.MidiData._patternDefaults">
+        <member name="F:MidiLib.MidiDataFile._currentPattern">
+            <summary>Currently collecting this pattern.</summary>
+        </member>
+        <member name="F:MidiLib.MidiDataFile._patternDefaults">
             <summary>Default values if not supplied in pattern. Mainly for managing patches.</summary>
         </member>
-        <member name="F:MidiLib.MidiData._fn">
+        <member name="P:MidiLib.MidiDataFile.FileName">
             <summary>Current loaded file.</summary>
         </member>
-        <member name="P:MidiLib.MidiData.MidiFileType">
+        <member name="P:MidiLib.MidiDataFile.MidiFileType">
             <summary>What is it.</summary>
         </member>
-        <member name="P:MidiLib.MidiData.NumTracks">
+        <member name="P:MidiLib.MidiDataFile.NumTracks">
             <summary>How many tracks.</summary>
         </member>
-        <member name="P:MidiLib.MidiData.DeltaTicksPerQuarterNote">
+        <member name="P:MidiLib.MidiDataFile.DeltaTicksPerQuarterNote">
             <summary>Original resolution for all events.</summary>
         </member>
-        <member name="P:MidiLib.MidiData.NumPatterns">
+        <member name="P:MidiLib.MidiDataFile.NumPatterns">
             <summary>Number of patterns contained.</summary>
         </member>
-        <member name="M:MidiLib.MidiData.Read(System.String,System.Int32,System.Boolean)">
+        <member name="M:MidiLib.MidiDataFile.Read(System.String,System.Int32,System.Boolean)">
             <summary>
             Read a file.
             </summary>
@@ -679,143 +652,92 @@
             <param name="defaultTempo">Specified by client.</param>
             <param name="includeNoisy"></param>
         </member>
-        <member name="M:MidiLib.MidiData.Reset">
-            <summary>
-            Clean up.
-            </summary>
-        </member>
-        <member name="M:MidiLib.MidiData.GetPattern(System.Int32)">
+        <member name="M:MidiLib.MidiDataFile.GetPattern(System.Int32)">
             <summary>
             Get the pattern by index.
             </summary>
             <param name="index">Which</param>
             <returns>The pattern or null if invalid request.</returns>
         </member>
-        <member name="M:MidiLib.MidiData.GetPattern(System.String)">
+        <member name="M:MidiLib.MidiDataFile.GetPattern(System.String)">
             <summary>
             Get the pattern by name.
             </summary>
             <param name="name">Which</param>
             <returns>The pattern or null if invalid request.</returns>
         </member>
-        <member name="M:MidiLib.MidiData.GetPatternNames">
+        <member name="M:MidiLib.MidiDataFile.GetPatternNames">
             <summary>
             Get all pattern names.
             </summary>
             <returns>List of names.</returns>
         </member>
-        <member name="M:MidiLib.MidiData.ReadMThd(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadMThd(System.IO.BinaryReader)">
             <summary>
             Read the midi header section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadMTrk(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadMTrk(System.IO.BinaryReader)">
             <summary>
             Read a midi track chunk.
             </summary>
             <param name="br"></param>
             <returns></returns>
         </member>
-        <member name="M:MidiLib.MidiData.ReadCASM(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadCASM(System.IO.BinaryReader)">
             <summary>
             Read the CASM section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadCSEG(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadCSEG(System.IO.BinaryReader)">
             <summary>
             Read the CSEG section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadSdec(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadSdec(System.IO.BinaryReader)">
             <summary>
             Read the Sdec section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadCtab(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadCtab(System.IO.BinaryReader)">
             <summary>
             Read the Ctab section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadCntt(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadCntt(System.IO.BinaryReader)">
             <summary>
             Read the Cntt section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadOTSc(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadOTSc(System.IO.BinaryReader)">
             <summary>
             Read the OTSc section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.ReadFNRc(System.IO.BinaryReader)">
+        <member name="M:MidiLib.MidiDataFile.ReadFNRc(System.IO.BinaryReader)">
             <summary>
             Read the FNRc section of a style file.
             </summary>
             <param name="br"></param>
         </member>
-        <member name="M:MidiLib.MidiData.CleanUpPattern">
+        <member name="M:MidiLib.MidiDataFile.CleanUpPattern">
             <summary>
             Fill in missing info using defaults.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiData.ReadStream(System.IO.BinaryReader,System.Int32)">
+        <member name="M:MidiLib.MidiDataFile.ReadStream(System.IO.BinaryReader,System.Int32)">
             <summary>
             Read a number from stream and adjust endianess.
             </summary>
             <param name="br"></param>
             <param name="size"></param>
-            <returns></returns>
-        </member>
-        <member name="M:MidiLib.MidiData.ExportAllEvents(System.String,System.Collections.Generic.List{System.Int32})">
-            <summary>
-            Export the contents in a csv readable form. This is as the events appear in the original file.
-            </summary>
-            <param name="outPath">Where to boss?</param>
-            <param name="channels">Specific channnels or all if empty.</param>
-            <returns>File name of dump file.</returns>
-        </member>
-        <member name="M:MidiLib.MidiData.ExportGroupedEvents(System.String,System.String,System.Collections.Generic.List{System.Int32},System.Boolean)">
-            <summary>
-            Makes csv dumps of some events grouped by pattern/channel. This is as the events appear in the original file.
-            </summary>
-            <param name="outPath">Where to boss?</param>
-            <param name="patternName">Specific pattern.</param>
-            <param name="channels">Specific channnels or all if empty.</param>
-            <param name="includeOther">false if just notes or true if everything.</param>
-            <returns>File name of dump file.</returns>
-        </member>
-        <member name="M:MidiLib.MidiData.ExportMidi(System.String,System.String,System.Collections.Generic.List{System.Int32},System.Int32)">
-            <summary>
-            Export pattern parts to individual midi files. This is as the events appear in the original file.
-            </summary>
-            <param name="outPath">Where to boss?</param>
-            <param name="patternName">Specific pattern.</param>
-            <param name="channels">Specific channnels or all if empty.</param>
-            <param name="ppq">Export at this resolution.</param>
-            <returns>File name of export file.</returns>
-        </member>
-        <member name="M:MidiLib.MidiData.GetFilteredEvents(System.String,System.Collections.Generic.List{System.Int32},System.Boolean)">
-            <summary>
-            Get enumerator for events using supplied filters.
-            </summary>
-            <param name="patternName">Specific pattern or all if empty.</param>
-            <param name="channels">Specific channnels or all if empty.</param>
-            <param name="sortTime">Optional sort.</param>
-            <returns>Enumerator or null if invalid.</returns>
-        </member>
-        <member name="M:MidiLib.MidiData.MakeExportFileName(System.String,System.String,System.String)">
-            <summary>
-            Create a new clean filename for export. Creates path if it doesn't exist.
-            </summary>
-            <param name="path">Export path</param>
-            <param name="mod">Modifier</param>
-            <param name="ext">File extension</param>
             <returns></returns>
         </member>
         <member name="T:MidiLib.MidiDefs">
@@ -931,6 +853,59 @@
         <member name="F:MidiLib.MidiDefs._controllers">
             <summary>The midi controller definitions.</summary>
         </member>
+        <member name="T:MidiLib.MidiEventDesc">
+            <summary>
+            Internal representation of one midi event.
+            </summary>
+        </member>
+        <member name="P:MidiLib.MidiEventDesc.ChannelNumber">
+            <summary>One-based channel number.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventDesc.AbsoluteTime">
+            <summary>Time (subdivs) from original file.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventDesc.ScaledTime">
+            <summary>Time (subdivs) scaled to internal units using send PPQ.</summary>
+        </member>
+        <member name="P:MidiLib.MidiEventDesc.MidiEvent">
+            <summary>The raw midi event.</summary>
+        </member>
+        <member name="M:MidiLib.MidiEventDesc.#ctor(NAudio.Midi.MidiEvent)">
+            <summary>Normal constructor from NAudio event.</summary>
+        </member>
+        <member name="T:MidiLib.MidiExport">
+            <summary>
+            Writes to various output formats.
+            </summary>
+        </member>
+        <member name="M:MidiLib.MidiExport.ExportAllEvents(System.String,System.Collections.Generic.List{MidiLib.PatternInfo},System.Collections.Generic.List{MidiLib.Channel},System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Export the contents in a csv readable form. This is as the events appear in the original file.
+            </summary>
+            <param name="outFileName">Where to boss?</param>
+            <param name="patterns">Specific patterns.</param>
+            <param name="channels">Specific channnels or all if empty.</param>
+            <param name="meta">File meta data to include.</param>
+        </member>
+        <member name="M:MidiLib.MidiExport.ExportGroupedEvents(System.String,MidiLib.PatternInfo,System.Collections.Generic.List{MidiLib.Channel},System.Collections.Generic.Dictionary{System.String,System.Int32},System.Boolean)">
+            <summary>
+            Makes csv dumps of some events grouped by pattern/channel. This is as the events appear in the original file.
+            </summary>
+            <param name="outFileName">Where to boss?</param>
+            <param name="pattern">Specific pattern.</param>
+            <param name="channels">Specific channnels or all if empty.</param>
+            <param name="meta">File meta data to include.</param>
+            <param name="includeAll">False if just notes or true if everything.</param>
+        </member>
+        <member name="M:MidiLib.MidiExport.ExportMidi(System.String,MidiLib.PatternInfo,System.Collections.Generic.List{MidiLib.Channel},System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Export pattern parts to individual midi files. This is as the events appear in the original file.
+            </summary>
+            <param name="outFileName">Where to boss?</param>
+            <param name="pattern">Specific pattern.</param>
+            <param name="channels">Specific channnels or all if empty.</param>
+            <param name="meta">File meta data to include.</param>
+        </member>
         <member name="T:MidiLib.MidiListener">
             <summary>
             Midi input handler.
@@ -945,9 +920,6 @@
         <member name="P:MidiLib.MidiListener.DeviceName">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiListener.DeviceId">
-            <inheritdoc />
-        </member>
         <member name="P:MidiLib.MidiListener.Valid">
             <inheritdoc />
         </member>
@@ -960,12 +932,11 @@
         <member name="E:MidiLib.MidiListener.InputEvent">
             <inheritdoc />
         </member>
-        <member name="M:MidiLib.MidiListener.#ctor(System.String,System.String)">
+        <member name="M:MidiLib.MidiListener.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="deviceName">Client must supply name of device.</param>
-            <param name="deviceId">Client must supply id of device.</param>
         </member>
         <member name="M:MidiLib.MidiListener.Dispose">
             <summary>
@@ -1081,21 +1052,17 @@
         <member name="P:MidiLib.MidiSender.DeviceName">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiSender.DeviceId">
-            <inheritdoc />
-        </member>
         <member name="P:MidiLib.MidiSender.Valid">
             <inheritdoc />
         </member>
         <member name="P:MidiLib.MidiSender.LogEnable">
             <inheritdoc />
         </member>
-        <member name="M:MidiLib.MidiSender.#ctor(System.String,System.String)">
+        <member name="M:MidiLib.MidiSender.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="deviceName">Client must supply name of device.</param>
-            <param name="deviceId">Client must supply id of device.</param>
         </member>
         <member name="M:MidiLib.MidiSender.Dispose">
             <summary> 
@@ -1226,7 +1193,7 @@
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
         <member name="T:MidiLib.PatternInfo">
-            <summary>Properties associated with a pattern.</summary>
+            <summary>Represents the contents of a midi file pattern. If it is a plain midi file (not style) there will be one only.</summary>
         </member>
         <member name="P:MidiLib.PatternInfo.PatternName">
             <summary>Pattern name. Empty indicates single pattern aka plain midi file.</summary>
@@ -1243,11 +1210,53 @@
         <member name="P:MidiLib.PatternInfo.Patches">
             <summary>All the channel patches. Index is 0-based, not channel number.</summary>
         </member>
-        <member name="P:MidiLib.PatternInfo.Events">
-            <summary>All the pattern midi events, (usually) ordered by time.</summary>
+        <member name="P:MidiLib.PatternInfo.ChannelNumbers">
+            <summary>All channel numbers in the pattern.</summary>
+        </member>
+        <member name="F:MidiLib.PatternInfo._events">
+            <summary>All the pattern midi events.</summary>
+        </member>
+        <member name="F:MidiLib.PatternInfo._eventsByTime">
+            <summary>All the pattern midi events, key is when to play (scaled time).</summary>
+        </member>
+        <member name="F:MidiLib.PatternInfo._mt">
+            <summary>For scaling subdivs to internal.</summary>
         </member>
         <member name="M:MidiLib.PatternInfo.#ctor">
-            <summary>Normal constructor.</summary>
+            <summary>
+            Default constructor. Use only for initialization!
+            </summary>
+        </member>
+        <member name="M:MidiLib.PatternInfo.#ctor(System.String,System.Int32)">
+            <summary>
+            Normal constructor.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PatternInfo.#ctor(System.String,System.Int32,System.Collections.Generic.List{MidiLib.MidiEventDesc},System.Collections.Generic.List{MidiLib.Channel},System.Int32)">
+            <summary>
+            Constructor from existing data.
+            </summary>
+        </member>
+        <member name="M:MidiLib.PatternInfo.AddEvent(MidiLib.MidiEventDesc)">
+            <summary>
+            Add an event to the collection.
+            </summary>
+            <param name="evt">The event with properly scaled time.</param>
+        </member>
+        <member name="M:MidiLib.PatternInfo.GetFilteredEvents(System.Collections.Generic.List{System.Int32},System.Boolean)">
+            <summary>
+            Get enumerator for events using supplied filters.
+            </summary>
+            <param name="channels">Specific channnels or all if empty.</param>
+            <param name="sortByTime">Optional sort.</param>
+            <returns>Enumerator.</returns>
+        </member>
+        <member name="M:MidiLib.PatternInfo.GetEvents(System.Int32)">
+            <summary>
+            Get all events at a specific time.
+            </summary>
+            <param name="when"></param>
+            <returns></returns>
         </member>
         <member name="M:MidiLib.PatternInfo.ToString">
             <summary>Readable version.</summary>
@@ -1259,7 +1268,7 @@
         <member name="E:MidiLib.PlayerControl.ChannelChangeEvent">
             <summary>Notify host of asynchronous changes from user.</summary>
         </member>
-        <member name="P:MidiLib.PlayerControl.Channel">
+        <member name="P:MidiLib.PlayerControl.BoundChannel">
             <summary>Bound object.</summary>
         </member>
         <member name="P:MidiLib.PlayerControl.ChannelNumber">

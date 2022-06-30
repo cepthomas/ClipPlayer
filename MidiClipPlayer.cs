@@ -115,7 +115,7 @@ namespace ClipPlayer
             _playEvents.Clear();
 
             // Get events.
-            var mfile = new MidiFile(fn, true);
+            var mfile = new MidiFile(fn, true); //TODO1 use MidiLib?
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.

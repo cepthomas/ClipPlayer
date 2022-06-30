@@ -7,7 +7,7 @@ A tool for playing audio and midi files.
 - UI is also used for editing your settings: output devices etc. Note that not all presented audio/midi options pertain to this application.
 - It is built as a single instance app. Second instance sends the filename to the primary via IPC.
 
-Requires VS2019 and .NET5.
+Requires VS2019 and .NET6.
 
 
 # Third Party

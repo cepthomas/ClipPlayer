@@ -342,8 +342,7 @@ namespace ClipPlayer
                     case "Latency":
                     case "MidiInDevice":
                     case "MidiOutDevice":
-                    case "InternalTimeResolution":
-                    case "PPQ":
+                    case "InternalPPQ":
                     case "ControlColor":
                         restart = true;
                         break;
