@@ -82,7 +82,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _sender = new(Common.Settings.MidiSettings.MidiOutDevice, "MidiOutDevice");
+            _sender = new(Common.Settings.MidiSettings.MidiOutDevice);
             _sender.LogEnable = false;
         }
 
@@ -115,7 +115,7 @@ namespace ClipPlayer
             _playEvents.Clear();
 
             // Get events.
-            var mfile = new MidiFile(fn, true); //TODO1 use MidiLib?
+            var mfile = new MidiFile(fn, true); //TODO use MidiDataFile?
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.

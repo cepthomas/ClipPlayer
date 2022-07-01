@@ -50,16 +50,17 @@ namespace ClipPlayer
         public Transport(string fn)
         {
             _fn = fn;
-            InitializeComponent();
 
-            Icon = Properties.Resources.croco;
-
-            // Get the settings.
+            // Must do this first before initializing.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
             Common.Settings = (UserSettings)Settings.Load(appDir, typeof(UserSettings));
             // Tell the libs about their settings.
             MidiSettings.LibSettings = Common.Settings.MidiSettings;
             AudioSettings.LibSettings = Common.Settings.AudioSettings;
+
+            InitializeComponent();
+
+            Icon = Properties.Resources.croco;
 
             sldVolume.Value = Common.Settings.Volume;
             var pos = Common.Settings.FormGeometry;
