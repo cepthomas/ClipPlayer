@@ -119,8 +119,11 @@
         <member name="F:MidiLib.BarTime._all_ids">
             <summary>Increment for unique value.</summary>
         </member>
+        <member name="F:MidiLib.BarTime._base">
+            <summary>Adjustment for 0/1-based.</summary>
+        </member>
         <member name="P:MidiLib.BarTime.TotalSubdivs">
-            <summary>The length.</summary>
+            <summary>The time in subdivs. Always zero-based.</summary>
         </member>
         <member name="P:MidiLib.BarTime.Bar">
             <summary>The bar number.</summary>
@@ -152,9 +155,9 @@
         </member>
         <member name="M:MidiLib.BarTime.#ctor(System.Double)">
             <summary>
-            Constructor from Beat.Subdiv representation as a double.
+            Constructor from floating point beat.
             </summary>
-            <param name="tts"></param>
+            <param name="beat"></param>
         </member>
         <member name="M:MidiLib.BarTime.Reset">
             <summary>
@@ -182,11 +185,10 @@
             <param name="snapType"></param>
             <param name="up">To ceiling otherwise closest.</param>
         </member>
-        <member name="M:MidiLib.BarTime.Format(System.Boolean)">
+        <member name="M:MidiLib.BarTime.Format">
             <summary>
             Format a readable string.
             </summary>
-            <param name="zeroBased"></param>
             <returns></returns>
         </member>
         <member name="M:MidiLib.BarTime.ToString">
@@ -887,7 +889,7 @@
             <param name="meta">File meta data to include.</param>
             <param name="includeAll">False if just notes or true if everything.</param>
         </member>
-        <member name="M:MidiLib.MidiExport.ExportMidi(System.String,MidiLib.PatternInfo,System.Collections.Generic.List{MidiLib.Channel},System.Collections.Generic.Dictionary{System.String,System.Int32})">
+        <member name="M:MidiLib.MidiExport.ExportMidi(System.String,MidiLib.PatternInfo,System.Collections.Generic.IEnumerable{MidiLib.Channel},System.Collections.Generic.Dictionary{System.String,System.Int32})">
             <summary>
             Export pattern parts to individual midi files. This is as the events appear in the original file.
             </summary>
@@ -1222,7 +1224,7 @@
             Normal constructor.
             </summary>
         </member>
-        <member name="M:MidiLib.PatternInfo.#ctor(System.String,System.Int32,System.Collections.Generic.List{MidiLib.MidiEventDesc},System.Collections.Generic.List{MidiLib.Channel},System.Int32)">
+        <member name="M:MidiLib.PatternInfo.#ctor(System.String,System.Int32,System.Collections.Generic.IEnumerable{MidiLib.MidiEventDesc},System.Collections.Generic.IEnumerable{MidiLib.Channel},System.Int32)">
             <summary>
             Constructor from existing data.
             </summary>
@@ -1233,7 +1235,7 @@
             </summary>
             <param name="evt">The event to add.</param>
         </member>
-        <member name="M:MidiLib.PatternInfo.GetFilteredEvents(System.Collections.Generic.List{System.Int32})">
+        <member name="M:MidiLib.PatternInfo.GetFilteredEvents(System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Get enumerator for events using supplied filters.
             </summary>

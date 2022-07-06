@@ -99,6 +99,9 @@ namespace ClipPlayer
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
+
+            // Wait a bit in case there are some lingering events.
+            System.Threading.Thread.Sleep(100);
         }
         #endregion
 
@@ -115,7 +118,7 @@ namespace ClipPlayer
             _playEvents.Clear();
 
             // Get events.
-            var mfile = new MidiFile(fn, true); //TODO use MidiDataFile?
+            var mfile = new MidiFile(fn, true); //TODOX2 use MidiDataFile?
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.
@@ -176,8 +179,7 @@ namespace ClipPlayer
         public string GetInfo()
         {
             BarTime bt = new(_totalSubdivs);
-            int inc = Common.Settings.MidiSettings.ZeroBased ? 0 : 1;
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar + inc}:{bt.Beat + inc}:{bt.Subdiv + inc:00})";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar}:{bt.Beat}:{bt.Subdiv:00})";
             return s;
         }
 
