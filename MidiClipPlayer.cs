@@ -82,7 +82,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _sender = new(Common.Settings.MidiSettings.MidiOutDevice);
+            _sender = new(Common.Settings.MidiSettings.OutputDevice);
             _sender.LogEnable = false;
         }
 
@@ -118,7 +118,7 @@ namespace ClipPlayer
             _playEvents.Clear();
 
             // Get events.
-            var mfile = new MidiFile(fn, true); //TODOX2 use MidiDataFile?
+            var mfile = new MidiFile(fn, true); //TODOX use MidiDataFile?
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.

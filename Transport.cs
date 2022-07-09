@@ -67,8 +67,8 @@ namespace ClipPlayer
             Location = new(pos.X, pos.Y);
 
             // Init logging.
-            LogManager.MinLevelFile = LogLevel.Debug;
-            LogManager.MinLevelNotif = LogLevel.Trace;
+            LogManager.MinLevelFile = LogLevel.Trace;
+            LogManager.MinLevelNotif = LogLevel.Debug;
             LogManager.LogEvent += LogManager_LogEvent;
             LogManager.Run();
 
@@ -128,7 +128,7 @@ namespace ClipPlayer
 
             if (!_midiPlayer.Valid)
             {
-                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiSettings.MidiOutDevice}");
+                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiSettings.OutputDevice}");
                 ok = false;
             }
 
@@ -341,9 +341,8 @@ namespace ClipPlayer
                 {
                     case "WavOutDevice":
                     case "Latency":
-                    case "MidiInDevice":
-                    case "MidiOutDevice":
-                    case "InternalPPQ":
+                    case "InputDevice":
+                    case "OutputDevice":
                     case "ControlColor":
                         restart = true;
                         break;
