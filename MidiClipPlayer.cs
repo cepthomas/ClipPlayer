@@ -118,7 +118,7 @@ namespace ClipPlayer
             _playEvents.Clear();
 
             // Get events.
-            var mfile = new MidiFile(fn, true); //TODOX use MidiDataFile?
+            var mfile = new MidiFile(fn, true);
             _sourceEvents = mfile.Events;
 
             // Scale to internal ppq.

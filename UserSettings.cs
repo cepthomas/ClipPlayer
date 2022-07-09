@@ -10,8 +10,10 @@ using NAudio.Wave;
 using NAudio.Midi;
 using NBagOfTricks;
 using NBagOfUis;
+using NBagOfTricks.Slog;
 using MidiLib;
 using AudioLib;
+
 
 namespace ClipPlayer
 {
@@ -34,6 +36,16 @@ namespace ClipPlayer
         [Description("Do not press this!!!")]
         [Browsable(true)]
         public bool Debug { get; set; } = false;
+
+        [DisplayName("File Log Level")]
+        [Description("Log level for file write.")]
+        [Browsable(true)]
+        public LogLevel FileLogLevel { get; set; } = LogLevel.Trace;
+
+        [DisplayName("File Log Level")]
+        [Description("Log level for UI notification.")]
+        [Browsable(true)]
+        public LogLevel NotifLogLevel { get; set; } = LogLevel.Debug;
 
         [DisplayName("Midi Settings")]
         [Description("Edit midi settings.")]

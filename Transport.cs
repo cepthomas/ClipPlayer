@@ -67,8 +67,8 @@ namespace ClipPlayer
             Location = new(pos.X, pos.Y);
 
             // Init logging.
-            LogManager.MinLevelFile = LogLevel.Trace;
-            LogManager.MinLevelNotif = LogLevel.Debug;
+            LogManager.MinLevelFile = Common.Settings.FileLogLevel;
+            LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
             LogManager.LogEvent += LogManager_LogEvent;
             LogManager.Run();
 
