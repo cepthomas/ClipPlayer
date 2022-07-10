@@ -550,6 +550,83 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="P:MidiLib.DevicesEditor.Devices">
+            <summary>
+            Items to edit.
+            </summary>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.OnLoad(System.EventArgs)">
+            <summary>
+            Fill the grid with current selections.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.OnFormClosing(System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Save current selections.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.OnDeviceNameMenu_Click(System.Object,System.EventArgs)">
+            <summary>
+            Get the clicked cell and fill with the selection.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.DeviceNameMenu_Opening(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Make a list of options and add selection handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:MidiLib.DevicesEditor.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:MidiLib.DevicesEditor.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:MidiLib.DevicesTypeEditor">
+            <summary>
+            Plug in to property grid.
+            </summary>
+        </member>
+        <member name="M:MidiLib.DevicesTypeEditor.EditValue(System.ComponentModel.ITypeDescriptorContext,System.IServiceProvider,System.Object)">
+            <summary>
+            Do the work.
+            </summary>
+            <param name="context"></param>
+            <param name="provider"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MidiLib.DevicesTypeEditor.GetEditStyle(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            Identify yourself.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MidiLib.DeviceTypeConverter">
+            <summary>Converter for selecting property value from known lists. TODO can be removed.</summary>
+        </member>
         <member name="T:MidiLib.IDevice">
             <summary>Abstraction layer to support all midi-like devices.</summary>
         </member>
@@ -947,57 +1024,57 @@
             <param name="channels">Specific channnels or all if empty.</param>
             <param name="meta">File meta data to include.</param>
         </member>
-        <member name="T:MidiLib.MidiListener">
+        <member name="T:MidiLib.MidiInput">
             <summary>
             Midi input handler.
             </summary>
         </member>
-        <member name="F:MidiLib.MidiListener._midiIn">
+        <member name="F:MidiLib.MidiInput._midiIn">
             <summary>Midi input device.</summary>
         </member>
-        <member name="F:MidiLib.MidiListener._logger">
+        <member name="F:MidiLib.MidiInput._logger">
             <summary>Midi send logging.</summary>
         </member>
-        <member name="F:MidiLib.MidiListener._capturing">
+        <member name="F:MidiLib.MidiInput._capturing">
             <summary>Control.</summary>
         </member>
-        <member name="P:MidiLib.MidiListener.DeviceName">
+        <member name="P:MidiLib.MidiInput.DeviceName">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiListener.Valid">
+        <member name="P:MidiLib.MidiInput.Valid">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiListener.LogEnable">
+        <member name="P:MidiLib.MidiInput.LogEnable">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiListener.CaptureEnable">
+        <member name="P:MidiLib.MidiInput.CaptureEnable">
             <summary>Capture on/off.</summary>
         </member>
-        <member name="E:MidiLib.MidiListener.InputEvent">
+        <member name="E:MidiLib.MidiInput.InputEvent">
             <inheritdoc />
         </member>
-        <member name="M:MidiLib.MidiListener.#ctor(System.String)">
+        <member name="M:MidiLib.MidiInput.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="deviceName">Client must supply name of device.</param>
         </member>
-        <member name="M:MidiLib.MidiListener.Dispose">
+        <member name="M:MidiLib.MidiInput.Dispose">
             <summary>
             Resource clean up.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiListener.MidiIn_MessageReceived(System.Object,NAudio.Midi.MidiInMessageEventArgs)">
+        <member name="M:MidiLib.MidiInput.MidiIn_MessageReceived(System.Object,NAudio.Midi.MidiInMessageEventArgs)">
             <summary>
             Process input midi event.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiListener.MidiIn_ErrorReceived(System.Object,NAudio.Midi.MidiInMessageEventArgs)">
+        <member name="M:MidiLib.MidiInput.MidiIn_ErrorReceived(System.Object,NAudio.Midi.MidiInMessageEventArgs)">
             <summary>
             Process error midi event - Parameter 1 is invalid.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiListener.Log(MidiLib.InputEventArgs)">
+        <member name="M:MidiLib.MidiInput.Log(MidiLib.InputEventArgs)">
             <summary>
             Send event information to the client to sort out.
             </summary>
@@ -1142,9 +1219,6 @@
         </member>
         <member name="P:MidiLib.MidiSettings.SubdivsPerBar">
             <summary>Convenience.</summary>
-        </member>
-        <member name="T:MidiLib.DeviceTypeConverter">
-            <summary>Converter for selecting property value from known lists.</summary>
         </member>
         <member name="T:MidiLib.MidiTimeConverter">
             <summary>Helpers to translate between midi standard and arbtrary internal representation.</summary>

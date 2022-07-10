@@ -21,7 +21,7 @@ namespace ClipPlayer
         readonly Logger _logger = LogManager.CreateLogger("MidiClipPlayer");
 
         /// <summary>Midi output device.</summary>
-        readonly MidiOutput _output;
+        IOutputDevice _outputDevice = new NullOutputDevice();
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -56,7 +56,7 @@ namespace ClipPlayer
         public double Volume { get; set; }
 
         /// <inheritdoc />
-        public bool Valid { get { return _output.Valid; } }
+        public bool Valid { get { return _outputDevice.Valid; } }
 
         /// <inheritdoc />
         public TimeSpan Current
@@ -82,8 +82,20 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _output = new(Common.Settings.MidiSettings.OutputDevice);
-            _output.LogEnable = false;
+            // Set up output device.
+            foreach (var dev in Common.Settings.MidiSettings.OutputDevices)
+            {
+                // Try midi.
+                _outputDevice = new MidiOutput(dev.DeviceName);
+                if (_outputDevice.Valid)
+                {
+                    break;
+                }
+            }
+            if (!_outputDevice.Valid)
+            {
+                _logger.Error($"Something wrong with your output device:{_outputDevice.DeviceName}");
+            }
         }
 
         /// <summary> 
@@ -95,7 +107,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            _output.Dispose();
+            _outputDevice.Dispose();
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -288,7 +300,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _output.SendEvent(evt);
+            _outputDevice.SendEvent(evt);
         }
 
         /// <summary>

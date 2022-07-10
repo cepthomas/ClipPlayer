@@ -128,7 +128,7 @@ namespace ClipPlayer
 
             if (!_midiPlayer.Valid)
             {
-                MessageBox.Show($"Something wrong with your midi output device:{Common.Settings.MidiSettings.OutputDevice}");
+                MessageBox.Show($"Something wrong with your midi output device");
                 ok = false;
             }
 
