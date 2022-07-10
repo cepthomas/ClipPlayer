@@ -652,9 +652,6 @@
         <member name="M:MidiLib.InputEventArgs.ToString">
             <summary>Read me.</summary>
         </member>
-        <member name="T:MidiLib.DeviceTypeConverter">
-            <summary>Converter for selecting property value from known lists.</summary>
-        </member>
         <member name="T:MidiLib.MidiDataFile">
             <summary>
             Represents one complete collection of midi events, usually from a midi file.
@@ -1006,6 +1003,97 @@
             </summary>
             <param name="evt"></param>
         </member>
+        <member name="T:MidiLib.OscInput">
+            <summary>Provides midi over OSC. Server side.</summary>
+        </member>
+        <member name="F:MidiLib.OscInput._logger">
+            <summary>My logger.</summary>
+        </member>
+        <member name="F:MidiLib.OscInput._oscInput">
+            <summary>OSC input device.</summary>
+        </member>
+        <member name="E:MidiLib.OscInput.InputEvent">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscInput.DeviceName">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscInput.CaptureEnable">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscInput.Valid">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscInput.LogEnable">
+            <inheritdoc />
+        </member>
+        <member name="M:MidiLib.OscInput.#ctor(System.String)">
+            <summary>
+            Constructor.
+            <param name="deviceName">Client must supply name of device.</param>
+            </summary>
+        </member>
+        <member name="M:MidiLib.OscInput.Dispose">
+            <summary>
+            Resource clean up.
+            </summary>
+        </member>
+        <member name="M:MidiLib.OscInput.OscInput_LogEvent(System.Object,NebOsc.LogEventArgs)">
+            <summary>
+            OSC has something to say.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:MidiLib.OscInput.OscInput_InputEvent(System.Object,NebOsc.InputEventArgs)">
+            <summary>
+            Handle a received message.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:MidiLib.OscOutput">
+            <summary>Provides midi over OSC. Client side.</summary>
+        </member>
+        <member name="F:MidiLib.OscOutput._logger">
+            <summary>My logger.</summary>
+        </member>
+        <member name="F:MidiLib.OscOutput._oscOutput">
+            <summary>OSC output device.</summary>
+        </member>
+        <member name="F:MidiLib.OscOutput._lock">
+            <summary>Access synchronizer.</summary>
+        </member>
+        <member name="P:MidiLib.OscOutput.DeviceName">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscOutput.Valid">
+            <inheritdoc />
+        </member>
+        <member name="P:MidiLib.OscOutput.LogEnable">
+            <inheritdoc />
+        </member>
+        <member name="M:MidiLib.OscOutput.#ctor(System.String)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="deviceName">Client must supply name of device.</param>
+        </member>
+        <member name="M:MidiLib.OscOutput.Dispose">
+            <summary>
+            Resource clean up.
+            </summary>
+        </member>
+        <member name="M:MidiLib.OscOutput.SendEvent(NAudio.Midi.MidiEvent)">
+            <inheritdoc />
+        </member>
+        <member name="M:MidiLib.OscOutput.OscOutput_LogEvent(System.Object,NebOsc.LogEventArgs)">
+            <summary>
+            OSC has something to say.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="T:MidiLib.MidiSender">
             <summary>
             A midi output layer - associated with a single device.
@@ -1054,6 +1142,9 @@
         </member>
         <member name="P:MidiLib.MidiSettings.SubdivsPerBar">
             <summary>Convenience.</summary>
+        </member>
+        <member name="T:MidiLib.DeviceTypeConverter">
+            <summary>Converter for selecting property value from known lists.</summary>
         </member>
         <member name="T:MidiLib.MidiTimeConverter">
             <summary>Helpers to translate between midi standard and arbtrary internal representation.</summary>
