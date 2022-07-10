@@ -1094,38 +1094,38 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="T:MidiLib.MidiSender">
+        <member name="T:MidiLib.MidiOutput">
             <summary>
             A midi output layer - associated with a single device.
             </summary>
         </member>
-        <member name="F:MidiLib.MidiSender._midiOut">
+        <member name="F:MidiLib.MidiOutput._midiOut">
             <summary>Low level midi output device.</summary>
         </member>
-        <member name="F:MidiLib.MidiSender._logger">
+        <member name="F:MidiLib.MidiOutput._logger">
             <summary>Midi send logging.</summary>
         </member>
-        <member name="P:MidiLib.MidiSender.DeviceName">
+        <member name="P:MidiLib.MidiOutput.DeviceName">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiSender.Valid">
+        <member name="P:MidiLib.MidiOutput.Valid">
             <inheritdoc />
         </member>
-        <member name="P:MidiLib.MidiSender.LogEnable">
+        <member name="P:MidiLib.MidiOutput.LogEnable">
             <inheritdoc />
         </member>
-        <member name="M:MidiLib.MidiSender.#ctor(System.String)">
+        <member name="M:MidiLib.MidiOutput.#ctor(System.String)">
             <summary>
             Normal constructor.
             </summary>
             <param name="deviceName">Client must supply name of device.</param>
         </member>
-        <member name="M:MidiLib.MidiSender.Dispose">
+        <member name="M:MidiLib.MidiOutput.Dispose">
             <summary> 
             Clean up any resources being used.
             </summary>
         </member>
-        <member name="M:MidiLib.MidiSender.SendEvent(NAudio.Midi.MidiEvent)">
+        <member name="M:MidiLib.MidiOutput.SendEvent(NAudio.Midi.MidiEvent)">
             <inheritdoc />
         </member>
         <member name="P:MidiLib.MidiSettings.LibSettings">

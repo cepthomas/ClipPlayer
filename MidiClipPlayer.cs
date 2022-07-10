@@ -21,7 +21,7 @@ namespace ClipPlayer
         readonly Logger _logger = LogManager.CreateLogger("MidiClipPlayer");
 
         /// <summary>Midi output device.</summary>
-        readonly MidiSender _sender;
+        readonly MidiOutput _output;
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -56,7 +56,7 @@ namespace ClipPlayer
         public double Volume { get; set; }
 
         /// <inheritdoc />
-        public bool Valid { get { return _sender.Valid; } }
+        public bool Valid { get { return _output.Valid; } }
 
         /// <inheritdoc />
         public TimeSpan Current
@@ -82,8 +82,8 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _sender = new(Common.Settings.MidiSettings.OutputDevice);
-            _sender.LogEnable = false;
+            _output = new(Common.Settings.MidiSettings.OutputDevice);
+            _output.LogEnable = false;
         }
 
         /// <summary> 
@@ -95,7 +95,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            _sender.Dispose();
+            _output.Dispose();
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -288,7 +288,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _sender.SendEvent(evt);
+            _output.SendEvent(evt);
         }
 
         /// <summary>
