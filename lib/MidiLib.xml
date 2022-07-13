@@ -227,6 +227,9 @@
         <member name="F:MidiLib.BingBong._pen">
             <summary>The pen.</summary>
         </member>
+        <member name="P:MidiLib.BingBong.Channel">
+            <summary>Channel number 1-based.</summary>
+        </member>
         <member name="P:MidiLib.BingBong.MinNote">
             <summary>Lowest note. Adjust to taste.</summary>
         </member>
@@ -1442,6 +1445,9 @@
             Virtual keyboard control borrowed from Leslie Sanford with extras.
             </summary>
         </member>
+        <member name="P:MidiLib.VirtualKeyboard.Channel">
+            <summary>Channel number 1-based.</summary>
+        </member>
         <member name="P:MidiLib.VirtualKeyboard.ShowNoteNames">
             <summary>Draw the names on the keys.</summary>
         </member>
@@ -1513,7 +1519,7 @@
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:MidiLib.VirtualKeyboard.Keyboard_VKeyEvent(System.Object,MidiLib.VirtualKey.VKeyEventArgs)">
+        <member name="M:MidiLib.VirtualKeyboard.Keyboard_InputEvent(System.Object,MidiLib.InputEventArgs)">
             <summary>
             Pass along an event from a virtual key.
             </summary>
@@ -1548,7 +1554,7 @@
         <member name="P:MidiLib.VirtualKey.NoteId">
             <summary>Associated midi note.</summary>
         </member>
-        <member name="T:MidiLib.VirtualKey.VKeyEventArgs">
+        <member name="E:MidiLib.VirtualKey.InputEvent">
             <summary>Notify handlers of key change.</summary>
         </member>
         <member name="M:MidiLib.VirtualKey.#ctor(MidiLib.VirtualKeyboard,System.Boolean,System.Int32)">
