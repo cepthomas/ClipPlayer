@@ -34,7 +34,7 @@ namespace ClipPlayer
 
         [DisplayName("Debug")]
         [Description("Do not press this!!!")]
-        [Browsable(true)]
+        [Browsable(false)] // Hide for now.
         public bool Debug { get; set; } = false;
 
         [DisplayName("File Log Level")]

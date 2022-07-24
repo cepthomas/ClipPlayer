@@ -221,7 +221,7 @@ namespace ClipPlayer
         }
 
         /// <inheritdoc />
-        public void SettingsChanged()
+        public void UpdateSettings()
         {
         }
         #endregion

@@ -4,19 +4,22 @@
         <name>AudioLib</name>
     </assembly>
     <members>
-        <member name="F:AudioLib.VolumeDefs.MIN">
+        <member name="F:AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">
+            <summary>Supported types.</summary>
+        </member>
+        <member name="F:AudioLib.AudioLibDefs.VOLUME_MIN">
             <summary>Corresponds to midi velocity = 0.</summary>
         </member>
-        <member name="F:AudioLib.VolumeDefs.MAX">
+        <member name="F:AudioLib.AudioLibDefs.VOLUME_MAX">
             <summary>Corresponds to midi velocity = 127.</summary>
         </member>
-        <member name="F:AudioLib.VolumeDefs.DEFAULT">
+        <member name="F:AudioLib.AudioLibDefs.VOLUME_DEFAULT">
             <summary>Default value.</summary>
         </member>
-        <member name="F:AudioLib.VolumeDefs.STEP">
+        <member name="F:AudioLib.AudioLibDefs.VOLUME_STEP">
             <summary>UI control smoothness.</summary>
         </member>
-        <member name="F:AudioLib.VolumeDefs.MAX_GAIN">
+        <member name="F:AudioLib.AudioLibDefs.MAX_GAIN">
             <summary>Allow UI controls some more headroom.</summary>
         </member>
         <member name="T:AudioLib.AudioPlayer">
