@@ -96,7 +96,7 @@ namespace ClipPlayer
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
 
-            _player.Init(postVolumeMeter);
+            _player.SetProvider(postVolumeMeter);
             _player.Volume = (float)Common.Settings.Volume;
 
             return ok;
