@@ -18,6 +18,9 @@ namespace ClipPlayer
         /// <summary>Wave output play device.</summary>
         readonly AudioPlayer _player;
 
+        /// <summary>Input device for audio player.</summary>
+        readonly SwappableSampleProvider _waveOutSwapper;
+
         /// <summary>Input device for playing wav file.</summary>
         AudioFileReader? _audioFileReader = null;
 
@@ -63,7 +66,8 @@ namespace ClipPlayer
         public AudioClipPlayer()
         {
             // Create output device.
-            _player = new(Common.Settings.AudioSettings.WavOutDevice, int.Parse(Common.Settings.AudioSettings.Latency));
+            _waveOutSwapper = new();
+            _player = new(Common.Settings.AudioSettings.WavOutDevice, int.Parse(Common.Settings.AudioSettings.Latency), _waveOutSwapper);
             _player.PlaybackStopped += Player_PlaybackStopped;
         }
 
@@ -96,7 +100,8 @@ namespace ClipPlayer
             var postVolumeMeter = new MeteringSampleProvider(sampleChannel);
             //postVolumeMeter.StreamVolume += PostVolumeMeter_StreamVolume;
 
-            _player.SetProvider(postVolumeMeter);
+            _waveOutSwapper.SetInput(postVolumeMeter);
+            _audioFileReader.Position = 0; // rewind
             _player.Volume = (float)Common.Settings.Volume;
 
             return ok;

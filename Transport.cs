@@ -245,7 +245,7 @@ namespace ClipPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Fail open file: {ex}");
+                MessageBox.Show($"Fail open file: {ex.Message}");
                 _fn = "";
                 ok = false;
             }

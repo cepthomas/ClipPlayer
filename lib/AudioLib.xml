@@ -13,16 +13,70 @@
         <member name="F:AudioLib.AudioLibDefs.VOLUME_MAX">
             <summary>NAudio doesn't publish this for their API.</summary>
         </member>
-        <member name="T:AudioLib.AudioPlayer">
+        <member name="F:AudioLib.AudioLibDefs.READ_BUFF_SIZE">
+            <summary>Internal buffer size.</summary>
+        </member>
+        <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
+            <summary>For viewing purposes.</summary>
+        </member>
+        <member name="T:AudioLib.StereoCoercion">
+            <summary>How to handle stereo files.</summary>
+        </member>
+        <member name="T:AudioLib.AudioFileInfo">
+            <summary>Borrowed from NAudio.</summary>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.GetFileInfo(System.String,System.Boolean)">
             <summary>
-            A simple audio file player.
+            Top level function to get file info.
             </summary>
+            <param name="fileName"></param>
+            <param name="verbose"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.GetInfoMp3(System.String,System.Boolean)">
+            <summary>
+            Get info for mp3 file.
+            </summary>
+            <param name="fileName"></param>
+            <param name="verbose"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.GetInfoWav(System.String,System.Boolean)">
+            <summary>
+            Get info for wav file.
+            </summary>
+            <param name="fileName"></param>
+            <param name="verbose"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.GetInfoSf(System.String,System.Boolean)">
+            <summary>
+            Get info for soundfonts.
+            </summary>
+            <param name="fileName"></param>
+            <param name="verbose"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.GetInfoOther(System.String,System.Boolean)">
+            <summary>
+            Get info for other file types. Maybe.
+            </summary>
+            <param name="fileName"></param>
+            <param name="verbose"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioFileInfo.FormatWaveFormat(NAudio.Wave.WaveFormat)">
+            <summary>
+            Helper.
+            </summary>
+            <param name="wf"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AudioLib.AudioPlayer">
+            <summary>A simple audio file player.</summary>
         </member>
         <member name="F:AudioLib.AudioPlayer._waveOut">
             <summary>Wave output play device.</summary>
-        </member>
-        <member name="F:AudioLib.AudioPlayer._swapper">
-            <summary>WaveOut doesn't like calling Init() more than once.</summary>
         </member>
         <member name="E:AudioLib.AudioPlayer.PlaybackStopped">
             <summary>Wave playing done.</summary>
@@ -36,24 +90,18 @@
         <member name="P:AudioLib.AudioPlayer.Playing">
             <summary>State.</summary>
         </member>
-        <member name="M:AudioLib.AudioPlayer.#ctor(System.String,System.Int32)">
+        <member name="M:AudioLib.AudioPlayer.#ctor(System.String,System.Int32,NAudio.Wave.ISampleProvider)">
             <summary>
             Normal constructor.
             </summary>
             <param name="wavOutDevice">Device name.</param>
             <param name="latency">How slow.</param>
+            <param name="smpl">Provider.</param>
         </member>
         <member name="M:AudioLib.AudioPlayer.Dispose">
             <summary> 
             Clean up any resources being used.
             </summary>
-        </member>
-        <member name="M:AudioLib.AudioPlayer.SetProvider(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Bind the source to output.
-            </summary>
-            <param name="smpl"></param>
-            <returns></returns>
         </member>
         <member name="M:AudioLib.AudioPlayer.Run(System.Boolean)">
             <summary>
@@ -79,45 +127,15 @@
         <member name="T:AudioLib.FixedListTypeConverter">
             <summary>Converter for selecting property value from known lists.</summary>
         </member>
-        <member name="M:AudioLib.AudioUtils.ReadAll(NAudio.Wave.ISampleProvider,System.Int32)">
-            <summary>
-            Make a buffer out of the provider contents.
-            </summary>
-            <param name="sprov">The provider.</param>
-            <param name="len">Optional known length. TODO?</param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.AudioUtils.ValidateFormat(NAudio.Wave.WaveFormat,System.Boolean)">
-            <summary>
-            Sanity check for only 32bit fp, 44100Hz, mono.
-            </summary>
-            <param name="waveFormat">Format to check.</param>
-            <param name="mono">Must be mono.</param>
-        </member>
-        <member name="M:AudioLib.AudioUtils.Export(System.String,NAudio.Wave.AudioFileReader)">
-            <summary>
-            Export wave data to text file.
-            </summary>
-            <param name="exportFileName"></param>
-            <param name="rdr">Data source.</param>
-        </member>
-        <member name="M:AudioLib.AudioUtils.Dump(System.Single[],System.String)">
-            <summary>
-            Simple dump utility.
-            </summary>
-            <param name="data"></param>
-            <param name="fn"></param>
-        </member>
         <member name="T:AudioLib.ClipSampleProvider">
             <summary>
             Provider that encapsulates a client supplied audio data subset.
+            Mono output only - coerces stereo input per client call. Can be used for splitting stereo files.
+            If you need stereo, use AudioFileReader.
             Supplies some basic editing:
               - Gain envelope.
               - Gain overall.
             </summary>
-        </member>
-        <member name="T:AudioLib.ClipSampleProvider.StereoCoerce">
-            <summary>How to handle stereo files.</summary>
         </member>
         <member name="F:AudioLib.ClipSampleProvider._vals">
             <summary>The full buffer from client.</summary>
@@ -132,10 +150,10 @@
             <summary>The lock() target.</summary>
         </member>
         <member name="F:AudioLib.ClipSampleProvider._envelope">
-            <summary>Piecewise gain envelope. Key is index, value is gain.</summary>
+            <summary>Piecewise gain envelope. Key is index, value is gain. TODO all</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.WaveFormat">
-            <summary>The WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+            <summary>The WaveFormat of this sample provider. Fixed to mono. ISampleProvider implementation.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.FileName">
             <summary>The associated file name. Empty if new.</summary>
@@ -146,26 +164,29 @@
         <member name="P:AudioLib.ClipSampleProvider.Length">
             <summary>Length of the clip in samples.</summary>
         </member>
+        <member name="P:AudioLib.ClipSampleProvider.TotalTime">
+            <summary>Length of the clip in seconds.</summary>
+        </member>
         <member name="P:AudioLib.ClipSampleProvider.Position">
             <summary>Position of the simulated stream as sample index.</summary>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider)">
+        <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
-            Constructor from a sample provider.
+            Constructor from a sample provider. Coerces stereo to mono.
             </summary>
-            <param name="provider">Format to use.</param>
+            <param name="source">Source provider to use.</param>
+            <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.WaveFormat,System.Single[],System.String)">
+        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[],System.String)">
             <summary>
-            Constructor from a buffer.
+            Constructor from a buffer. Mono only.
             </summary>
-            <param name="waveFormat">Format to use.</param>
             <param name="vals">The data to use.</param>
             <param name="fn">Maybe associated filename.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.String,AudioLib.ClipSampleProvider.StereoCoerce)">
+        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.String,AudioLib.StereoCoercion)">
             <summary>
-            Constructor from a file. Deals with stereo files.
+            Constructor from a file. Coerces stereo to mono.
             </summary>
             <param name="fn">File to use.</param>
             <param name="mode">How to handle stereo files.</param>
@@ -180,6 +201,65 @@
             <param name="count">Number of samples required.</param>
             <returns>Number of samples read.</returns>
         </member>
+        <member name="M:AudioLib.ClipSampleProvider.ReadSource(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
+            <summary>
+            Common buff loader. Coerces stereo to mono per client request.
+            </summary>
+            <param name="source">Source provider to use.</param>
+            <param name="mode">How to handle stereo files.</param>
+        </member>
+        <member name="T:AudioLib.NAudioEx">
+            <summary>
+            Extensions to enhance or extend core NAudio.
+            </summary>
+        </member>
+        <member name="M:AudioLib.NAudioEx.ReadAll(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Make a buffer from the provider contents. Mono only.
+            </summary>
+            <param name="prov">The provider.</param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetPosition(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic position getter.
+            </summary>
+            <param name="prov"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.SetPosition(NAudio.Wave.ISampleProvider,System.Int32)">
+            <summary>
+            Agnostic position setter.
+            </summary>
+            <param name="prov"></param>
+            <param name="pos"></param>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetInfo(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Get provider info. Mainly for window header.
+            </summary>
+            <param name="prov"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
+            <summary>
+            Sanity check for only 32bit fp, 44100Hz, mono.
+            </summary>
+            <param name="prov">Format to check.</param>
+            <param name="mono">Must be mono.</param>
+        </member>
+        <member name="M:AudioLib.NAudioEx.Export(NAudio.Wave.ISampleProvider,System.String)">
+            <summary>
+            Export wave data to csv file.
+            </summary>
+            <param name="prov">Data source.</param>
+            <param name="exportFileName"></param>
+        </member>
+        <member name="T:AudioLib.PeakProvider">
+            <summary>
+            Customized version of NAudio's IPeakProvider family.
+            </summary>
+        </member>
         <member name="M:AudioLib.PeakProvider.GetPeaks(System.Single[],System.Int32,System.Int32,System.Int32)">
             <summary>
             Get wave peak values for UI display.
@@ -191,16 +271,26 @@
             <returns></returns>
         </member>
         <member name="T:AudioLib.SwappableSampleProvider">
-            <summary>Supports hot swapping of input.</summary>
+            <summary>
+            Sample provider that supports hot swapping of input. Mainly used to supply input to
+            WaveOut which doesn't like having its input switched.
+            Takes stereo or mono input, output is always stereo.
+            </summary>
         </member>
         <member name="F:AudioLib.SwappableSampleProvider._currentInput">
             <summary>The current input.</summary>
+        </member>
+        <member name="F:AudioLib.SwappableSampleProvider._vals">
+            <summary>The current buffer.</summary>
         </member>
         <member name="F:AudioLib.SwappableSampleProvider._locker">
             <summary>The lock() target.</summary>
         </member>
         <member name="P:AudioLib.SwappableSampleProvider.WaveFormat">
-            <summary>The WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+            <summary>The fixed WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+        </member>
+        <member name="P:AudioLib.SwappableSampleProvider.Position">
+            <summary>Position of the simulated stream as sample index.</summary>
         </member>
         <member name="M:AudioLib.SwappableSampleProvider.SetInput(NAudio.Wave.ISampleProvider)">
             <summary>
@@ -240,9 +330,6 @@
         </member>
         <member name="F:AudioLib.TimeBar.SMALL_CHANGE">
             <summary>Constant.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar.TS_FORMAT">
-            <summary>For viewing purposes.</summary>
         </member>
         <member name="P:AudioLib.TimeBar.Current">
             <summary>Where we be now.</summary>
@@ -347,6 +434,9 @@
             <param name="val"></param>
             <returns></returns>
         </member>
+        <member name="T:AudioLib.WaveViewer">
+            <summary>Simple mono wave display.</summary>
+        </member>
         <member name="F:AudioLib.WaveViewer._pen">
             <summary>For drawing.</summary>
         </member>
@@ -359,14 +449,20 @@
         <member name="F:AudioLib.WaveViewer._format">
             <summary>For drawing text.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.Values">
-            <summary>The full buffer from client.</summary>
+        <member name="F:AudioLib.WaveViewer._vals">
+            <summary>The data buffer.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.SampleProvider">
+            <summary>The provider from client. Mono only.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.DrawColor">
             <summary>For styling.</summary>
         </member>
+        <member name="P:AudioLib.WaveViewer.YGain">
+            <summary>Y adjustment.</summary>
+        </member>
         <member name="P:AudioLib.WaveViewer.Marker">
-            <summary>Marker index.</summary>
+            <summary>Marker sample index.</summary>
         </member>
         <member name="M:AudioLib.WaveViewer.#ctor">
             <summary>
@@ -386,7 +482,7 @@
         </member>
         <member name="M:AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
-            Paints the waveform.
+            Paint the waveform.
             </summary>
         </member>
     </members>
