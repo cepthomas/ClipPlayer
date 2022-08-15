@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NBagOfTricks;
@@ -26,6 +27,9 @@ namespace ClipPlayer
 
         /// <summary>Current volume.</summary>
         double _volume = 0.5;
+
+        /// <summary>Clean up if resampled.</summary>
+        string _resampleFile = "";
         #endregion
 
         #region Properties - interface implementation
@@ -88,9 +92,27 @@ namespace ClipPlayer
         {
             bool ok = true;
 
+            // Clean up first.
+            _audioFileReader?.Dispose();
+            if(_resampleFile != "")
+            {
+                File.Delete(_resampleFile);
+                _resampleFile = "";
+            }
+
             // Create input device.
-            _audioFileReader?.Dispose(); //old one
             _audioFileReader = new AudioFileReader(fn);
+
+            // If it doesn't match, create a resampled temp file.
+            if(_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
+            {
+                var ext = Path.GetExtension(fn);
+                _resampleFile = fn.Replace(ext, "_rs" + ext);
+                var resampler = new WdlResamplingSampleProvider(_audioFileReader, AudioLibDefs.SAMPLE_RATE);
+                WaveFileWriter.CreateWaveFile16(_resampleFile, resampler);
+                _audioFileReader = new AudioFileReader(_resampleFile);
+            }
+            
             Length = _audioFileReader.TotalTime;
 
             // Create reader.

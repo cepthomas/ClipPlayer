@@ -19,6 +19,9 @@
         <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
             <summary>For viewing purposes.</summary>
         </member>
+        <member name="F:AudioLib.AudioLibDefs.SAMPLE_RATE">
+            <summary>Everything internal.</summary>
+        </member>
         <member name="T:AudioLib.StereoCoercion">
             <summary>How to handle stereo files.</summary>
         </member>
@@ -129,7 +132,8 @@
         </member>
         <member name="T:AudioLib.ClipSampleProvider">
             <summary>
-            Provider that encapsulates a client supplied audio data subset.
+            Provider that encapsulates a client supplied audio data subset. When constructed, it reads in the
+            entire file. Does sample rate conversion if needed.
             Mono output only - coerces stereo input per client call. Can be used for splitting stereo files.
             If you need stereo, use AudioFileReader.
             Supplies some basic editing:
