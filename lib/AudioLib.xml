@@ -181,7 +181,7 @@
             <param name="source">Source provider to use.</param>
             <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[],System.String)">
+        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[])">
             <summary>
             Constructor from a buffer. Mono only.
             </summary>
