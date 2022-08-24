@@ -18,7 +18,7 @@ using AudioLib;
 namespace ClipPlayer
 {
     [Serializable]
-    public class UserSettings : Settings
+    public sealed class UserSettings : Settings
     {
         #region Persisted editable properties
         [DisplayName("Auto Close")]

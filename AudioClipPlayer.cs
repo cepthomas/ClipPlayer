@@ -39,7 +39,6 @@ namespace ClipPlayer
         /// <inheritdoc />
         public TimeSpan Length { get; private set; } = TimeSpan.Zero;
 
-        /// <summary>Current time.</summary>
         /// <inheritdoc />
         public TimeSpan Current
         {
@@ -104,15 +103,10 @@ namespace ClipPlayer
             _audioFileReader = new AudioFileReader(fn);
 
             // If it doesn't match, create a resampled temp file.
-            if(_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
+            if (_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
             {
-                var ext = Path.GetExtension(fn);
-                _resampleFile = fn.Replace(ext, "_rs" + ext);
-                var resampler = new WdlResamplingSampleProvider(_audioFileReader, AudioLibDefs.SAMPLE_RATE);
-                WaveFileWriter.CreateWaveFile16(_resampleFile, resampler);
-                _audioFileReader = new AudioFileReader(_resampleFile);
+                _audioFileReader = _audioFileReader.Resample();
             }
-            
             Length = _audioFileReader.TotalTime;
 
             // Create reader.
