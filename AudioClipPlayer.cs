@@ -29,7 +29,7 @@ namespace ClipPlayer
         double _volume = 0.5;
 
         /// <summary>Clean up if resampled.</summary>
-        string _resampleFile = "";
+        const string RESAMPLE_FILE = "Resampe_file_delete_me.wav";
         #endregion
 
         #region Properties - interface implementation
@@ -93,11 +93,7 @@ namespace ClipPlayer
 
             // Clean up first.
             _audioFileReader?.Dispose();
-            if(_resampleFile != "")
-            {
-                File.Delete(_resampleFile);
-                _resampleFile = "";
-            }
+            File.Delete(RESAMPLE_FILE);
 
             // Create input device.
             _audioFileReader = new AudioFileReader(fn);
@@ -105,7 +101,9 @@ namespace ClipPlayer
             // If it doesn't match, create a resampled temp file.
             if (_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
             {
-                _audioFileReader = _audioFileReader.Resample();
+                _audioFileReader.Dispose();
+                NAudioEx.Resample(fn, RESAMPLE_FILE);
+                _audioFileReader = new AudioFileReader(RESAMPLE_FILE);
             }
             Length = _audioFileReader.TotalTime;
 

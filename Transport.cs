@@ -151,6 +151,7 @@ namespace ClipPlayer
                 //Environment.ExitCode = 1;
                 //Close();
             }
+            base.OnLoad(e);
         }
 
         /// <summary>
