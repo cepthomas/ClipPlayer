@@ -85,9 +85,20 @@ namespace ClipPlayer
             chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
 
             // Hook up UI handlers.
-            chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player?.Play() : _player?.Stop(); };
-            btnRewind.Click += (_, __) => { _player?.Rewind(); progress.AddValue(0); };
-            sldVolume.ValueChanged += (_, __) => { Common.Settings.Volume = sldVolume.Value; if(_player is not null) _player.Volume = sldVolume.Value; };
+            chkPlay.CheckedChanged += (_, __) => _ = chkPlay.Checked ? _player?.Play() : _player?.Stop();
+            btnRewind.Click += (_, __) => 
+            {
+                _player?.Rewind();
+                progress.AddValue(0);
+            };
+            sldVolume.ValueChanged += (_, __) =>
+            {
+                Common.Settings.Volume = sldVolume.Value;
+                if(_player is not null)
+                {
+                    _player.Volume = sldVolume.Value;
+                }
+            };
             btnSettings.Click += Settings_Click;
             progress!.MouseDown += Progress_MouseDown;
             progress!.MouseMove += Progress_MouseMove;
@@ -98,7 +109,7 @@ namespace ClipPlayer
             {
                 cmbDrumChannel.Items.Add($"{i + 1}");
             }
-            cmbDrumChannel.SelectedIndexChanged += (_, __) => { _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
+            cmbDrumChannel.SelectedIndexChanged += (_, __) => _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1;
             cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
 
             if(!Common.Settings.Debug)

@@ -98,7 +98,7 @@ namespace ClipPlayer
             // Create input device.
             _audioFileReader = new AudioFileReader(fn);
 
-            // If it doesn't match, create a resampled temp file.
+            // If it doesn't match, create a resampled temp file. TODO but display original filename.
             if (_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
             {
                 _audioFileReader.Dispose();

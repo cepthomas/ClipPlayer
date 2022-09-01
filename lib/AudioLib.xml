@@ -490,6 +490,9 @@
         <member name="F:AudioLib.WaveViewer._samplesPerPixelMax">
             <summary>Means fully zoomed out.</summary>
         </member>
+        <member name="F:AudioLib.WaveViewer._simple">
+            <summary>Simple display only.</summary>
+        </member>
         <member name="P:AudioLib.WaveViewer.WaveFormat">
             <summary>Gets the WaveFormat of this Sample Provider. ISampleProvider implementation.</summary>
         </member>
@@ -514,8 +517,8 @@
         <member name="P:AudioLib.WaveViewer.ZoomFactor">
             <summary>Zoom increment.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.PanFactor">
-            <summary>Pan increment.</summary>
+        <member name="P:AudioLib.WaveViewer.ShiftIncrement">
+            <summary>Number of pixels to shift by.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.Length">
             <summary>Length of the clip in samples.</summary>
@@ -530,15 +533,18 @@
             <summary>Selection length in samples. Could be negative.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.Marker">
-            <summary>Current cursor location.</summary>
+            <summary>General purpose marker location.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.VisStart">
+        <member name="P:AudioLib.WaveViewer.VisibleStart">
             <summary>Visible start sample.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.VisLength">
+        <member name="P:AudioLib.WaveViewer.VisibleLength">
             <summary>Visible length in samples. Always positive.</summary>
         </member>
         <member name="E:AudioLib.WaveViewer.GainChangedEvent">
+            <summary>Value changed by user.</summary>
+        </member>
+        <member name="E:AudioLib.WaveViewer.MarkerChangedEvent">
             <summary>Value changed by user.</summary>
         </member>
         <member name="M:AudioLib.WaveViewer.#ctor">
@@ -546,11 +552,17 @@
             Default constructor. Mainly for designer.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider)">
+        <member name="M:AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider,System.Boolean)">
             <summary>
             Set everything from data source. Client must do this before setting properties as some are overwritten.
             </summary>
             <param name="prov">Source</param>
+            <param name="simple">If true simple display only.</param>
+        </member>
+        <member name="M:AudioLib.WaveViewer.ResetView">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:AudioLib.WaveViewer.Dispose(System.Boolean)">
             <summary>
@@ -576,6 +588,12 @@
             <summary>
             Fit the wave exactly.
             </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.Center(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
         </member>
         <member name="M:AudioLib.WaveViewer.OnMouseWheel(System.Windows.Forms.MouseEventArgs)">
             <summary>
@@ -612,16 +630,12 @@
             Paint the waveform.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.ValidateProperties">
-            <summary>
-            Check sanity of client selections.
-            </summary>
-        </member>
         <member name="M:AudioLib.WaveViewer.PixelToSample(System.Int32)">
             <summary>
             Convert x pos to sample index.
             </summary>
-            <param name="pixel">UI loc or -1 if get current mouse.</param>
+            <param name="pixel">UI location.</param>
+            <returns>The sample or -1 if not visible.</returns>
         </member>
         <member name="M:AudioLib.WaveViewer.SampleToPixel(System.Int32)">
             <summary>
@@ -629,6 +643,12 @@
             </summary>
             <param name="sample"></param>
             <returns>The pixel or -1 if not visible.</returns>
+        </member>
+        <member name="M:AudioLib.WaveViewer.MouseX">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:AudioLib.WaveViewer.DoSnap(System.Int32)">
             <summary>
