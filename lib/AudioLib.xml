@@ -28,6 +28,9 @@
         <member name="T:AudioLib.StereoCoercion">
             <summary>How to handle stereo files.</summary>
         </member>
+        <member name="T:AudioLib.WaveSelectionMode">
+            <summary>Selection.</summary>
+        </member>
         <member name="M:AudioLib.AudioLibUtils.TimeToSample(System.TimeSpan)">
             <summary>
             Conversion function.
@@ -55,6 +58,23 @@
             </summary>
             <param name="sample"></param>
             <returns></returns>
+        </member>
+        <member name="M:AudioLib.AudioLibUtils.SampleToBarBeat(System.Int32,System.Single)">
+            <summary>
+            Conversion function.
+            </summary>
+            <param name="sample"></param>
+            <param name="bpm"></param>
+            <returns>(bar, beat)</returns>
+        </member>
+        <member name="M:AudioLib.AudioLibUtils.BarBeatToSample(System.Int32,System.Int32,System.Single)">
+            <summary>
+            Conversion function.
+            </summary>
+            <param name="bar"></param>
+            <param name="beat"></param>
+            <param name="bpm"></param>
+            <returns>Sample</returns>
         </member>
         <member name="T:AudioLib.AudioFileInfo">
             <summary>Borrowed from NAudio.</summary>
@@ -466,6 +486,9 @@
         <member name="F:AudioLib.WaveViewer._textFont">
             <summary>For drawing text.</summary>
         </member>
+        <member name="F:AudioLib.WaveViewer._textBrush">
+            <summary>For drawing text.</summary>
+        </member>
         <member name="F:AudioLib.WaveViewer._format">
             <summary>For drawing text.</summary>
         </member>
@@ -480,9 +503,6 @@
         </member>
         <member name="F:AudioLib.WaveViewer._position">
             <summary>Make this look like a stream for sample provider.</summary>
-        </member>
-        <member name="F:AudioLib.WaveViewer.GRID_STEP">
-            <summary>Grid Y resolution. Assumes +-1.0f range.</summary>
         </member>
         <member name="F:AudioLib.WaveViewer._samplesPerPixel">
             <summary>For painting. Essentially the zoom factor.</summary>
@@ -508,17 +528,23 @@
         <member name="P:AudioLib.WaveViewer.Gain">
             <summary>Client gain adjustment.</summary>
         </member>
+        <member name="P:AudioLib.WaveViewer.Snap">
+            <summary>Snap control.</summary>
+        </member>
+        <member name="P:AudioLib.WaveViewer.SelectionMode">
+            <summary>How to select wave.</summary>
+        </member>
         <member name="P:AudioLib.WaveViewer.GainIncrement">
             <summary>UI gain adjustment.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.WheelResolution">
             <summary>How fast the mouse wheel goes.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.ZoomFactor">
+        <member name="P:AudioLib.WaveViewer.ZoomIncrement">
             <summary>Zoom increment.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.ShiftIncrement">
-            <summary>Number of pixels to shift by.</summary>
+            <summary>Number of pixels to x shift by.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.Length">
             <summary>Length of the clip in samples.</summary>
