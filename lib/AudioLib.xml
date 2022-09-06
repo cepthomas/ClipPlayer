@@ -16,14 +16,14 @@
         <member name="F:AudioLib.AudioLibDefs.MAX_GAIN">
             <summary>Maximum gain.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.READ_BUFF_SIZE">
-            <summary>Stream buffer size.</summary>
-        </member>
         <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
             <summary>For viewing purposes.</summary>
         </member>
         <member name="F:AudioLib.AudioLibDefs.SAMPLE_RATE">
             <summary>Everything internal.</summary>
+        </member>
+        <member name="F:AudioLib.AudioLibDefs.READ_BUFF_SIZE">
+            <summary>Stream buffer size.</summary>
         </member>
         <member name="T:AudioLib.StereoCoercion">
             <summary>How to handle stereo files.</summary>
@@ -208,12 +208,18 @@
         <member name="P:AudioLib.ClipSampleProvider.Position">
             <summary>Position of the simulated stream as sample index.</summary>
         </member>
+        <member name="P:AudioLib.ClipSampleProvider.SelStart">
+            <summary>Selection start sample.</summary>
+        </member>
+        <member name="P:AudioLib.ClipSampleProvider.SelLength">
+            <summary>Selection length in samples.</summary>
+        </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
-            Constructor from a sample provider. Coerces stereo to mono.
+            Constructor from a sample provider.Coerces stereo to mono.
             </summary>
-            <param name="source">Source provider to use.</param>
-            <param name="mode">How to handle stereo files.</param>
+            <param name = "source" > Source provider to use.</param>
+            <param name = "mode" > How to handle stereo files.</param>
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[])">
             <summary>
@@ -259,7 +265,7 @@
             Make a buffer from the provider contents. Mono only.
             </summary>
             <param name="prov">The provider.</param>
-            <returns></returns>
+            <returns>Values.</returns>
         </member>
         <member name="M:AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
             <summary>
@@ -272,7 +278,7 @@
             Agnostic property.
             </summary>
             <param name="prov"></param>
-            <returns>The length or 0 if unknown.</returns>
+            <returns>The length or -1 if unknown.</returns>
         </member>
         <member name="M:AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
             <summary>
@@ -308,6 +314,23 @@
             </summary>
             <param name="prov">Data source.</param>
             <param name="exportFileName"></param>
+        </member>
+        <member name="T:AudioLib.NullSampleProvider">
+            <summary>
+            Sample provider that does nothing.
+            </summary>
+        </member>
+        <member name="P:AudioLib.NullSampleProvider.WaveFormat">
+            <summary>The fixed stereo WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+        </member>
+        <member name="M:AudioLib.NullSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+            <summary>
+            ISampleProvider implementation.
+            </summary>
+            <param name="buffer">Sample buffer.</param>
+            <param name="offset">Offset into buffer.</param>
+            <param name="count">Number of samples required.</param>
+            <returns>Number of samples read.</returns>
         </member>
         <member name="T:AudioLib.PeakProvider">
             <summary>
@@ -513,9 +536,6 @@
         <member name="F:AudioLib.WaveViewer._simple">
             <summary>Simple display only.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.WaveFormat">
-            <summary>Gets the WaveFormat of this Sample Provider. ISampleProvider implementation.</summary>
-        </member>
         <member name="P:AudioLib.WaveViewer.DrawColor">
             <summary>The waveform color.</summary>
         </member>
@@ -556,7 +576,7 @@
             <summary>Selection start sample.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.SelLength">
-            <summary>Selection length in samples. Could be negative.</summary>
+            <summary>Selection length in samples.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.Marker">
             <summary>General purpose marker location.</summary>
@@ -600,15 +620,6 @@
             <summary>
             Put back to area of interest.
             </summary>
-        </member>
-        <member name="M:AudioLib.WaveViewer.Read(System.Single[],System.Int32,System.Int32)">
-            <summary>
-            Fill the buffer with selected data. ISampleProvider implementation.
-            </summary>
-            <param name="buffer">The buffer to fill with samples.</param>
-            <param name="offset">Offset into buffer.</param>
-            <param name="count">The number of samples to read.</param>
-            <returns>the number of samples written to the buffer.</returns>
         </member>
         <member name="M:AudioLib.WaveViewer.FitGain">
             <summary>
