@@ -216,10 +216,10 @@
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
-            Constructor from a sample provider.Coerces stereo to mono.
+            Constructor from a sample provider. Coerces stereo to mono.
             </summary>
-            <param name = "source" > Source provider to use.</param>
-            <param name = "mode" > How to handle stereo files.</param>
+            <param name="source">Source provider to use.</param>
+            <param name="mode">How to handle stereo files.</param>
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[])">
             <summary>
@@ -536,6 +536,18 @@
         <member name="F:AudioLib.WaveViewer._simple">
             <summary>Simple display only.</summary>
         </member>
+        <member name="F:AudioLib.WaveViewer.GAIN_INCREMENT">
+            <summary>UI gain adjustment.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer.WHEEL_RESOLUTION">
+            <summary>How fast the mouse wheel goes.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer.ZOOM_INCREMENT">
+            <summary>Zoom increment.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer.PAN_INCREMENT">
+            <summary>Number of pixels to x shift by.</summary>
+        </member>
         <member name="P:AudioLib.WaveViewer.DrawColor">
             <summary>The waveform color.</summary>
         </member>
@@ -554,17 +566,8 @@
         <member name="P:AudioLib.WaveViewer.SelectionMode">
             <summary>How to select wave.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.GainIncrement">
-            <summary>UI gain adjustment.</summary>
-        </member>
-        <member name="P:AudioLib.WaveViewer.WheelResolution">
-            <summary>How fast the mouse wheel goes.</summary>
-        </member>
-        <member name="P:AudioLib.WaveViewer.ZoomIncrement">
-            <summary>Zoom increment.</summary>
-        </member>
-        <member name="P:AudioLib.WaveViewer.ShiftIncrement">
-            <summary>Number of pixels to x shift by.</summary>
+        <member name="P:AudioLib.WaveViewer.BPM">
+            <summary>How fast to go for beat mode.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.Length">
             <summary>Length of the clip in samples.</summary>
@@ -588,6 +591,9 @@
             <summary>Visible length in samples. Always positive.</summary>
         </member>
         <member name="E:AudioLib.WaveViewer.GainChangedEvent">
+            <summary>Value changed by user.</summary>
+        </member>
+        <member name="E:AudioLib.WaveViewer.SelectionChangedEvent">
             <summary>Value changed by user.</summary>
         </member>
         <member name="E:AudioLib.WaveViewer.MarkerChangedEvent">
@@ -665,6 +671,11 @@
         <member name="M:AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
             Paint the waveform.
+            </summary>
+        </member>
+        <member name="M:AudioLib.WaveViewer.ValidateUi">
+            <summary>
+            Make sure user entered values are harmonious.
             </summary>
         </member>
         <member name="M:AudioLib.WaveViewer.PixelToSample(System.Int32)">
