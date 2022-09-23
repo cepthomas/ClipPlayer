@@ -13,6 +13,18 @@
         <member name="T:AudioLib.SnapType">
             <summary>How to snap.</summary>
         </member>
+        <member name="T:AudioLib.Property">
+            <summary>Notification type.</summary>
+        </member>
+        <member name="T:AudioLib.IConverterOps">
+            <summary>Abstraction of selection mode.</summary>
+        </member>
+        <member name="P:AudioLib.Globals.ConverterOps">
+            <summary>Global mode.</summary>
+        </member>
+        <member name="P:AudioLib.Globals.BPM">
+            <summary>Global tempo if using Beat selection mode.</summary>
+        </member>
         <member name="F:AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">
             <summary>Supported types.</summary>
         </member>
@@ -25,68 +37,17 @@
         <member name="F:AudioLib.AudioLibDefs.MAX_GAIN">
             <summary>Maximum gain.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
-            <summary>For viewing purposes.</summary>
-        </member>
         <member name="F:AudioLib.AudioLibDefs.SAMPLE_RATE">
             <summary>Everything internal.</summary>
         </member>
         <member name="F:AudioLib.AudioLibDefs.READ_BUFF_SIZE">
             <summary>Stream buffer size.</summary>
         </member>
-        <member name="M:AudioLib.AudioLibUtils.SampleToSample(System.Int32,AudioLib.SnapType)">
-            <summary>
-            Conversion function. Does snapping using arbitrary factors.
-            </summary>
-            <param name="sample"></param>
-            <param name="snap"></param>
-            <returns></returns>
+        <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
+            <summary>Standard formatting.</summary>
         </member>
-        <member name="M:AudioLib.AudioLibUtils.SampleToTime(System.Int32,AudioLib.SnapType)">
-            <summary>
-            Conversion function. Does snapping.
-            </summary>
-            <param name="sample"></param>
-            <param name="snap"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.AudioLibUtils.TimeToSample(System.TimeSpan)">
-            <summary>
-            Conversion function.
-            </summary>
-            <param name="ts"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.AudioLibUtils.SampleToBarBeat(System.Int32,System.Single,AudioLib.SnapType)">
-            <summary>
-            Conversion function. Does snapping.
-            </summary>
-            <param name="sample"></param>
-            <param name="bpm"></param>
-            <param name="snap"></param>
-            <returns>BarBeat</returns>
-        </member>
-        <member name="M:AudioLib.AudioLibUtils.BarBeatToSample(AudioLib.BarBeat,System.Single)">
-            <summary>
-            Conversion function.
-            </summary>
-            <param name="bb">BarBeat</param>
-            <param name="bpm"></param>
-            <returns>Sample</returns>
-        </member>
-        <member name="M:AudioLib.AudioLibUtils.MsecToSample(System.Single)">
-            <summary>
-            Conversion function.
-            </summary>
-            <param name="msec"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.AudioLibUtils.SampleToMsec(System.Int32)">
-            <summary>
-            Conversion function.
-            </summary>
-            <param name="sample"></param>
-            <returns></returns>
+        <member name="F:AudioLib.AudioLibDefs.MAX_CLIP_SIZE">
+            <summary>Max clip size in minutes. Can be overriden in settings.</summary>
         </member>
         <member name="T:AudioLib.AudioFileInfo">
             <summary>Borrowed from NAudio.</summary>
@@ -188,6 +149,69 @@
         <member name="T:AudioLib.FixedListTypeConverter">
             <summary>Converter for selecting property value from known lists.</summary>
         </member>
+        <member name="T:AudioLib.BarOps">
+            <summary>Converters for musical time. 0-based not traditional 1-based.</summary>
+        </member>
+        <member name="T:AudioLib.BarOps.BarDesc">
+            <summary>Convenience container for internal use.</summary>
+        </member>
+        <member name="M:AudioLib.BarOps.SnapSample(System.Int32,AudioLib.SnapType)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
+            <param name="snap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.TextToSample(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.Format(System.Int32)">
+            <summary>
+            Human readable.
+            </summary>
+            <param name="sample"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.TextToSubdiv(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.SubdivToSample(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="subdiv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.SampleToSubdiv(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.SampleToBar(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.BarOps.TextToBar(System.String)">
+            <summary>
+            Parser.
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
         <member name="T:AudioLib.ClipSampleProvider">
             <summary>
             Provider that encapsulates a client supplied audio data subset. When constructed, it reads in the
@@ -203,7 +227,7 @@
             <summary>Make this class look like a stream.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.WaveFormat">
-            <summary>The WaveFormat of this sample provider. Fixed to mono. ISampleProvider implementation.</summary>
+            <inheritdoc />
         </member>
         <member name="P:AudioLib.ClipSampleProvider.FileName">
             <summary>The associated file name. Empty if new.</summary>
@@ -211,20 +235,26 @@
         <member name="P:AudioLib.ClipSampleProvider.Gain">
             <summary>Overall gain applied to all samples.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.Length">
-            <summary>Length of the clip in samples.</summary>
+        <member name="P:AudioLib.ClipSampleProvider.SamplesPerChannel">
+            <summary>The number of samples per channel or -1 if unknown.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.TotalTime">
-            <summary>Length of the clip in seconds.</summary>
+            <summary>The total time in msec.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.Position">
-            <summary>Position of the simulated stream as sample index.</summary>
+            <summary>The current stream position.</summary>
+        </member>
+        <member name="P:AudioLib.ClipSampleProvider.CurrentTime">
+            <summary>The current time.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.SelStart">
             <summary>Selection start sample.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.SelLength">
             <summary>Selection length in samples.</summary>
+        </member>
+        <member name="M:AudioLib.ClipSampleProvider.ToString">
+            <summary>Get provider info. Mainly for window header.</summary>
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
@@ -272,6 +302,8 @@
         <member name="T:AudioLib.NAudioEx">
             <summary>
             Extensions to enhance core NAudio for this application.
+            TODO A lot of these are kind of clunky but the alternative is to add some new functionality
+            to ISampleprovider. Maybe I'll branch NAudio some day.
             </summary>
         </member>
         <member name="M:AudioLib.NAudioEx.ReadAll(NAudio.Wave.ISampleProvider)">
@@ -280,33 +312,6 @@
             </summary>
             <param name="prov">The provider.</param>
             <returns>Values.</returns>
-        </member>
-        <member name="M:AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic position setter.
-            </summary>
-            <param name="prov"></param>
-        </member>
-        <member name="M:AudioLib.NAudioEx.Length(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic property.
-            </summary>
-            <param name="prov"></param>
-            <returns>The length or -1 if unknown.</returns>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Get provider info. Mainly for window header.
-            </summary>
-            <param name="prov"></param>
-            <returns>Info chunks.</returns>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetInfo(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Get provider info generically.
-            </summary>
-            <param name="prov"></param>
-            <returns>Info as tuple.</returns>
         </member>
         <member name="M:AudioLib.NAudioEx.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
             <summary>
@@ -317,7 +322,7 @@
         </member>
         <member name="M:AudioLib.NAudioEx.Resample(System.String,System.String)">
             <summary>
-            Resample to a new file compatible with this application.
+            Resample to a new wav file.
             </summary>
             <param name="fn">The current filename</param>
             <param name="newfn">The new filename</param>
@@ -329,22 +334,57 @@
             <param name="prov">Data source.</param>
             <param name="exportFileName"></param>
         </member>
+        <member name="M:AudioLib.NAudioEx.SetPosition(NAudio.Wave.ISampleProvider,System.Int32)">
+            <summary>
+            Agnostic stream position setter.
+            </summary>
+            <param name="prov"></param>
+            <param name="pos"></param>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetPosition(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic stream position getter.
+            </summary>
+            <param name="prov"></param>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetTotalTime(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic property.
+            </summary>
+            <param name="prov"></param>
+            <returns>The duration in msec.</returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetCurrentTime(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic property.
+            </summary>
+            <param name="prov"></param>
+            <returns>The duration in msec.</returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetSamplesPerChannel(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic property.
+            </summary>
+            <param name="prov"></param>
+            <returns>The number of samples per channel or -1 if unknown.</returns>
+        </member>
+        <member name="M:AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Get provider info. Mainly for window header.
+            </summary>
+            <param name="prov"></param>
+            <returns>Info chunks.</returns>
+        </member>
         <member name="T:AudioLib.NullSampleProvider">
             <summary>
             Sample provider that does nothing.
             </summary>
         </member>
         <member name="P:AudioLib.NullSampleProvider.WaveFormat">
-            <summary>The fixed stereo WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+            <inheritdoc />
         </member>
         <member name="M:AudioLib.NullSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
-            <summary>
-            ISampleProvider implementation.
-            </summary>
-            <param name="buffer">Sample buffer.</param>
-            <param name="offset">Offset into buffer.</param>
-            <param name="count">Number of samples requested.</param>
-            <returns>Number of samples read.</returns>
+            <inheritdoc />
         </member>
         <member name="T:AudioLib.PeakProvider">
             <summary>
@@ -361,6 +401,30 @@
             <param name="totalPixels">Where to stop.</param>
             <returns></returns>
         </member>
+        <member name="T:AudioLib.SampleOps">
+            <summary>Converters for samples.</summary>
+        </member>
+        <member name="M:AudioLib.SampleOps.SnapSample(System.Int32,AudioLib.SnapType)">
+            <summary>
+            Snap sample to 10000 or 1000 or none.
+            </summary>
+            <param name="sample"></param>
+            <param name="snap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.SampleOps.TextToSample(System.String)">
+            <summary>
+            Parse a sample text.
+            </summary>
+            <param name="val"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.SampleOps.Format(System.Int32)">
+            <summary>
+            Human readable.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:AudioLib.SwappableSampleProvider">
             <summary>
             Sample provider that supports hot swapping of input. Mainly used to supply input to
@@ -372,18 +436,13 @@
             <summary>The current input.</summary>
         </member>
         <member name="P:AudioLib.SwappableSampleProvider.WaveFormat">
-            <summary>The fixed stereo WaveFormat of this sample provider. ISampleProvider implementation.</summary>
+            <summary>ISampleProvider implementation.</summary>
         </member>
         <member name="M:AudioLib.SwappableSampleProvider.SetInput(NAudio.Wave.ISampleProvider)">
             <summary>
             Sets the input source.
             </summary>
             <param name="input">New input or null to disable.</param>
-        </member>
-        <member name="M:AudioLib.SwappableSampleProvider.Rewind">
-            <summary>
-            Rewind.
-            </summary>
         </member>
         <member name="M:AudioLib.SwappableSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
             <summary>
@@ -516,10 +575,73 @@
             <param name="val"></param>
             <returns></returns>
         </member>
-        <member name="T:AudioLib.WaveViewer">
+        <member name="T:AudioLib.TimeOps">
+            <summary>Converters for audio time.</summary>
+        </member>
+        <member name="T:AudioLib.TimeOps.TimeDesc">
+            <summary>Convenience container for internal use.</summary>
+        </member>
+        <member name="M:AudioLib.TimeOps.SnapSample(System.Int32,AudioLib.SnapType)">
             <summary>
-            Simple mono wave display.
+            
             </summary>
+            <param name="sample"></param>
+            <param name="snap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.TextToSample(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.Format(System.Int32)">
+            <summary>
+            Human readable.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.MsecToSample(System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="msec"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.SampleToMsec(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.SampleToTime(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="sample"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.TextToMsec(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AudioLib.TimeOps.TextToTime(System.String)">
+            <summary>
+            Parser.
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AudioLib.WaveViewer">
+            <summary>Simple mono wave display.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._viewMode">
+            <summary>Function set.</summary>
         </member>
         <member name="F:AudioLib.WaveViewer._textFont">
             <summary>For drawing text.</summary>
@@ -542,23 +664,23 @@
         <member name="F:AudioLib.WaveViewer._samplesPerPixel">
             <summary>For painting. Essentially the zoom factor.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._simple">
-            <summary>Simple display only.</summary>
-        </member>
         <member name="F:AudioLib.WaveViewer._lastXPos">
             <summary>Last pixel.</summary>
+        </member>
+        <member name="F:AudioLib.WaveViewer._snap">
+            <summary>How to snap.</summary>
         </member>
         <member name="F:AudioLib.WaveViewer.GAIN_INCREMENT">
             <summary>UI gain adjustment.</summary>
         </member>
         <member name="F:AudioLib.WaveViewer.WHEEL_RESOLUTION">
-            <summary>How fast the mouse wheel goes.</summary>
+            <summary>Scroll rate. Smaller means faster.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer.ZOOM_INCREMENT">
-            <summary>Zoom increment.</summary>
+        <member name="F:AudioLib.WaveViewer.ZOOM_RATIO">
+            <summary>Zoom ratio.</summary>
         </member>
         <member name="F:AudioLib.WaveViewer.PAN_INCREMENT">
-            <summary>Number of pixels to x shift by.</summary>
+            <summary>Number of pixels to x pan by.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.DrawColor">
             <summary>The waveform color.</summary>
@@ -576,7 +698,7 @@
             <summary>Length of the clip in samples.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.TotalTime">
-            <summary>Length of the clip in seconds.</summary>
+            <summary>Length of the clip in msec.</summary>
         </member>
         <member name="P:AudioLib.WaveViewer.SelStart">
             <summary>Selection start sample.</summary>
@@ -593,14 +715,8 @@
         <member name="P:AudioLib.WaveViewer.VisibleLength">
             <summary>Visible length in samples. Always positive.</summary>
         </member>
-        <member name="E:AudioLib.WaveViewer.GainChangedEvent">
-            <summary>Value changed by user.</summary>
-        </member>
-        <member name="E:AudioLib.WaveViewer.SelectionChangedEvent">
-            <summary>Value changed by user.</summary>
-        </member>
-        <member name="E:AudioLib.WaveViewer.MarkerChangedEvent">
-            <summary>Value changed by user.</summary>
+        <member name="E:AudioLib.WaveViewer.ViewerChangeEvent">
+            <summary>Value changed by user. Notify owner for display.</summary>
         </member>
         <member name="M:AudioLib.WaveViewer.#ctor">
             <summary>
@@ -625,11 +741,24 @@
             Fit the wave exactly.
             </summary>
         </member>
+        <member name="M:AudioLib.WaveViewer.ResetGain">
+            <summary>
+            Go to unity gain.
+            </summary>
+        </member>
         <member name="M:AudioLib.WaveViewer.Recenter(System.Int32)">
             <summary>
             Pan to new center location.
             </summary>
             <param name="sample">Center around this.</param>
+        </member>
+        <member name="M:AudioLib.WaveViewer.UpdateProperty(AudioLib.Property,System.String)">
+            <summary>
+            Owner is updating a property. This does conversion and syntax checking for the client.
+            </summary>
+            <param name="change">The property</param>
+            <param name="val">The new value</param>
+            <returns>True if valid.</returns>
         </member>
         <member name="M:AudioLib.WaveViewer.OnMouseWheel(System.Windows.Forms.MouseEventArgs)">
             <summary>
@@ -648,7 +777,7 @@
         </member>
         <member name="M:AudioLib.WaveViewer.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
             <summary>
-            Handle mouse move.
+            Handle mouse move. Just for tooltip currently.
             </summary>
             <param name="e"></param>
         </member>
@@ -666,12 +795,12 @@
         </member>
         <member name="M:AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
-            Paint the waveform.
+            Paint the waveform. In simple mode support just the waveform with no zoom, pan, etc.
             </summary>
         </member>
         <member name="M:AudioLib.WaveViewer.CheckSel">
             <summary>
-            Make sure user entered values are harmonious.
+            Do a few sanity checks.
             </summary>
         </member>
         <member name="M:AudioLib.WaveViewer.ResetView">
@@ -696,12 +825,6 @@
         <member name="M:AudioLib.WaveViewer.MouseX">
             <summary>
             Helper.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.WaveViewer.GetSnapType">
-            <summary>
-            Snap to user preference.
             </summary>
             <returns></returns>
         </member>
