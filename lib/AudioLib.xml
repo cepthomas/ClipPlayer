@@ -217,14 +217,13 @@
             Provider that encapsulates a client supplied audio data subset. When constructed, it reads in the
             entire file. Does sample rate conversion if needed.
             Mono output only - coerces stereo input per client call. Can be used for splitting stereo files.
-            If you need stereo, use AudioFileReader.
             </summary>
         </member>
         <member name="F:AudioLib.ClipSampleProvider._vals">
             <summary>The full buffer from client.</summary>
         </member>
-        <member name="F:AudioLib.ClipSampleProvider._position">
-            <summary>Make this class look like a stream.</summary>
+        <member name="F:AudioLib.ClipSampleProvider._sampleCount">
+            <summary>For notifications.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.WaveFormat">
             <inheritdoc />
@@ -236,13 +235,13 @@
             <summary>Overall gain applied to all samples.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.SamplesPerChannel">
-            <summary>The number of samples per channel or -1 if unknown.</summary>
+            <summary>The number of samples per channel.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.TotalTime">
-            <summary>The total time in msec.</summary>
+            <summary>The total time.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.Position">
-            <summary>The current stream position.</summary>
+            <summary>Make this class sort of look like a stream. TODO1 This is actually the index into the buffer aka sample index.</summary>
         </member>
         <member name="P:AudioLib.ClipSampleProvider.CurrentTime">
             <summary>The current time.</summary>
@@ -253,8 +252,11 @@
         <member name="P:AudioLib.ClipSampleProvider.SelLength">
             <summary>Selection length in samples.</summary>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.ToString">
-            <summary>Get provider info. Mainly for window header.</summary>
+        <member name="P:AudioLib.ClipSampleProvider.SamplesPerNotification">
+            <summary>Number of samples per notification.</summary>
+        </member>
+        <member name="E:AudioLib.ClipSampleProvider.ClipProgress">
+            <summary>Raised periodically to inform the user of play progress.</summary>
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
@@ -271,7 +273,7 @@
         </member>
         <member name="M:AudioLib.ClipSampleProvider.#ctor(System.String,AudioLib.StereoCoercion)">
             <summary>
-            Constructor from a file. Coerces stereo to mono.
+            Constructor from a file. Coerces stereo to client's choice.
             </summary>
             <param name="fn">File to use.</param>
             <param name="mode">How to handle stereo files.</param>
@@ -287,11 +289,6 @@
             <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.Rewind">
-            <summary>
-            Go back to the beginning.
-            </summary>
-        </member>
         <member name="M:AudioLib.ClipSampleProvider.ReadSource(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
             <summary>
             Common buff loader. Coerces stereo to mono per client request.
@@ -302,7 +299,7 @@
         <member name="T:AudioLib.NAudioEx">
             <summary>
             Extensions to enhance core NAudio for this application.
-            TODO A lot of these are kind of clunky but the alternative is to add some new functionality
+            A lot of these are kind of clunky but the alternative is to add some new functionality
             to ISampleprovider. Maybe I'll branch NAudio some day.
             </summary>
         </member>
@@ -334,43 +331,15 @@
             <param name="prov">Data source.</param>
             <param name="exportFileName"></param>
         </member>
-        <member name="M:AudioLib.NAudioEx.SetPosition(NAudio.Wave.ISampleProvider,System.Int32)">
+        <member name="M:AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
             <summary>
             Agnostic stream position setter.
             </summary>
             <param name="prov"></param>
-            <param name="pos"></param>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetPosition(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic stream position getter.
-            </summary>
-            <param name="prov"></param>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetTotalTime(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic property.
-            </summary>
-            <param name="prov"></param>
-            <returns>The duration in msec.</returns>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetCurrentTime(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic property.
-            </summary>
-            <param name="prov"></param>
-            <returns>The duration in msec.</returns>
-        </member>
-        <member name="M:AudioLib.NAudioEx.GetSamplesPerChannel(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic property.
-            </summary>
-            <param name="prov"></param>
-            <returns>The number of samples per channel or -1 if unknown.</returns>
         </member>
         <member name="M:AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
             <summary>
-            Get provider info. Mainly for window header.
+            Get provider info. Mainly for UI display.
             </summary>
             <param name="prov"></param>
             <returns>Info chunks.</returns>
@@ -400,6 +369,100 @@
             <param name="samplesPerPixel">UI resolution.</param>
             <param name="totalPixels">Where to stop.</param>
             <returns></returns>
+        </member>
+        <member name="T:AudioLib.ProgressBar">
+            <summary>The control.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._lastXPos">
+            <summary>For tracking mouse moves.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._format">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._textBrush">
+            <summary>For drawing text.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._penMark">
+            <summary>For drawing markers.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._penProgress">
+            <summary>For drawing progress.</summary>
+        </member>
+        <member name="F:AudioLib.ProgressBar._snap">
+            <summary>How to snap.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.Current">
+            <summary>Where we be now in samples.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.Length">
+            <summary>Total length in samples.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.SelStart">
+            <summary>Selection start sample.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.SelLength">
+            <summary>Selection length in samples.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.ProgressColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.MarkColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.TextColor">
+            <summary>For styling.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.FontLarge">
+            <summary>Big font.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.FontSmall">
+            <summary>Baby font.</summary>
+        </member>
+        <member name="P:AudioLib.ProgressBar.Thumbnail">
+            <summary>Optional background.</summary>
+        </member>
+        <member name="E:AudioLib.ProgressBar.CurrentChanged">
+            <summary>Value changed by user.</summary>
+        </member>
+        <member name="M:AudioLib.ProgressBar.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:AudioLib.ProgressBar.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:AudioLib.ProgressBar.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draw the slider.
+            </summary>
+        </member>
+        <member name="M:AudioLib.ProgressBar.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle mouse position changes.
+            </summary>
+        </member>
+        <member name="M:AudioLib.ProgressBar.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle dragging.
+            </summary>
+        </member>
+        <member name="M:AudioLib.ProgressBar.PixelToSample(System.Int32)">
+            <summary>
+            Convert x pos to sample index.
+            </summary>
+            <param name="pixel">UI location.</param>
+            <returns>The sample or -1 if not visible.</returns>
+        </member>
+        <member name="M:AudioLib.ProgressBar.SampleToPixel(System.Int32)">
+            <summary>
+            Find sample visible location.
+            </summary>
+            <param name="sample"></param>
+            <returns>The pixel or -1 if not visible.</returns>
         </member>
         <member name="T:AudioLib.SampleOps">
             <summary>Converters for samples.</summary>
@@ -453,127 +516,6 @@
             <param name="offset">Offset into buffer.</param>
             <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
-        </member>
-        <member name="T:AudioLib.TimeBar">
-            <summary>The control.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar._lastXPos">
-            <summary>For tracking mouse moves.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar._toolTip">
-            <summary>Tooltip for mousing.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar._format">
-            <summary>For drawing text.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar.LARGE_CHANGE">
-            <summary>Constant.</summary>
-        </member>
-        <member name="F:AudioLib.TimeBar.SMALL_CHANGE">
-            <summary>Constant.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.Current">
-            <summary>Where we be now.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.Length">
-            <summary>Total length.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.Marker1">
-            <summary>One marker.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.Marker2">
-            <summary>Other marker.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.SnapMsec">
-            <summary>Snap to this increment value.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.ProgressColor">
-            <summary>For styling.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.MarkerColor">
-            <summary>For styling.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.FontLarge">
-            <summary>Big font.</summary>
-        </member>
-        <member name="P:AudioLib.TimeBar.FontSmall">
-            <summary>Baby font.</summary>
-        </member>
-        <member name="E:AudioLib.TimeBar.CurrentTimeChanged">
-            <summary>Value changed by user.</summary>
-        </member>
-        <member name="M:AudioLib.TimeBar.#ctor">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
-        <member name="M:AudioLib.TimeBar.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:AudioLib.TimeBar.IncrementCurrent(System.Int32)">
-            <summary>
-            Update current time.
-            </summary>
-            <param name="msec"></param>
-        </member>
-        <member name="M:AudioLib.TimeBar.OnPaint(System.Windows.Forms.PaintEventArgs)">
-            <summary>
-            Draw the slider.
-            </summary>
-        </member>
-        <member name="M:AudioLib.TimeBar.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
-            <summary>
-            Handle selection operations.
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:AudioLib.TimeBar.OnPreviewKeyDown(System.Windows.Forms.PreviewKeyDownEventArgs)">
-            <summary>
-            Hook to intercept keys.
-            </summary>
-            <param name="e"></param>
-        </member>
-        <member name="M:AudioLib.TimeBar.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Handle mouse position changes.
-            </summary>
-        </member>
-        <member name="M:AudioLib.TimeBar.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
-            <summary>
-            Handle dragging.
-            </summary>
-        </member>
-        <member name="M:AudioLib.TimeBar.GetTimeFromMouse(System.Int32)">
-            <summary>
-            Convert x pos to TimeSpan.
-            </summary>
-            <param name="x"></param>
-        </member>
-        <member name="M:AudioLib.TimeBar.DoSnap(System.Int32)">
-            <summary>
-            Snap to user preference.
-            </summary>
-            <param name="msec"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.TimeBar.Constrain(System.TimeSpan,System.TimeSpan,System.TimeSpan)">
-            <summary>
-            Utility helper function.
-            </summary>
-            <param name="val"></param>
-            <param name="lower"></param>
-            <param name="upper"></param>
-            <returns></returns>
-        </member>
-        <member name="M:AudioLib.TimeBar.Scale(System.TimeSpan)">
-            <summary>
-            Map from time to UI pixels.
-            </summary>
-            <param name="val"></param>
-            <returns></returns>
         </member>
         <member name="T:AudioLib.TimeOps">
             <summary>Converters for audio time.</summary>
@@ -640,9 +582,6 @@
         <member name="T:AudioLib.WaveViewer">
             <summary>Simple mono wave display.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._viewMode">
-            <summary>Function set.</summary>
-        </member>
         <member name="F:AudioLib.WaveViewer._textFont">
             <summary>For drawing text.</summary>
         </member>
@@ -691,6 +630,9 @@
         <member name="P:AudioLib.WaveViewer.MarkColor">
             <summary>For styling.</summary>
         </member>
+        <member name="P:AudioLib.WaveViewer.TextColor">
+            <summary>For styling.</summary>
+        </member>
         <member name="P:AudioLib.WaveViewer.Gain">
             <summary>Client gain adjustment.</summary>
         </member>
@@ -723,12 +665,11 @@
             Default constructor. Mainly for designer.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider,System.Boolean)">
+        <member name="M:AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider)">
             <summary>
             Set everything from data source. Client must do this before setting properties as some are overwritten.
             </summary>
             <param name="prov">Source</param>
-            <param name="simple">If true simple display only.</param>
         </member>
         <member name="M:AudioLib.WaveViewer.Dispose(System.Boolean)">
             <summary>
@@ -798,6 +739,17 @@
             Paint the waveform. In simple mode support just the waveform with no zoom, pan, etc.
             </summary>
         </member>
+        <member name="M:AudioLib.WaveViewer.Render(System.Int32,System.Int32,System.Drawing.Color,System.Drawing.Color,System.Boolean)">
+            <summary>
+            Render a bitmap suitable for navigation.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="drawColor"></param>
+            <param name="backColor"></param>
+            <param name="fit"></param>
+            <returns></returns>
+        </member>
         <member name="M:AudioLib.WaveViewer.CheckSel">
             <summary>
             Do a few sanity checks.
@@ -821,12 +773,6 @@
             </summary>
             <param name="sample"></param>
             <returns>The pixel or -1 if not visible.</returns>
-        </member>
-        <member name="M:AudioLib.WaveViewer.MouseX">
-            <summary>
-            Helper.
-            </summary>
-            <returns></returns>
         </member>
     </members>
 </doc>
