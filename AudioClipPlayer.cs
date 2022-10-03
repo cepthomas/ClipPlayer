@@ -29,7 +29,7 @@ namespace ClipPlayer
         double _volume = 0.5;
 
         /// <summary>Clean up if resampled.</summary>
-        const string RESAMPLE_FILE = "Resampe_file_delete_me.wav";
+        const string RESAMPLE_FILE = "resampled_file_delete_me.wav";
         #endregion
 
         #region Properties - interface implementation
