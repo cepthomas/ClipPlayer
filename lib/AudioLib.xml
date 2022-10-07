@@ -322,11 +322,10 @@
         </member>
         <member name="M:AudioLib.NAudioEx.Resample(System.String,System.String)">
             <summary>
-            
+            For client convenience.
             </summary>
             <param name="fn"></param>
             <param name="newfn"></param>
-            <returns></returns>
         </member>
         <member name="M:AudioLib.NAudioEx.Export(NAudio.Wave.ISampleProvider,System.String)">
             <summary>

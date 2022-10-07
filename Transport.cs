@@ -53,7 +53,7 @@ namespace ClipPlayer
 
             // Must do this first before initializing.
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-            Common.Settings = (UserSettings)Settings.Load(appDir, typeof(UserSettings));
+            Common.Settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
             // Tell the libs about their settings.
             MidiSettings.LibSettings = Common.Settings.MidiSettings;
             AudioSettings.LibSettings = Common.Settings.AudioSettings;
@@ -342,7 +342,7 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
-            var changes = Common.Settings.Edit("User Settings", 450);
+            var changes = SettingsEditor.Edit(Common.Settings, "User Settings", 450);
 
             // Detect changes of interest.
             bool restart = false;
