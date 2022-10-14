@@ -4,10 +4,10 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
-using NBagOfTricks;
+using Ephemera.NBagOfTricks;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     public enum RunState { Stopped, Playing, Complete }
 

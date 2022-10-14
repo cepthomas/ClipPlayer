@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using NBagOfTricks;
-using NBagOfTricks.Slog;
-using AudioLib;
+using Ephemera.NBagOfTricks;
+using Ephemera.NBagOfTricks.Slog;
+using Ephemera.AudioLib;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     public sealed class AudioClipPlayer : IPlayer
     {

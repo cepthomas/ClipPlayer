@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AudioLib;
-using MidiLib;
-using NBagOfTricks;
-using NBagOfTricks.Slog;
-using NBagOfUis;
+using Ephemera.AudioLib;
+using Ephemera.MidiLib;
+using Ephemera.NBagOfTricks;
+using Ephemera.NBagOfTricks.Slog;
+using Ephemera.NBagOfUis;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     public partial class Transport : Form
     {
@@ -168,7 +168,6 @@ namespace ClipPlayer
         /// <summary>
         /// Goodbye.
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="e"></param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

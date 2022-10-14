@@ -6,11 +6,11 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Resources;
-using NBagOfTricks.SimpleIpc;
 using System.Threading;
+using Ephemera.NBagOfTricks.SimpleIpc;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     static class Program
     {

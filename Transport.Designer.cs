@@ -1,5 +1,5 @@
 ﻿
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     partial class Transport
     {
@@ -17,15 +17,15 @@ namespace ClipPlayer
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.progress = new NBagOfUis.Meter();
+            this.progress = new Ephemera.NBagOfUis.Meter();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.sldVolume = new NBagOfUis.Slider();
+            this.sldVolume = new Ephemera.NBagOfUis.Slider();
             this.chkPlay = new System.Windows.Forms.CheckBox();
             this.chkLoop = new System.Windows.Forms.CheckBox();
             this.btnRewind = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
-            this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.cmbDrumChannel = new System.Windows.Forms.ComboBox();
+            this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // progress
@@ -36,7 +36,7 @@ namespace ClipPlayer
             this.progress.Location = new System.Drawing.Point(128, 4);
             this.progress.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.progress.Maximum = 100D;
-            this.progress.MeterType = NBagOfUis.MeterType.Linear;
+            this.progress.MeterType = Ephemera.NBagOfUis.MeterType.Linear;
             this.progress.Minimum = 0D;
             this.progress.Name = "progress";
             this.progress.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -73,7 +73,7 @@ namespace ClipPlayer
             this.chkPlay.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkPlay.FlatAppearance.BorderSize = 0;
             this.chkPlay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkPlay.Image = global::ClipPlayer.Properties.Resources.glyphicons_174_play;
+            this.chkPlay.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_174_play;
             this.chkPlay.Location = new System.Drawing.Point(2, 4);
             this.chkPlay.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chkPlay.Name = "chkPlay";
@@ -87,7 +87,7 @@ namespace ClipPlayer
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkLoop.FlatAppearance.BorderSize = 0;
             this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_82_refresh;
+            this.chkLoop.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_82_refresh;
             this.chkLoop.Location = new System.Drawing.Point(244, 4);
             this.chkLoop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chkLoop.Name = "chkLoop";
@@ -100,7 +100,7 @@ namespace ClipPlayer
             // 
             this.btnRewind.FlatAppearance.BorderSize = 0;
             this.btnRewind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRewind.Image = global::ClipPlayer.Properties.Resources.glyphicons_173_rewind;
+            this.btnRewind.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_173_rewind;
             this.btnRewind.Location = new System.Drawing.Point(37, 4);
             this.btnRewind.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnRewind.Name = "btnRewind";
@@ -113,7 +113,7 @@ namespace ClipPlayer
             // 
             this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
+            this.btnSettings.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
             this.btnSettings.Location = new System.Drawing.Point(279, 4);
             this.btnSettings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSettings.Name = "btnSettings";
@@ -121,6 +121,16 @@ namespace ClipPlayer
             this.btnSettings.TabIndex = 83;
             this.toolTip.SetToolTip(this.btnSettings, "Your settings");
             this.btnSettings.UseVisualStyleBackColor = true;
+            // 
+            // cmbDrumChannel
+            // 
+            this.cmbDrumChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbDrumChannel.FormattingEnabled = true;
+            this.cmbDrumChannel.Location = new System.Drawing.Point(318, 13);
+            this.cmbDrumChannel.Name = "cmbDrumChannel";
+            this.cmbDrumChannel.Size = new System.Drawing.Size(42, 28);
+            this.cmbDrumChannel.TabIndex = 87;
+            this.toolTip.SetToolTip(this.cmbDrumChannel, "Drum channel if not default");
             // 
             // rtbLog
             // 
@@ -133,16 +143,6 @@ namespace ClipPlayer
             this.rtbLog.Size = new System.Drawing.Size(364, 263);
             this.rtbLog.TabIndex = 86;
             this.rtbLog.Text = "";
-            // 
-            // cmbDrumChannel
-            // 
-            this.cmbDrumChannel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbDrumChannel.FormattingEnabled = true;
-            this.cmbDrumChannel.Location = new System.Drawing.Point(318, 13);
-            this.cmbDrumChannel.Name = "cmbDrumChannel";
-            this.cmbDrumChannel.Size = new System.Drawing.Size(42, 28);
-            this.cmbDrumChannel.TabIndex = 87;
-            this.toolTip.SetToolTip(this.cmbDrumChannel, "Drum channel if not default");
             // 
             // Transport
             // 

@@ -8,14 +8,14 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NAudio.Wave;
 using NAudio.Midi;
-using NBagOfTricks;
-using NBagOfUis;
-using NBagOfTricks.Slog;
-using MidiLib;
-using AudioLib;
+using Ephemera.NBagOfTricks;
+using Ephemera.NBagOfUis;
+using Ephemera.NBagOfTricks.Slog;
+using Ephemera.MidiLib;
+using Ephemera.AudioLib;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     [Serializable]
     public sealed class UserSettings : SettingsCore

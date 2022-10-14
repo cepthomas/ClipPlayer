@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using NAudio.Midi;
-using NBagOfTricks;
-using NBagOfTricks.Slog;
-using MidiLib;
+using Ephemera.NBagOfTricks;
+using Ephemera.NBagOfTricks.Slog;
+using Ephemera.MidiLib;
 
 
-namespace ClipPlayer
+namespace Ephemera.ClipPlayer
 {
     /// <summary>
     /// A "good enough" midi player.
