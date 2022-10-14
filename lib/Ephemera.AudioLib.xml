@@ -1,77 +1,77 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>AudioLib</name>
+        <name>Ephemera.AudioLib</name>
     </assembly>
     <members>
-        <member name="T:AudioLib.StereoCoercion">
+        <member name="T:Ephemera.AudioLib.StereoCoercion">
             <summary>How to handle stereo files.</summary>
         </member>
-        <member name="T:AudioLib.WaveSelectionMode">
+        <member name="T:Ephemera.AudioLib.WaveSelectionMode">
             <summary>How to select.</summary>
         </member>
-        <member name="T:AudioLib.SnapType">
+        <member name="T:Ephemera.AudioLib.SnapType">
             <summary>How to snap.</summary>
         </member>
-        <member name="T:AudioLib.ParamChange">
+        <member name="T:Ephemera.AudioLib.ParamChange">
             <summary>Notification of param change.</summary>
         </member>
-        <member name="T:AudioLib.IConverterOps">
+        <member name="T:Ephemera.AudioLib.IConverterOps">
             <summary>Abstraction of selection mode. Does text parsing, formatting, snap.</summary>
         </member>
-        <member name="M:AudioLib.IConverterOps.Snap(System.Int32,AudioLib.SnapType)">
+        <member name="M:Ephemera.AudioLib.IConverterOps.Snap(System.Int32,Ephemera.AudioLib.SnapType)">
             <summary>Snap to neighbor.</summary>
             <param name="sample">Test sample.</param>
             <param name="snap">How tight.</param>
             <returns>Snapped sample.</returns>
         </member>
-        <member name="M:AudioLib.IConverterOps.Parse(System.String)">
+        <member name="M:Ephemera.AudioLib.IConverterOps.Parse(System.String)">
             <summary>Parse text.</summary>
             <param name="input">The text.</param>
             <returns>Corresponding sample.</returns>
         </member>
-        <member name="M:AudioLib.IConverterOps.Format(System.Int32)">
+        <member name="M:Ephemera.AudioLib.IConverterOps.Format(System.Int32)">
             <summary>Make a readable string.</summary>
             <param name="sample">Which sample.</param>
             <returns>The string.</returns>
         </member>
-        <member name="P:AudioLib.Globals.ConverterOps">
+        <member name="P:Ephemera.AudioLib.Globals.ConverterOps">
             <summary>This abstracts the conversions for the different WaveSelectionModes.</summary>
         </member>
-        <member name="P:AudioLib.Globals.BPM">
+        <member name="P:Ephemera.AudioLib.Globals.BPM">
             <summary>Global tempo if using Beat selection mode.</summary>
         </member>
-        <member name="P:AudioLib.Globals.ControlColor">
+        <member name="P:Ephemera.AudioLib.Globals.ControlColor">
             <summary>Colors.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">
             <summary>Supported types.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.VOLUME_MIN">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.VOLUME_MIN">
             <summary>NAudio doesn't publish this for their API.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.VOLUME_MAX">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.VOLUME_MAX">
             <summary>NAudio doesn't publish this for their API.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.MAX_GAIN">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_GAIN">
             <summary>Maximum gain.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.SAMPLE_RATE">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.SAMPLE_RATE">
             <summary>Everything internal.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.READ_BUFF_SIZE">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.READ_BUFF_SIZE">
             <summary>Stream buffer size.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.TS_FORMAT">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.TS_FORMAT">
             <summary>Standard formatting.</summary>
         </member>
-        <member name="F:AudioLib.AudioLibDefs.MAX_CLIP_SIZE">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_CLIP_SIZE">
             <summary>Max clip size in minutes. Can be overriden in settings.</summary>
         </member>
-        <member name="T:AudioLib.AudioFileInfo">
+        <member name="T:Ephemera.AudioLib.AudioFileInfo">
             <summary>Borrowed from NAudio.</summary>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.GetFileInfo(System.String,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.GetFileInfo(System.String,System.Boolean)">
             <summary>
             Top level function to get file info.
             </summary>
@@ -79,7 +79,7 @@
             <param name="verbose"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.GetInfoMp3(System.String,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.GetInfoMp3(System.String,System.Boolean)">
             <summary>
             Get info for mp3 file.
             </summary>
@@ -87,7 +87,7 @@
             <param name="verbose"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.GetInfoWav(System.String,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.GetInfoWav(System.String,System.Boolean)">
             <summary>
             Get info for wav file.
             </summary>
@@ -95,7 +95,7 @@
             <param name="verbose"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.GetInfoSf(System.String,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.GetInfoSf(System.String,System.Boolean)">
             <summary>
             Get info for soundfonts.
             </summary>
@@ -103,7 +103,7 @@
             <param name="verbose"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.GetInfoOther(System.String,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.GetInfoOther(System.String,System.Boolean)">
             <summary>
             Get info for other file types. Maybe.
             </summary>
@@ -111,32 +111,32 @@
             <param name="verbose"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.AudioFileInfo.FormatWaveFormat(NAudio.Wave.WaveFormat)">
+        <member name="M:Ephemera.AudioLib.AudioFileInfo.FormatWaveFormat(NAudio.Wave.WaveFormat)">
             <summary>
             Helper.
             </summary>
             <param name="wf"></param>
             <returns></returns>
         </member>
-        <member name="T:AudioLib.AudioPlayer">
+        <member name="T:Ephemera.AudioLib.AudioPlayer">
             <summary>A simple audio file player.</summary>
         </member>
-        <member name="F:AudioLib.AudioPlayer._waveOut">
+        <member name="F:Ephemera.AudioLib.AudioPlayer._waveOut">
             <summary>Wave output play device.</summary>
         </member>
-        <member name="E:AudioLib.AudioPlayer.PlaybackStopped">
+        <member name="E:Ephemera.AudioLib.AudioPlayer.PlaybackStopped">
             <summary>Wave playing done.</summary>
         </member>
-        <member name="P:AudioLib.AudioPlayer.Valid">
+        <member name="P:Ephemera.AudioLib.AudioPlayer.Valid">
             <summary>Are we ok?</summary>
         </member>
-        <member name="P:AudioLib.AudioPlayer.Volume">
+        <member name="P:Ephemera.AudioLib.AudioPlayer.Volume">
             <summary>Volume.</summary>
         </member>
-        <member name="P:AudioLib.AudioPlayer.Playing">
+        <member name="P:Ephemera.AudioLib.AudioPlayer.Playing">
             <summary>State.</summary>
         </member>
-        <member name="M:AudioLib.AudioPlayer.#ctor(System.String,System.Int32,NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.AudioPlayer.#ctor(System.String,System.Int32,NAudio.Wave.ISampleProvider)">
             <summary>
             Normal constructor.
             </summary>
@@ -144,135 +144,135 @@
             <param name="latency">How slow.</param>
             <param name="smpl">Provider.</param>
         </member>
-        <member name="M:AudioLib.AudioPlayer.Dispose">
+        <member name="M:Ephemera.AudioLib.AudioPlayer.Dispose">
             <summary> 
             Clean up any resources being used.
             </summary>
         </member>
-        <member name="M:AudioLib.AudioPlayer.Run(System.Boolean)">
+        <member name="M:Ephemera.AudioLib.AudioPlayer.Run(System.Boolean)">
             <summary>
             Start/stop everything.
             </summary>
             <param name="go">Or no.</param>
         </member>
-        <member name="M:AudioLib.AudioPlayer.WaveOut_PlaybackStopped(System.Object,NAudio.Wave.StoppedEventArgs)">
+        <member name="M:Ephemera.AudioLib.AudioPlayer.WaveOut_PlaybackStopped(System.Object,NAudio.Wave.StoppedEventArgs)">
             <summary>
             Usually end of file but could be error. Client can handle.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="P:AudioLib.AudioSettings.LibSettings">
+        <member name="P:Ephemera.AudioLib.AudioSettings.LibSettings">
             <summary>Current audio settings. Client must set this before accessing!</summary>
         </member>
-        <member name="T:AudioLib.FixedListTypeConverter">
+        <member name="T:Ephemera.AudioLib.FixedListTypeConverter">
             <summary>Converter for selecting property value from known lists.</summary>
         </member>
-        <member name="T:AudioLib.BarOps">
+        <member name="T:Ephemera.AudioLib.BarOps">
             <summary>Converters for musical time. 0-based not traditional 1-based.</summary>
         </member>
-        <member name="T:AudioLib.BarOps.BarDesc">
+        <member name="T:Ephemera.AudioLib.BarOps.BarDesc">
             <summary>Convenience container for internal use.</summary>
         </member>
-        <member name="M:AudioLib.BarOps.Snap(System.Int32,AudioLib.SnapType)">
+        <member name="M:Ephemera.AudioLib.BarOps.Snap(System.Int32,Ephemera.AudioLib.SnapType)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.BarOps.Parse(System.String)">
+        <member name="M:Ephemera.AudioLib.BarOps.Parse(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.BarOps.Format(System.Int32)">
+        <member name="M:Ephemera.AudioLib.BarOps.Format(System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.BarOps.TextToSubdiv(System.String)">
+        <member name="M:Ephemera.AudioLib.BarOps.TextToSubdiv(System.String)">
             <summary>
             
             </summary>
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.BarOps.SubdivToSample(System.Int32)">
+        <member name="M:Ephemera.AudioLib.BarOps.SubdivToSample(System.Int32)">
             <summary>
             
             </summary>
             <param name="subdiv"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.BarOps.SampleToSubdiv(System.Int32)">
+        <member name="M:Ephemera.AudioLib.BarOps.SampleToSubdiv(System.Int32)">
             <summary>
             
             </summary>
             <param name="sample"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.BarOps.SampleToBar(System.Int32)">
+        <member name="M:Ephemera.AudioLib.BarOps.SampleToBar(System.Int32)">
             <summary>
             
             </summary>
             <param name="sample"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.BarOps.ParseBar(System.String)">
+        <member name="M:Ephemera.AudioLib.BarOps.ParseBar(System.String)">
             <summary>
             Parser.
             </summary>
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="T:AudioLib.ClipSampleProvider">
+        <member name="T:Ephemera.AudioLib.ClipSampleProvider">
             <summary>
             Provider that encapsulates a client supplied audio data subset. When constructed, it reads in the
             entire file. Does sample rate conversion if needed.
             Mono output only - coerces stereo input per client call. Can be used for splitting stereo files.
             </summary>
         </member>
-        <member name="F:AudioLib.ClipSampleProvider._vals">
+        <member name="F:Ephemera.AudioLib.ClipSampleProvider._vals">
             <summary>The full buffer from client.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.WaveFormat">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.WaveFormat">
             <inheritdoc />
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.Gain">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.Gain">
             <summary>Overall gain applied to all samples.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.SamplesPerChannel">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.SamplesPerChannel">
             <summary>The number of samples per channel.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.TotalTime">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.TotalTime">
             <summary>The total time.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.SampleIndex">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.SampleIndex">
             <summary>Make this class sort of look like a stream.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.CurrentTime">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.CurrentTime">
             <summary>The current time.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.SelStart">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.SelStart">
             <summary>Selection start sample.</summary>
         </member>
-        <member name="P:AudioLib.ClipSampleProvider.SelLength">
+        <member name="P:Ephemera.AudioLib.ClipSampleProvider.SelLength">
             <summary>Selection length in samples. 0 means to the end.</summary>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.#ctor(NAudio.Wave.ISampleProvider,Ephemera.AudioLib.StereoCoercion)">
             <summary>
             Constructor from a sample provider. Coerces stereo to mono.
             </summary>
             <param name="source">Source provider to use.</param>
             <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.Single[])">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.#ctor(System.Single[])">
             <summary>
             Constructor from a buffer. Mono only.
             </summary>
             <param name="vals">The data to use.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.#ctor(System.String,AudioLib.StereoCoercion)">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.#ctor(System.String,Ephemera.AudioLib.StereoCoercion)">
             <summary>
             Constructor from a file. Coerces stereo to client's choice.
             </summary>
             <param name="fn">File to use.</param>
             <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
             <summary>
             Reads samples from this sample provider with adjustments for gain.
             Honors user selection if specified.
@@ -283,36 +283,36 @@
             <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
         </member>
-        <member name="M:AudioLib.ClipSampleProvider.ReadSource(NAudio.Wave.ISampleProvider,AudioLib.StereoCoercion)">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.ReadSource(NAudio.Wave.ISampleProvider,Ephemera.AudioLib.StereoCoercion)">
             <summary>
             Common buff loader. Coerces stereo to mono per client request.
             </summary>
             <param name="source">Source provider to use.</param>
             <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="T:AudioLib.Conversion">
+        <member name="T:Ephemera.AudioLib.Conversion">
             <summary>Conversion options.</summary>
         </member>
-        <member name="T:AudioLib.NAudioEx">
+        <member name="T:Ephemera.AudioLib.NAudioEx">
             <summary>
             Extensions to enhance core NAudio for this application.
             </summary>
         </member>
-        <member name="M:AudioLib.NAudioEx.ReadAll(NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.ReadAll(NAudio.Wave.ISampleProvider)">
             <summary>
             Make a buffer from the provider contents. Mono only.
             </summary>
             <param name="prov">The provider.</param>
             <returns>Values.</returns>
         </member>
-        <member name="M:AudioLib.NAudioEx.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
             <summary>
             Sanity check for only 32bit fp, 44100Hz, mono.
             </summary>
             <param name="prov">Format to check.</param>
             <param name="mono">Must be mono.</param>
         </member>
-        <member name="M:AudioLib.NAudioEx.Convert(AudioLib.Conversion,System.String)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.Convert(Ephemera.AudioLib.Conversion,System.String)">
             <summary>
             Process a file.
             </summary>
@@ -320,50 +320,50 @@
             <param name="fn">The input filename. Output file is the same with option appended.</param>
             <returns>Succesful conversion.</returns>
         </member>
-        <member name="M:AudioLib.NAudioEx.Resample(System.String,System.String)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.Resample(System.String,System.String)">
             <summary>
             For client convenience.
             </summary>
             <param name="fn"></param>
             <param name="newfn"></param>
         </member>
-        <member name="M:AudioLib.NAudioEx.Export(NAudio.Wave.ISampleProvider,System.String)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.Export(NAudio.Wave.ISampleProvider,System.String)">
             <summary>
             Export wave data to csv file.
             </summary>
             <param name="prov">Data source.</param>
             <param name="exportFileName"></param>
         </member>
-        <member name="M:AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
             <summary>
             Agnostic stream position setter.
             </summary>
             <param name="prov"></param>
         </member>
-        <member name="M:AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
             <summary>
             Get provider info. Mainly for UI display.
             </summary>
             <param name="prov"></param>
             <returns>Info chunks.</returns>
         </member>
-        <member name="T:AudioLib.NullSampleProvider">
+        <member name="T:Ephemera.AudioLib.NullSampleProvider">
             <summary>
             Sample provider that does nothing.
             </summary>
         </member>
-        <member name="P:AudioLib.NullSampleProvider.WaveFormat">
+        <member name="P:Ephemera.AudioLib.NullSampleProvider.WaveFormat">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.NullSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.NullSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="T:AudioLib.PeakProvider">
+        <member name="T:Ephemera.AudioLib.PeakProvider">
             <summary>
             Customized version of NAudio's IPeakProvider family.
             </summary>
         </member>
-        <member name="M:AudioLib.PeakProvider.GetPeaks(System.Single[],System.Int32,System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.PeakProvider.GetPeaks(System.Single[],System.Int32,System.Int32,System.Int32)">
             <summary>
             Get wave peak values for UI display.
             </summary>
@@ -373,132 +373,132 @@
             <param name="totalPixels">Where to stop.</param>
             <returns></returns>
         </member>
-        <member name="T:AudioLib.ProgressBar">
+        <member name="T:Ephemera.AudioLib.ProgressBar">
             <summary>The control.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._lastXPos">
+        <member name="F:Ephemera.AudioLib.ProgressBar._lastXPos">
             <summary>For tracking mouse moves.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._format">
+        <member name="F:Ephemera.AudioLib.ProgressBar._format">
             <summary>For drawing text.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._textBrush">
+        <member name="F:Ephemera.AudioLib.ProgressBar._textBrush">
             <summary>For drawing text.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._penMark">
+        <member name="F:Ephemera.AudioLib.ProgressBar._penMark">
             <summary>For drawing markers.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._penProgress">
+        <member name="F:Ephemera.AudioLib.ProgressBar._penProgress">
             <summary>For drawing progress.</summary>
         </member>
-        <member name="F:AudioLib.ProgressBar._snap">
+        <member name="F:Ephemera.AudioLib.ProgressBar._snap">
             <summary>How to snap.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.Current">
+        <member name="P:Ephemera.AudioLib.ProgressBar.Current">
             <summary>Where we be now in samples.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.Length">
+        <member name="P:Ephemera.AudioLib.ProgressBar.Length">
             <summary>Total length in samples.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.SelStart">
+        <member name="P:Ephemera.AudioLib.ProgressBar.SelStart">
             <summary>Selection start sample.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.SelLength">
+        <member name="P:Ephemera.AudioLib.ProgressBar.SelLength">
             <summary>Selection length in samples.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.ProgressColor">
+        <member name="P:Ephemera.AudioLib.ProgressBar.ProgressColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.MarkColor">
+        <member name="P:Ephemera.AudioLib.ProgressBar.MarkColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.TextColor">
+        <member name="P:Ephemera.AudioLib.ProgressBar.TextColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.FontLarge">
+        <member name="P:Ephemera.AudioLib.ProgressBar.FontLarge">
             <summary>Big font.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.FontSmall">
+        <member name="P:Ephemera.AudioLib.ProgressBar.FontSmall">
             <summary>Baby font.</summary>
         </member>
-        <member name="P:AudioLib.ProgressBar.Thumbnail">
+        <member name="P:Ephemera.AudioLib.ProgressBar.Thumbnail">
             <summary>Optional background.</summary>
         </member>
-        <member name="E:AudioLib.ProgressBar.CurrentChanged">
+        <member name="E:Ephemera.AudioLib.ProgressBar.CurrentChanged">
             <summary>Value changed by user.</summary>
         </member>
-        <member name="M:AudioLib.ProgressBar.#ctor">
+        <member name="M:Ephemera.AudioLib.ProgressBar.#ctor">
             <summary>
             Constructor.
             </summary>
         </member>
-        <member name="M:AudioLib.ProgressBar.Dispose(System.Boolean)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.Dispose(System.Boolean)">
             <summary> 
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:AudioLib.ProgressBar.OnPaint(System.Windows.Forms.PaintEventArgs)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
             Draw the slider.
             </summary>
         </member>
-        <member name="M:AudioLib.ProgressBar.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
             <summary>
             Handle mouse position changes.
             </summary>
         </member>
-        <member name="M:AudioLib.ProgressBar.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
             <summary>
             Handle dragging.
             </summary>
         </member>
-        <member name="M:AudioLib.ProgressBar.PixelToSample(System.Int32)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.PixelToSample(System.Int32)">
             <summary>
             Convert x pos to sample index.
             </summary>
             <param name="pixel">UI location.</param>
             <returns>The sample or -1 if not visible.</returns>
         </member>
-        <member name="M:AudioLib.ProgressBar.SampleToPixel(System.Int32)">
+        <member name="M:Ephemera.AudioLib.ProgressBar.SampleToPixel(System.Int32)">
             <summary>
             Find sample visible location.
             </summary>
             <param name="sample"></param>
             <returns>The pixel or -1 if not visible.</returns>
         </member>
-        <member name="T:AudioLib.SampleOps">
+        <member name="T:Ephemera.AudioLib.SampleOps">
             <summary>Converters for samples.</summary>
         </member>
-        <member name="M:AudioLib.SampleOps.Snap(System.Int32,AudioLib.SnapType)">
+        <member name="M:Ephemera.AudioLib.SampleOps.Snap(System.Int32,Ephemera.AudioLib.SnapType)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.SampleOps.Parse(System.String)">
+        <member name="M:Ephemera.AudioLib.SampleOps.Parse(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.SampleOps.Format(System.Int32)">
+        <member name="M:Ephemera.AudioLib.SampleOps.Format(System.Int32)">
             <inheritdoc />
         </member>
-        <member name="T:AudioLib.SwappableSampleProvider">
+        <member name="T:Ephemera.AudioLib.SwappableSampleProvider">
             <summary>
             Sample provider that supports hot swapping of input. Mainly used to supply input to
             WaveOut which doesn't like having its input switched.
             Takes stereo or mono input, output is always stereo.
             </summary>
         </member>
-        <member name="F:AudioLib.SwappableSampleProvider._currentInput">
+        <member name="F:Ephemera.AudioLib.SwappableSampleProvider._currentInput">
             <summary>The current input.</summary>
         </member>
-        <member name="P:AudioLib.SwappableSampleProvider.WaveFormat">
+        <member name="P:Ephemera.AudioLib.SwappableSampleProvider.WaveFormat">
             <summary>ISampleProvider implementation.</summary>
         </member>
-        <member name="M:AudioLib.SwappableSampleProvider.SetInput(NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.SwappableSampleProvider.SetInput(NAudio.Wave.ISampleProvider)">
             <summary>
             Sets the input source.
             </summary>
             <param name="input">New input or null to disable.</param>
         </member>
-        <member name="M:AudioLib.SwappableSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.SwappableSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
             <summary>
             Reads samples from this sample provider.
             ISampleProvider implementation.
@@ -508,217 +508,217 @@
             <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
         </member>
-        <member name="T:AudioLib.TimeOps">
+        <member name="T:Ephemera.AudioLib.TimeOps">
             <summary>Converters for audio time.</summary>
         </member>
-        <member name="T:AudioLib.TimeOps.TimeDesc">
+        <member name="T:Ephemera.AudioLib.TimeOps.TimeDesc">
             <summary>Convenience container for internal use.</summary>
         </member>
-        <member name="M:AudioLib.TimeOps.Snap(System.Int32,AudioLib.SnapType)">
+        <member name="M:Ephemera.AudioLib.TimeOps.Snap(System.Int32,Ephemera.AudioLib.SnapType)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.TimeOps.Parse(System.String)">
+        <member name="M:Ephemera.AudioLib.TimeOps.Parse(System.String)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.TimeOps.Format(System.Int32)">
+        <member name="M:Ephemera.AudioLib.TimeOps.Format(System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:AudioLib.TimeOps.MsecToSample(System.Double)">
+        <member name="M:Ephemera.AudioLib.TimeOps.MsecToSample(System.Double)">
             <summary>
             
             </summary>
             <param name="msec"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.TimeOps.SampleToMsec(System.Int32)">
+        <member name="M:Ephemera.AudioLib.TimeOps.SampleToMsec(System.Int32)">
             <summary>
             
             </summary>
             <param name="sample"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.TimeOps.SampleToTime(System.Int32)">
+        <member name="M:Ephemera.AudioLib.TimeOps.SampleToTime(System.Int32)">
             <summary>
             
             </summary>
             <param name="sample"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.TimeOps.ParseMsec(System.String)">
+        <member name="M:Ephemera.AudioLib.TimeOps.ParseMsec(System.String)">
             <summary>
             
             </summary>
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.TimeOps.ParseTime(System.String)">
+        <member name="M:Ephemera.AudioLib.TimeOps.ParseTime(System.String)">
             <summary>
             Parser.
             </summary>
             <param name="input"></param>
             <returns></returns>
         </member>
-        <member name="T:AudioLib.ToolStripParamEditor">
+        <member name="T:Ephemera.AudioLib.ToolStripParamEditor">
             <summary>Simple toolstrip container for the param editor.</summary>
         </member>
-        <member name="F:AudioLib.ToolStripParamEditor._ed">
+        <member name="F:Ephemera.AudioLib.ToolStripParamEditor._ed">
             <summary>Contained control.</summary>
         </member>
-        <member name="F:AudioLib.ToolStripParamEditor._validColor">
+        <member name="F:Ephemera.AudioLib.ToolStripParamEditor._validColor">
             <summary>OK color.</summary>
         </member>
-        <member name="F:AudioLib.ToolStripParamEditor._invalidColor">
+        <member name="F:Ephemera.AudioLib.ToolStripParamEditor._invalidColor">
             <summary>Not OK color.</summary>
         </member>
-        <member name="P:AudioLib.ToolStripParamEditor.Value">
+        <member name="P:Ephemera.AudioLib.ToolStripParamEditor.Value">
             <summary>Current value (sample) or -1 if invalid.</summary>
         </member>
-        <member name="P:AudioLib.ToolStripParamEditor.Label">
+        <member name="P:Ephemera.AudioLib.ToolStripParamEditor.Label">
             <summary>Tool tip or other label.</summary>
         </member>
-        <member name="E:AudioLib.ToolStripParamEditor.ParamChanged">
+        <member name="E:Ephemera.AudioLib.ToolStripParamEditor.ParamChanged">
             <summary>Value changed by user. Notify owner for display.</summary>
         </member>
-        <member name="M:AudioLib.ToolStripParamEditor.#ctor">
+        <member name="M:Ephemera.AudioLib.ToolStripParamEditor.#ctor">
             <summary>
             Make one.
             </summary>
         </member>
-        <member name="M:AudioLib.ToolStripParamEditor.Ed_PreviewKeyDown(System.Object,System.Windows.Forms.PreviewKeyDownEventArgs)">
+        <member name="M:Ephemera.AudioLib.ToolStripParamEditor.Ed_PreviewKeyDown(System.Object,System.Windows.Forms.PreviewKeyDownEventArgs)">
             <summary>
             
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.ToolStripParamEditor.Ed_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
+        <member name="M:Ephemera.AudioLib.ToolStripParamEditor.Ed_KeyDown(System.Object,System.Windows.Forms.KeyEventArgs)">
             <summary>
             Look at what the user entered.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.ToolStripParamEditor.Ed_KeyPress(System.Object,System.Windows.Forms.KeyPressEventArgs)">
+        <member name="M:Ephemera.AudioLib.ToolStripParamEditor.Ed_KeyPress(System.Object,System.Windows.Forms.KeyPressEventArgs)">
             <summary>
             Initial sanity check.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.ToolStripParamEditor.ValidateParam">
+        <member name="M:Ephemera.AudioLib.ToolStripParamEditor.ValidateParam">
             <summary>
             Executed when done editing.
             </summary>
         </member>
-        <member name="T:AudioLib.WaveViewer">
+        <member name="T:Ephemera.AudioLib.WaveViewer">
             <summary>Simple mono wave display.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._textBrush">
+        <member name="F:Ephemera.AudioLib.WaveViewer._textBrush">
             <summary>For drawing text.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._format">
+        <member name="F:Ephemera.AudioLib.WaveViewer._format">
             <summary>For drawing text.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._vals">
+        <member name="F:Ephemera.AudioLib.WaveViewer._vals">
             <summary>The data buffer.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._min">
+        <member name="F:Ephemera.AudioLib.WaveViewer._min">
             <summary>Extent of _vals.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._max">
+        <member name="F:Ephemera.AudioLib.WaveViewer._max">
             <summary>Extent of _vals.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._samplesPerPixel">
+        <member name="F:Ephemera.AudioLib.WaveViewer._samplesPerPixel">
             <summary>For painting. Essentially the zoom factor.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._lastXPos">
+        <member name="F:Ephemera.AudioLib.WaveViewer._lastXPos">
             <summary>Last pixel.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer._snap">
+        <member name="F:Ephemera.AudioLib.WaveViewer._snap">
             <summary>How to snap.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer.GAIN_INCREMENT">
+        <member name="F:Ephemera.AudioLib.WaveViewer.GAIN_INCREMENT">
             <summary>UI gain adjustment.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer.WHEEL_RESOLUTION">
+        <member name="F:Ephemera.AudioLib.WaveViewer.WHEEL_RESOLUTION">
             <summary>Scroll rate. Smaller means faster.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer.ZOOM_RATIO">
+        <member name="F:Ephemera.AudioLib.WaveViewer.ZOOM_RATIO">
             <summary>Zoom ratio.</summary>
         </member>
-        <member name="F:AudioLib.WaveViewer.PAN_INCREMENT">
+        <member name="F:Ephemera.AudioLib.WaveViewer.PAN_INCREMENT">
             <summary>Number of pixels to x pan by.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.WaveColor">
+        <member name="P:Ephemera.AudioLib.WaveViewer.WaveColor">
             <summary>The waveform color.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.GridColor">
+        <member name="P:Ephemera.AudioLib.WaveViewer.GridColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.MarkColor">
+        <member name="P:Ephemera.AudioLib.WaveViewer.MarkColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.TextColor">
+        <member name="P:Ephemera.AudioLib.WaveViewer.TextColor">
             <summary>For styling.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.TextFont">
+        <member name="P:Ephemera.AudioLib.WaveViewer.TextFont">
             <summary>For drawing text.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.ExtraMenuItems">
+        <member name="P:Ephemera.AudioLib.WaveViewer.ExtraMenuItems">
             <summary>Owner can add some menu items.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.Gain">
+        <member name="P:Ephemera.AudioLib.WaveViewer.Gain">
             <summary>Client gain adjustment.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.Length">
+        <member name="P:Ephemera.AudioLib.WaveViewer.Length">
             <summary>Length of the clip in samples.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.TotalTime">
+        <member name="P:Ephemera.AudioLib.WaveViewer.TotalTime">
             <summary>Length of the clip in msec.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.SelStart">
+        <member name="P:Ephemera.AudioLib.WaveViewer.SelStart">
             <summary>Selection start sample. -1 means no selection.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.SelLength">
+        <member name="P:Ephemera.AudioLib.WaveViewer.SelLength">
             <summary>Selection length in samples. 0 means to the end.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.Marker">
+        <member name="P:Ephemera.AudioLib.WaveViewer.Marker">
             <summary>General purpose marker location. -1 means no marker.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.VisibleStart">
+        <member name="P:Ephemera.AudioLib.WaveViewer.VisibleStart">
             <summary>Visible start sample.</summary>
         </member>
-        <member name="P:AudioLib.WaveViewer.VisibleLength">
+        <member name="P:Ephemera.AudioLib.WaveViewer.VisibleLength">
             <summary>Visible length in samples. Always positive.</summary>
         </member>
-        <member name="E:AudioLib.WaveViewer.ViewerChangeEvent">
+        <member name="E:Ephemera.AudioLib.WaveViewer.ViewerChangeEvent">
             <summary>Value changed by user. Notify owner for display.</summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.#ctor">
+        <member name="M:Ephemera.AudioLib.WaveViewer.#ctor">
             <summary>
             Default constructor. Mainly for designer.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.Init(NAudio.Wave.ISampleProvider)">
             <summary>
             Set everything from data source. Client must do this before setting properties as some are overwritten.
             </summary>
             <param name="prov">Source</param>
         </member>
-        <member name="M:AudioLib.WaveViewer.Dispose(System.Boolean)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:AudioLib.WaveViewer.ContextMenuStrip_Opening(System.Object,System.ComponentModel.CancelEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.ContextMenuStrip_Opening(System.Object,System.ComponentModel.CancelEventArgs)">
             <summary>
             Create context menu.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnMouseWheel(System.Windows.Forms.MouseEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnMouseWheel(System.Windows.Forms.MouseEventArgs)">
             <summary>
             Handle mouse wheel.
              - If ctrl, X zoom.
@@ -727,36 +727,36 @@
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnMouseClick(System.Windows.Forms.MouseEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnMouseClick(System.Windows.Forms.MouseEventArgs)">
             <summary>
             Handle mouse clicks to select things.
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
             <summary>
             Handle mouse move. Just for tooltip currently.
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
             <summary>
             Key press.
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnResize(System.EventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnResize(System.EventArgs)">
             <summary>
             Resize handler.
             </summary>
             <param name="e"></param>
         </member>
-        <member name="M:AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
             <summary>
             Paint the waveform. In simple mode support just the waveform with no zoom, pan, etc.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.RenderThumbnail(System.Int32,System.Int32,System.Drawing.Color,System.Drawing.Color,System.Boolean)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.RenderThumbnail(System.Int32,System.Int32,System.Drawing.Color,System.Drawing.Color,System.Boolean)">
             <summary>
             Render a bitmap suitable for navigation.
             </summary>
@@ -767,55 +767,55 @@
             <param name="fit"></param>
             <returns></returns>
         </member>
-        <member name="M:AudioLib.WaveViewer.FitGain">
+        <member name="M:Ephemera.AudioLib.WaveViewer.FitGain">
             <summary>
             Fit the wave exactly.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.ResetGain">
+        <member name="M:Ephemera.AudioLib.WaveViewer.ResetGain">
             <summary>
             Go to unity gain.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.Recenter(System.Int32)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.Recenter(System.Int32)">
             <summary>
             Pan to new center location.
             </summary>
             <param name="sample">Center around this.</param>
         </member>
-        <member name="M:AudioLib.WaveViewer.ResetView">
+        <member name="M:Ephemera.AudioLib.WaveViewer.ResetView">
             <summary>
             Show original view.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.GoToMarker">
+        <member name="M:Ephemera.AudioLib.WaveViewer.GoToMarker">
             <summary>
             Go to the current marker.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.GoToSelection">
+        <member name="M:Ephemera.AudioLib.WaveViewer.GoToSelection">
             <summary>
             Go to the current selection.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.SetSnap(AudioLib.SnapType)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.SetSnap(Ephemera.AudioLib.SnapType)">
             <summary>
             Set snap.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.CheckProperties">
+        <member name="M:Ephemera.AudioLib.WaveViewer.CheckProperties">
             <summary>
             Do a few sanity checks.
             </summary>
         </member>
-        <member name="M:AudioLib.WaveViewer.PixelToSample(System.Int32)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.PixelToSample(System.Int32)">
             <summary>
             Convert x pos to sample index.
             </summary>
             <param name="pixel">UI location.</param>
             <returns>The sample or -1 if not visible.</returns>
         </member>
-        <member name="M:AudioLib.WaveViewer.SampleToPixel(System.Int32)">
+        <member name="M:Ephemera.AudioLib.WaveViewer.SampleToPixel(System.Int32)">
             <summary>
             Find sample visible location.
             </summary>
