@@ -17,6 +17,10 @@ namespace Ephemera.ClipPlayer
         [STAThread]
         static void Main(string[] args)
         {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             var _log = new MpLog(Common.LogFileName, "MAIN");
 
             if (args.Length > 0)

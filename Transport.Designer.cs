@@ -128,9 +128,9 @@ namespace Ephemera.ClipPlayer
             this.cmbDrumChannel.FormattingEnabled = true;
             this.cmbDrumChannel.Location = new System.Drawing.Point(318, 13);
             this.cmbDrumChannel.Name = "cmbDrumChannel";
-            this.cmbDrumChannel.Size = new System.Drawing.Size(42, 28);
+            this.cmbDrumChannel.Size = new System.Drawing.Size(57, 28);
             this.cmbDrumChannel.TabIndex = 87;
-            this.toolTip.SetToolTip(this.cmbDrumChannel, "Drum channel if not default");
+            this.toolTip.SetToolTip(this.cmbDrumChannel, "Drum channel");
             // 
             // rtbLog
             // 
@@ -140,7 +140,7 @@ namespace Ephemera.ClipPlayer
             this.rtbLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rtbLog.Location = new System.Drawing.Point(2, 56);
             this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(364, 263);
+            this.rtbLog.Size = new System.Drawing.Size(373, 263);
             this.rtbLog.TabIndex = 86;
             this.rtbLog.Text = "";
             // 
@@ -148,7 +148,7 @@ namespace Ephemera.ClipPlayer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 323);
+            this.ClientSize = new System.Drawing.Size(380, 323);
             this.Controls.Add(this.cmbDrumChannel);
             this.Controls.Add(this.rtbLog);
             this.Controls.Add(this.chkLoop);
