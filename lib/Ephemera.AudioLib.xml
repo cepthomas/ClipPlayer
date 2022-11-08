@@ -691,7 +691,7 @@
         <member name="P:Ephemera.AudioLib.WaveViewer.VisibleLength">
             <summary>Visible length in samples. Always positive.</summary>
         </member>
-        <member name="E:Ephemera.AudioLib.WaveViewer.ViewerChangeEvent">
+        <member name="E:Ephemera.AudioLib.WaveViewer.ViewerChange">
             <summary>Value changed by user. Notify owner for display.</summary>
         </member>
         <member name="M:Ephemera.AudioLib.WaveViewer.#ctor">

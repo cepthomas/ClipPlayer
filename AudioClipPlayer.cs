@@ -59,7 +59,7 @@ namespace Ephemera.ClipPlayer
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusEventArgs>? StatusEvent;
+        public event EventHandler<StatusChangeEventArgs>? StatusChange;
         #endregion
 
         #region Lifecycle
@@ -179,7 +179,7 @@ namespace Ephemera.ClipPlayer
             }
 
             State = RunState.Complete;
-            StatusEvent?.Invoke(this, new StatusEventArgs()
+            StatusChange?.Invoke(this, new StatusChangeEventArgs()
             {
                 Progress = 100
             });
@@ -193,7 +193,7 @@ namespace Ephemera.ClipPlayer
         void SampleChannel_PreVolumeMeter(object? sender, StreamVolumeEventArgs e)
         {
             int prog = 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds;
-            StatusEvent?.Invoke(this, new StatusEventArgs()
+            StatusChange?.Invoke(this, new StatusChangeEventArgs()
             {
                 Progress = prog
             });

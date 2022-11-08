@@ -73,7 +73,7 @@ namespace Ephemera.ClipPlayer
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusEventArgs>? StatusEvent;
+        public event EventHandler<StatusChangeEventArgs>? StatusChange;
         #endregion
 
         #region Lifecycle
@@ -287,7 +287,7 @@ namespace Ephemera.ClipPlayer
                     _currentSubdiv = 0;
                 }
 
-                StatusEvent?.Invoke(this, new StatusEventArgs()
+                StatusChange?.Invoke(this, new StatusChangeEventArgs()
                 {
                     Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
                 });

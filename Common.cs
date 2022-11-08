@@ -24,7 +24,7 @@ namespace Ephemera.ClipPlayer
     }
 
     /// <summary>Player has something to say or show.</summary>
-    public class StatusEventArgs : EventArgs
+    public class StatusChangeEventArgs : EventArgs
     {
         /// <summary>0 -> 100</summary>
         public int Progress { get; set; } = 0;
@@ -51,7 +51,7 @@ namespace Ephemera.ClipPlayer
         bool Valid { get; }
 
         /// <summary>Something changed event.</summary>
-        event EventHandler<StatusEventArgs> StatusEvent;
+        event EventHandler<StatusChangeEventArgs> StatusChange;
 
         /// <summary>Open playback file in player.</summary>
         bool OpenFile(string fn);

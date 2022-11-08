@@ -69,14 +69,14 @@ namespace Ephemera.ClipPlayer
             // Init logging.
             LogManager.MinLevelFile = Common.Settings.FileLogLevel;
             LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
-            LogManager.LogEvent += LogManager_LogEvent;
+            LogManager.LogMessage += LogManager_LogMessage;
             LogManager.Run();
 
             // Create the playback devices.
             _midiPlayer = new MidiClipPlayer();
-            _midiPlayer.StatusEvent += Player_StatusEvent;
+            _midiPlayer.StatusChange += Player_StatusChange;
             _audioPlayer = new AudioClipPlayer();
-            _audioPlayer.StatusEvent += Player_StatusEvent;
+            _audioPlayer.StatusChange += Player_StatusChange;
 
             // Cosmetics.
             progress.DrawColor = Common.Settings.ControlColor;
@@ -153,7 +153,7 @@ namespace Ephemera.ClipPlayer
             {
                 // Start listening for new app instances.
                 _server = new NBagOfTricks.SimpleIpc.Server(Common.PipeName, Common.LogFileName);
-                _server.ServerEvent += Server_IpcEvent;
+                _server.IpcReceive += Server_IpcReceive;
                 _server.Start();
             }
             else
@@ -274,7 +274,7 @@ namespace Ephemera.ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Player_StatusEvent(object? sender, StatusEventArgs e)
+        void Player_StatusChange(object? sender, StatusChangeEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
@@ -318,7 +318,7 @@ namespace Ephemera.ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcEvent(object? sender, NBagOfTricks.SimpleIpc.ServerEventArgs e)
+        void Server_IpcReceive(object? sender, NBagOfTricks.SimpleIpc.IpcReceiveEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
@@ -375,7 +375,7 @@ namespace Ephemera.ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void LogManager_LogEvent(object? sender, LogEventArgs e)
+        void LogManager_LogMessage(object? sender, LogMessageEventArgs e)
         {
             // Usually come from a different thread.
             if (IsHandleCreated)
