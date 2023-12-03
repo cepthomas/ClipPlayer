@@ -14,14 +14,11 @@ namespace Ephemera.ClipPlayer
     /// There are some limitations: Windows multimedia timer has 1 msec resolution at best. This causes a trade-off between
     /// ppq resolution and accuracy. The timer is also inherently wobbly.
     /// </summary>
-    public sealed class MidiClipPlayer : IPlayer
+    sealed class MidiClipPlayer : IPlayer
     {
         #region Fields
-        /// <summary>My logger.</summary>
-        readonly Logger _logger = LogManager.CreateLogger("MidiClipPlayer");
-
         /// <summary>Midi output device.</summary>
-        IOutputDevice _outputDevice = new NullOutputDevice();
+        readonly IOutputDevice _outputDevice = new NullOutputDevice();
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -92,10 +89,6 @@ namespace Ephemera.ClipPlayer
                     break;
                 }
             }
-            if (!_outputDevice.Valid)
-            {
-                _logger.Error($"Something wrong with your output device:{_outputDevice.DeviceName}");
-            }
         }
 
         /// <summary> 
@@ -121,8 +114,6 @@ namespace Ephemera.ClipPlayer
         /// <inheritdoc />
         public bool OpenFile(string fn)
         {
-            _logger.Info($"Open file:{fn}");
-
             _mmTimer.Stop();
 
             _currentSubdiv = 0;

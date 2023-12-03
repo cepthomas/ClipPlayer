@@ -29,8 +29,8 @@ namespace Ephemera.ClipPlayer
         /// <summary>0 -> 100</summary>
         public int Progress { get; set; } = 0;
 
-        ///// <summary>Where we at.</summary>
-        //public string Message { get; set; } = "";
+        /// <summary>Where we at.</summary>
+        public string Error { get; set; } = "";
     }
 
     interface IPlayer : IDisposable

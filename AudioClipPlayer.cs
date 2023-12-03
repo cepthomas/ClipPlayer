@@ -10,12 +10,9 @@ using Ephemera.AudioLib;
 
 namespace Ephemera.ClipPlayer
 {
-    public sealed class AudioClipPlayer : IPlayer
+    sealed class AudioClipPlayer : IPlayer
     {
         #region Fields
-        /// <summary>My logger.</summary>
-        readonly Logger _logger = LogManager.CreateLogger("AudioClipPlayer");
-
         /// <summary>Wave output play device.</summary>
         readonly AudioPlayer _player;
 
@@ -173,16 +170,16 @@ namespace Ephemera.ClipPlayer
         /// <param name="e"></param>
         void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
+            var evt = new StatusChangeEventArgs() { Progress = 100 };
+            State = RunState.Complete;
+
             if (e.Exception is not null)
             {
-                _logger.Exception(e.Exception, "Other NAudio error");
+                evt.Error = e.Exception.Message;
+                evt.Progress = 0;
             }
 
-            State = RunState.Complete;
-            StatusChange?.Invoke(this, new StatusChangeEventArgs()
-            {
-                Progress = 100
-            });
+            StatusChange?.Invoke(this, evt);
         }
 
         /// <summary>

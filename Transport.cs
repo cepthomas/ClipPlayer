@@ -30,8 +30,11 @@ namespace Ephemera.ClipPlayer
         /// <summary>Midi device.</summary>
         readonly MidiClipPlayer _midiPlayer;
 
+        /// <summary>Default device.</summary>
+        readonly NullPlayer _nullPlayer;
+
         /// <summary>Current play device.</summary>
-        IPlayer? _player = null;
+        IPlayer _player;
 
         /// <summary>Listen for new instances.</summary>
         NBagOfTricks.SimpleIpc.Server? _server;
@@ -73,10 +76,13 @@ namespace Ephemera.ClipPlayer
             LogManager.Run();
 
             // Create the playback devices.
-            _midiPlayer = new MidiClipPlayer();
+            _midiPlayer = new();
             _midiPlayer.StatusChange += Player_StatusChange;
-            _audioPlayer = new AudioClipPlayer();
+            _audioPlayer = new();
             _audioPlayer.StatusChange += Player_StatusChange;
+            _nullPlayer = new();
+            _nullPlayer.StatusChange += Player_StatusChange;
+            _player = _nullPlayer;
 
             // Cosmetics.
             progress.DrawColor = Common.Settings.ControlColor;
@@ -85,20 +91,9 @@ namespace Ephemera.ClipPlayer
             chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
 
             // Hook up UI handlers.
-            chkPlay.CheckedChanged += (_, __) => _ = chkPlay.Checked ? _player?.Play() : _player?.Stop();
-            btnRewind.Click += (_, __) => 
-            {
-                _player?.Rewind();
-                progress.AddValue(0);
-            };
-            sldVolume.ValueChanged += (_, __) =>
-            {
-                Common.Settings.Volume = sldVolume.Value;
-                if(_player is not null)
-                {
-                    _player.Volume = sldVolume.Value;
-                }
-            };
+            chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
+            btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
+            sldVolume.ValueChanged += (_, __) => { _player.Volume = sldVolume.Value; };
             btnSettings.Click += Settings_Click;
             progress!.MouseDown += Progress_MouseDown;
             progress!.MouseMove += Progress_MouseMove;
@@ -130,18 +125,6 @@ namespace Ephemera.ClipPlayer
             //_log.Write($"StartupPath:{Application.StartupPath}");
 
             bool ok = true;
-
-            if (!_audioPlayer.Valid)
-            {
-                MessageBox.Show($"Something wrong with your audio output device:{Common.Settings.AudioSettings.WavOutDevice}");
-                ok = false;
-            }
-
-            if (!_midiPlayer.Valid)
-            {
-                MessageBox.Show($"Something wrong with your midi output device");
-                ok = false;
-            }
 
             if(ok)
             {
@@ -218,19 +201,37 @@ namespace Ephemera.ClipPlayer
                 switch (Path.GetExtension(_fn).ToLower())
                 {
                     case ".mid":
-                    // case ".sty": Use ClipExplorer for these 
-                        _player = _midiPlayer;
+                        if (!_midiPlayer.Valid)
+                        {
+                            _logger.Error("Invalid midi output device");
+                            MessageBox.Show("Invalid midi output device");
+                            ok = false;
+                        }
+                        else
+                        {
+                            _player = _midiPlayer;
+                        }
                         break;
 
                     case ".wav":
                     case ".mp3":
                     case ".m4a":
                     case ".flac":
-                        _player = _audioPlayer;
+                        if (!_audioPlayer.Valid)
+                        {
+                            _logger.Error("Invalid audio output device");
+                            MessageBox.Show("Invalid audio output device");
+                            ok = false;
+                        }
+                        else
+                        {
+                            _player = _audioPlayer;
+                        }
                         break;
 
                     default:
                         MessageBox.Show($"Invalid file: {_fn}");
+                        _player = _nullPlayer;
                         ok = false;
                         _fn = "";
                         break;
@@ -238,9 +239,10 @@ namespace Ephemera.ClipPlayer
 
                 if(ok)
                 {
-                    if (_player!.OpenFile(_fn))
+                    if (_player.OpenFile(_fn))
                     {
                         Text = $"{Path.GetFileName(_fn)} {_player.GetInfo()}";
+                        _logger.Info($"Open file:{_fn}");
                         _player.Volume = sldVolume.Value;
                         _player.Rewind();
                         // Make it go.
@@ -278,7 +280,15 @@ namespace Ephemera.ClipPlayer
         {
             this.InvokeIfRequired(_ =>
             {
-                switch (_player!.State)
+                if (e.Error != "")
+                {
+                    _logger.Error($"Player error: {e.Error}");
+                    progress.AddValue(0);
+                    chkPlay.Checked = false;
+                    return; // early return!
+                }
+
+                switch (_player.State)
                 {
                     case RunState.Playing:
                         progress.AddValue(e.Progress);
@@ -398,7 +408,7 @@ namespace Ephemera.ClipPlayer
             progress.AddValue(e.X * 100 / progress.Width);
 
             TimeSpan ts = GetTimeFromMouse(e.X);
-            _player!.Current = ts;
+            _player.Current = ts;
             Invalidate();
         }
 
@@ -421,7 +431,7 @@ namespace Ephemera.ClipPlayer
         /// <param name="x"></param>
         TimeSpan GetTimeFromMouse(int x)
         {
-            int msec = x * (int)_player!.Length.TotalMilliseconds / progress.Width;
+            int msec = x * (int)_player.Length.TotalMilliseconds / progress.Width;
             msec = MathUtils.Constrain(msec, 0, (int)_player.Length.TotalMilliseconds);
             return new TimeSpan(0, 0, 0, 0, msec);
         }
