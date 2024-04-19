@@ -33,7 +33,7 @@ namespace Ephemera.ClipPlayer
         readonly Dictionary<int, List<MidiEvent>> _playEvents = new();
 
         /// <summary>Total length in subdivs.</summary>
-        int _totalSubdivs;
+        int _totalSubs;
 
         /// <summary>Current position in subdivs.</summary>
         int _currentSubdiv;
@@ -47,7 +47,7 @@ namespace Ephemera.ClipPlayer
         public RunState State { get; set; } = RunState.Stopped;
 
         /// <inheritdoc />
-        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalSubdivs * _msecPerSubdiv)); } }
+        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalSubs * _msecPerSubdiv)); } }
 
         /// <inheritdoc />
         public double Volume { get; set; }
@@ -59,7 +59,7 @@ namespace Ephemera.ClipPlayer
         public TimeSpan Current
         {
             get { return new TimeSpan(0, 0, 0, 0, (int)(_currentSubdiv * _msecPerSubdiv)); }
-            set { _currentSubdiv = (int)(value.TotalMilliseconds / _msecPerSubdiv); _currentSubdiv = MathUtils.Constrain(_currentSubdiv, 0, _totalSubdivs); }
+            set { _currentSubdiv = (int)(value.TotalMilliseconds / _msecPerSubdiv); _currentSubdiv = MathUtils.Constrain(_currentSubdiv, 0, _totalSubs); }
         }
         #endregion
 
@@ -117,7 +117,7 @@ namespace Ephemera.ClipPlayer
             _mmTimer.Stop();
 
             _currentSubdiv = 0;
-            _totalSubdivs = 0;
+            _totalSubs = 0;
             _playEvents.Clear();
 
             // Get events.
@@ -155,7 +155,7 @@ namespace Ephemera.ClipPlayer
                         }
 
                         _playEvents[subdiv].Add(te);
-                        _totalSubdivs = Math.Max(_totalSubdivs, subdiv);
+                        _totalSubs = Math.Max(_totalSubs, subdiv);
                     }
                 };
             }
@@ -168,8 +168,8 @@ namespace Ephemera.ClipPlayer
 
             // Round total up to next beat.
             BarTime bt = new();
-            bt.SetRounded(_totalSubdivs, SnapType.Beat, true);
-            _totalSubdivs = Math.Max(_totalSubdivs, bt.TotalSubdivs);
+            bt.SetRounded(_totalSubs, SnapType.Beat, true);
+            _totalSubs = Math.Max(_totalSubs, bt.TotalSubs);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
@@ -181,7 +181,7 @@ namespace Ephemera.ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            BarTime bt = new(_totalSubdivs);
+            BarTime bt = new(_totalSubs);
             string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar}:{bt.Beat}:{bt.Subdiv:00})";
             return s;
         }
@@ -272,7 +272,7 @@ namespace Ephemera.ClipPlayer
 
                 // Bump time. Check for end of play. Client will take care of transport control.
                 _currentSubdiv += 1;
-                if (_currentSubdiv >= _totalSubdivs)
+                if (_currentSubdiv >= _totalSubs)
                 {
                     State = RunState.Complete;
                     _currentSubdiv = 0;
@@ -280,7 +280,7 @@ namespace Ephemera.ClipPlayer
 
                 StatusChange?.Invoke(this, new StatusChangeEventArgs()
                 {
-                    Progress = _currentSubdiv < _totalSubdivs ? 100 * _currentSubdiv / _totalSubdivs : 100
+                    Progress = _currentSubdiv < _totalSubs ? 100 * _currentSubdiv / _totalSubs : 100
                 });
             }
         }
