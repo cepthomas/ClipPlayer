@@ -1,5 +1,5 @@
 ﻿
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     partial class Transport
     {
@@ -73,7 +73,7 @@ namespace Ephemera.ClipPlayer
             this.chkPlay.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkPlay.FlatAppearance.BorderSize = 0;
             this.chkPlay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkPlay.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_174_play;
+            this.chkPlay.Image = global::ClipPlayer.Properties.Resources.glyphicons_174_play;
             this.chkPlay.Location = new System.Drawing.Point(2, 4);
             this.chkPlay.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chkPlay.Name = "chkPlay";
@@ -87,7 +87,7 @@ namespace Ephemera.ClipPlayer
             this.chkLoop.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkLoop.FlatAppearance.BorderSize = 0;
             this.chkLoop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkLoop.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_82_refresh;
+            this.chkLoop.Image = global::ClipPlayer.Properties.Resources.glyphicons_82_refresh;
             this.chkLoop.Location = new System.Drawing.Point(244, 4);
             this.chkLoop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chkLoop.Name = "chkLoop";
@@ -100,7 +100,7 @@ namespace Ephemera.ClipPlayer
             // 
             this.btnRewind.FlatAppearance.BorderSize = 0;
             this.btnRewind.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRewind.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_173_rewind;
+            this.btnRewind.Image = global::ClipPlayer.Properties.Resources.glyphicons_173_rewind;
             this.btnRewind.Location = new System.Drawing.Point(37, 4);
             this.btnRewind.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnRewind.Name = "btnRewind";
@@ -113,7 +113,7 @@ namespace Ephemera.ClipPlayer
             // 
             this.btnSettings.FlatAppearance.BorderSize = 0;
             this.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSettings.Image = global::Ephemera.ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
+            this.btnSettings.Image = global::ClipPlayer.Properties.Resources.glyphicons_137_cogwheel;
             this.btnSettings.Location = new System.Drawing.Point(279, 4);
             this.btnSettings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSettings.Name = "btnSettings";

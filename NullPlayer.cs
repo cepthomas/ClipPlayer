@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     /// <summary>Default player that doesn't do anything.</summary>
     public class NullPlayer : IPlayer

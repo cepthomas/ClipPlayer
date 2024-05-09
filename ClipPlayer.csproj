@@ -4,8 +4,8 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net6.0-windows</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
-        <RootNamespace>Ephemera.ClipPlayer</RootNamespace>
-        <AssemblyName>Ephemera.ClipPlayer</AssemblyName>
+        <RootNamespace>ClipPlayer</RootNamespace>
+        <AssemblyName>ClipPlayer</AssemblyName>
         <Deterministic>False</Deterministic>
         <Version>$([System.DateTime]::UtcNow.ToString(yy.MM.dd))</Version>
         <Description>ClipPlayer application</Description>

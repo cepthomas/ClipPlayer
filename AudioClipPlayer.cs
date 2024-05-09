@@ -8,7 +8,7 @@ using Ephemera.NBagOfTricks.Slog;
 using Ephemera.AudioLib;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     sealed class AudioClipPlayer : IPlayer
     {

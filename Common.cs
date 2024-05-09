@@ -7,7 +7,7 @@ using System.Threading;
 using Ephemera.NBagOfTricks;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     public enum RunState { Stopped, Playing, Complete }
 

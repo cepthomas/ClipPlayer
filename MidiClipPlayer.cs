@@ -7,7 +7,7 @@ using Ephemera.NBagOfTricks.Slog;
 using Ephemera.MidiLib;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     /// <summary>
     /// A "good enough" midi player.

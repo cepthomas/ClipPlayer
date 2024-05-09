@@ -13,7 +13,7 @@ using Ephemera.NBagOfTricks.Slog;
 using Ephemera.NBagOfUis;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     public partial class Transport : Form
     {

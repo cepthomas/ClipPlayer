@@ -15,7 +15,7 @@ using Ephemera.MidiLib;
 using Ephemera.AudioLib;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     [Serializable]
     public sealed class UserSettings : SettingsCore

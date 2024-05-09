@@ -10,7 +10,7 @@ using System.Threading;
 using Ephemera.NBagOfTricks.SimpleIpc;
 
 
-namespace Ephemera.ClipPlayer
+namespace ClipPlayer
 {
     static class Program
     {
