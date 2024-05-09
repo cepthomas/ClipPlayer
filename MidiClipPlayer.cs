@@ -182,7 +182,7 @@ namespace ClipPlayer
         public string GetInfo()
         {
             BarTime bt = new(_totalSubs);
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar}:{bt.Beat}:{bt.Subdiv:00})";
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar}:{bt.Beat}:{bt.Sub:00})";
             return s;
         }
 

@@ -166,9 +166,9 @@ namespace ClipPlayer
         }
 
         #endregion
-        private NBagOfUis.Meter progress;
+        private Ephemera.NBagOfUis.Meter progress;
         private System.Windows.Forms.ToolTip toolTip;
-        private NBagOfUis.Slider sldVolume;
+        private Ephemera.NBagOfUis.Slider sldVolume;
         private System.Windows.Forms.CheckBox chkPlay;
         private System.Windows.Forms.Button btnRewind;
         private System.Windows.Forms.Button btnSettings;

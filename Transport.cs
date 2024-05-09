@@ -37,7 +37,7 @@ namespace ClipPlayer
         IPlayer _player;
 
         /// <summary>Listen for new instances.</summary>
-        NBagOfTricks.SimpleIpc.Server? _server;
+        Ephemera.NBagOfTricks.SimpleIpc.Server? _server;
 
         // /// <summary>My multiprocess logger for debug.</summary>
         // readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
@@ -135,7 +135,7 @@ namespace ClipPlayer
             if(ok)
             {
                 // Start listening for new app instances.
-                _server = new NBagOfTricks.SimpleIpc.Server(Common.PipeName, Common.LogFileName);
+                _server = new Ephemera.NBagOfTricks.SimpleIpc.Server(Common.PipeName, Common.LogFileName);
                 _server.IpcReceive += Server_IpcReceive;
                 _server.Start();
             }
@@ -328,7 +328,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcReceive(object? sender, NBagOfTricks.SimpleIpc.IpcReceiveEventArgs e)
+        void Server_IpcReceive(object? sender, Ephemera.NBagOfTricks.SimpleIpc.IpcReceiveEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
