@@ -165,7 +165,7 @@
         <member name="P:Ephemera.AudioLib.AudioSettings.LibSettings">
             <summary>Current audio settings. Client must set this before accessing!</summary>
         </member>
-        <member name="T:Ephemera.AudioLib.FixedListTypeConverter">
+        <member name="T:Ephemera.AudioLib.AudioSettingsConverter">
             <summary>Converter for selecting property value from known lists.</summary>
         </member>
         <member name="T:Ephemera.AudioLib.BarOps">
