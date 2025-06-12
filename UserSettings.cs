@@ -10,7 +10,6 @@ using NAudio.Wave;
 using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.NBagOfUis;
-using Ephemera.NBagOfTricks.Slog;
 using Ephemera.MidiLib;
 using Ephemera.AudioLib;
 

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using Ephemera.AudioLib;
 using Ephemera.MidiLib;
 using Ephemera.NBagOfTricks;
-using Ephemera.NBagOfTricks.Slog;
 using Ephemera.NBagOfUis;
 
 
@@ -37,7 +36,7 @@ namespace ClipPlayer
         IPlayer _player;
 
         /// <summary>Listen for new instances.</summary>
-        Ephemera.NBagOfTricks.SimpleIpc.Server? _server;
+        Ipc.Server? _server;
 
         // /// <summary>My multiprocess logger for debug.</summary>
         // readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
@@ -135,8 +134,8 @@ namespace ClipPlayer
             if(ok)
             {
                 // Start listening for new app instances.
-                _server = new Ephemera.NBagOfTricks.SimpleIpc.Server(Common.PipeName, Common.LogFileName);
-                _server.IpcReceive += Server_IpcReceive;
+                _server = new Ipc.Server(Common.PipeName, Common.LogFileName);
+                _server.Receive += Server_IpcReceive;
                 _server.Start();
             }
             else
@@ -328,7 +327,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Server_IpcReceive(object? sender, Ephemera.NBagOfTricks.SimpleIpc.IpcReceiveEventArgs e)
+        void Server_IpcReceive(object? sender, Ipc.ReceiveEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {

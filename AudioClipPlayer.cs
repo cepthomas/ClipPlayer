@@ -4,7 +4,6 @@ using System.IO;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using Ephemera.NBagOfTricks;
-using Ephemera.NBagOfTricks.Slog;
 using Ephemera.AudioLib;
 
 

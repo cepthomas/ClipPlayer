@@ -6,7 +6,7 @@ A tool for playing audio and midi files.
 - Best way to use is to associate with audio files (.mid, .wav, .mp3, .m4a, .flac) so it can be started with a simple click.
 - It displays a small UI so that playing can be stopped/started/looped.
 - UI is also used for editing your settings: output devices etc. Note that not all presented audio/midi options pertain to this application.
-- It is built as a single instance app. Second instance sends the filename to the primary via IPC.
+- It is built as a single instance app. Second instance sends the filename to the primary via local IPC.
 - Requires VS2022 and .NET6.
 
 

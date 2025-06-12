@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using NAudio.Midi;
 using Ephemera.NBagOfTricks;
-using Ephemera.NBagOfTricks.Slog;
 using Ephemera.MidiLib;
 
 

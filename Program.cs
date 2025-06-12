@@ -7,7 +7,6 @@ using System.IO.Pipes;
 using System.Text;
 using System.Resources;
 using System.Threading;
-using Ephemera.NBagOfTricks.SimpleIpc;
 
 
 namespace ClipPlayer
@@ -21,7 +20,7 @@ namespace ClipPlayer
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var _log = new MpLog(Common.LogFileName, "MAIN");
+            var _log = new Ipc.MpLog(Common.LogFileName, "MAIN");
 
             if (args.Length > 0)
             {
@@ -49,17 +48,17 @@ namespace ClipPlayer
                     // If this is the second instance, alert the primary by connecting and sending the new file name.
                     _log.Write($"sub thread enter");
 
-                    Client client = new(Common.PipeName, Common.LogFileName);
+                    Ipc.Client client = new(Common.PipeName, Common.LogFileName);
                     var res = client.Send(fn, 1000);
 
                     switch (res)
                     {
-                        case ClientStatus.Error:
+                        case Ipc.ClientStatus.Error:
                             _log.Write($"Client error:{client.Error}", true);
                             MessageBox.Show(client.Error, "Error!");
                             break;
 
-                        case ClientStatus.Timeout:
+                        case Ipc.ClientStatus.Timeout:
                             _log.Write($"Client timeout", true);
                             MessageBox.Show("Timeout!");
                             break;
