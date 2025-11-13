@@ -49,7 +49,7 @@ namespace ClipPlayer
         public double Volume
         {
             get { return _volume; }
-            set { _volume = MathUtils.Constrain(value, 0, 1); _player.Volume = (float)_volume; }
+            set { _volume = MathUtils.Constrain(value, 0.0, 1.0); _player.Volume = (float)_volume; }
         }
         #endregion
 
