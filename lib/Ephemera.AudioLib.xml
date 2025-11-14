@@ -47,10 +47,7 @@
         <member name="F:Ephemera.AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">
             <summary>Supported types.</summary>
         </member>
-        <member name="F:Ephemera.AudioLib.AudioLibDefs.VOLUME_MIN">
-            <summary>NAudio doesn't publish this for their API.</summary>
-        </member>
-        <member name="F:Ephemera.AudioLib.AudioLibDefs.VOLUME_MAX">
+        <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_VOLUME">
             <summary>NAudio doesn't publish this for their API.</summary>
         </member>
         <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_GAIN">
