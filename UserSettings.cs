@@ -12,6 +12,7 @@ using Ephemera.NBagOfTricks;
 using Ephemera.NBagOfUis;
 using Ephemera.MidiLib;
 using Ephemera.AudioLib;
+using System.Drawing.Design;
 
 
 namespace ClipPlayer
@@ -54,11 +55,11 @@ namespace ClipPlayer
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LogLevel NotifLogLevel { get; set; } = LogLevel.Debug;
 
-        [DisplayName("Midi Settings")]
-        [Description("Edit midi settings.")]
+        [DisplayName("Midi Device")]
+        [Description("Midi Device.")]
         [Browsable(true)]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public MidiSettings MidiSettings { get; set; } = new();
+        [Editor(typeof(GenericListTypeEditor), typeof(UITypeEditor))]
+        public string MidiDeviceName { get; set; } = "";
 
         [DisplayName("Audio Settings")]
         [Description("Edit audio settings.")]

@@ -4,6 +4,7 @@ using System.IO;
 using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.MidiLib;
+using Ephemera.MidiLibEx;
 
 
 namespace ClipPlayer
@@ -16,8 +17,11 @@ namespace ClipPlayer
     sealed class MidiClipPlayer : IPlayer
     {
         #region Fields
+        /// <summary>The boss.</summary>
+        readonly Manager _mgr = new();
+
         /// <summary>Midi output device.</summary>
-        readonly IOutputDevice _outputDevice = new NullOutputDevice();
+        IOutputDevice? _outputDevice = null;
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -32,13 +36,13 @@ namespace ClipPlayer
         readonly Dictionary<int, List<MidiEvent>> _playEvents = new();
 
         /// <summary>Total length in subdivs.</summary>
-        int _totalSubs;
+        int _totalTicks;
 
         /// <summary>Current position in subdivs.</summary>
         int _currentSubdiv;
 
         /// <summary>Current tempo. Initialize to default in case the file doesn't supply one.</summary>
-        int _tempo = Common.Settings.MidiSettings.DefaultTempo;
+        int _tempo = 100;// Common.Settings.MidiSettings.DefaultTempo;
         #endregion
 
         #region Properties - interface implementation
@@ -46,19 +50,19 @@ namespace ClipPlayer
         public RunState State { get; set; } = RunState.Stopped;
 
         /// <inheritdoc />
-        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalSubs * _msecPerSubdiv)); } }
+        public TimeSpan Length { get { return new TimeSpan(0, 0, 0, 0, (int)(_totalTicks * _msecPerSubdiv)); } }
 
         /// <inheritdoc />
         public double Volume { get; set; }
 
         /// <inheritdoc />
-        public bool Valid { get { return _outputDevice.Valid; } }
+        public bool Valid { get { return _outputDevice is not null; } }
 
         /// <inheritdoc />
         public TimeSpan Current
         {
             get { return new TimeSpan(0, 0, 0, 0, (int)(_currentSubdiv * _msecPerSubdiv)); }
-            set { _currentSubdiv = (int)(value.TotalMilliseconds / _msecPerSubdiv); _currentSubdiv = MathUtils.Constrain(_currentSubdiv, 0, _totalSubs); }
+            set { _currentSubdiv = (int)(value.TotalMilliseconds / _msecPerSubdiv); _currentSubdiv = MathUtils.Constrain(_currentSubdiv, 0, _totalTicks); }
         }
         #endregion
 
@@ -78,16 +82,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            // Set up output device.
-            foreach (var dev in Common.Settings.MidiSettings.OutputDevices)
-            {
-                // Try midi.
-                _outputDevice = new MidiOutput(dev.DeviceName);
-                if (_outputDevice.Valid)
-                {
-                    break;
-                }
-            }
+            _outputDevice = _mgr.GetOutputDevice(Common.Settings.MidiDeviceName);
         }
 
         /// <summary> 
@@ -99,7 +94,8 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            _outputDevice.Dispose();
+            _mgr.DestroyDevices();
+            _outputDevice = null;
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -116,7 +112,7 @@ namespace ClipPlayer
             _mmTimer.Stop();
 
             _currentSubdiv = 0;
-            _totalSubs = 0;
+            _totalTicks = 0;
             _playEvents.Clear();
 
             // Get events.
@@ -150,11 +146,11 @@ namespace ClipPlayer
                         // Add to our collection.
                         if (!_playEvents.ContainsKey(subdiv))
                         {
-                            _playEvents.Add(subdiv, new List<MidiEvent>());
+                            _playEvents.Add(subdiv, []);
                         }
 
                         _playEvents[subdiv].Add(te);
-                        _totalSubs = Math.Max(_totalSubs, subdiv);
+                        _totalTicks = Math.Max(_totalTicks, subdiv);
                     }
                 };
             }
@@ -166,9 +162,9 @@ namespace ClipPlayer
             int period = mt.RoundedInternalPeriod();
 
             // Round total up to next beat.
-            BarTime bt = new();
-            bt.SetRounded(_totalSubs, SnapType.Beat, true);
-            _totalSubs = Math.Max(_totalSubs, bt.TotalSubs);
+            MusicTime bt = new();
+            bt.Set(_totalTicks, SnapType.Beat, true);
+            _totalTicks = Math.Max(_totalTicks, bt.Tick);
 
             // Create periodic timer.
             _mmTimer.SetTimer(period, MmTimerCallback);
@@ -180,8 +176,9 @@ namespace ClipPlayer
         /// <inheritdoc />
         public string GetInfo()
         {
-            BarTime bt = new(_totalSubs);
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bt.Bar}:{bt.Beat}:{bt.Sub:00})";
+            MusicTime bt = new(_totalTicks);
+            var parts = bt.Parts;
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({parts.bar}:{parts.beat}:{parts.tick:00})";
             return s;
         }
 
@@ -271,7 +268,7 @@ namespace ClipPlayer
 
                 // Bump time. Check for end of play. Client will take care of transport control.
                 _currentSubdiv += 1;
-                if (_currentSubdiv >= _totalSubs)
+                if (_currentSubdiv >= _totalTicks)
                 {
                     State = RunState.Complete;
                     _currentSubdiv = 0;
@@ -279,18 +276,18 @@ namespace ClipPlayer
 
                 StatusChange?.Invoke(this, new StatusChangeEventArgs()
                 {
-                    Progress = _currentSubdiv < _totalSubs ? 100 * _currentSubdiv / _totalSubs : 100
+                    Progress = _currentSubdiv < _totalTicks ? 100 * _currentSubdiv / _totalTicks : 100
                 });
             }
         }
 
         /// <summary>
-        /// 
+        /// Send it.
         /// </summary>
         /// <param name="evt"></param>
         void SendMidi(MidiEvent evt)
         {
-            _outputDevice.SendEvent(evt);
+            _outputDevice?.Send(evt);
         }
 
         /// <summary>

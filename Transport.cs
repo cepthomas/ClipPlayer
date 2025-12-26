@@ -57,7 +57,6 @@ namespace ClipPlayer
             string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
             Common.Settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
             // Tell the libs about their settings.
-            MidiSettings.LibSettings = Common.Settings.MidiSettings;
             AudioSettings.LibSettings = Common.Settings.AudioSettings;
 
             InitializeComponent();
@@ -119,9 +118,6 @@ namespace ClipPlayer
         protected override void OnLoad(EventArgs e)
         {
             _logger.Info($"OK to log now!!");
-            //_log.Write($"CurrentDirectory:{Environment.CurrentDirectory}");
-            //_log.Write($"ExecutablePath:{Application.ExecutablePath}");
-            //_log.Write($"StartupPath:{Application.StartupPath}");
 
             bool ok = true;
 
@@ -350,6 +346,8 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
+            GenericListTypeEditor.SetOptions("MidiDeviceName", MidiOutputDevice.GetAvailableDevices());
+
             var changes = SettingsEditor.Edit(Common.Settings, "User Settings", 450);
 
             // Detect changes of interest.
@@ -361,8 +359,7 @@ namespace ClipPlayer
                 {
                     case "WavOutDevice":
                     case "Latency":
-                    case "InputDevice":
-                    case "OutputDevice":
+                    case "MidiDeviceName":
                     case "DrawColor":
                     case "SelectedColor":
                         restart = true;
