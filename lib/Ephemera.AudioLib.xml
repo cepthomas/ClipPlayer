@@ -41,7 +41,7 @@
         <member name="P:Ephemera.AudioLib.Globals.BPM">
             <summary>Global tempo if using Beat selection mode.</summary>
         </member>
-        <member name="P:Ephemera.AudioLib.Globals.ControlColor">
+        <member name="P:Ephemera.AudioLib.Globals.DrawColor">
             <summary>Colors.</summary>
         </member>
         <member name="F:Ephemera.AudioLib.AudioLibDefs.AUDIO_FILE_TYPES">

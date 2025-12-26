@@ -29,7 +29,13 @@ namespace ClipPlayer
         [Description("The color used for active control surfaces.")]
         [Browsable(true)]
         [JsonConverter(typeof(JsonColorConverter))]
-        public Color ControlColor { get; set; } = Color.MediumOrchid;
+        public Color DrawColor { get; set; } = Color.MediumOrchid;
+
+        [DisplayName("Selection Color")]
+        [Description("The color used for selections.")]
+        [Browsable(true)]
+        [JsonConverter(typeof(JsonColorConverter))]
+        public Color SelectedColor { get; set; } = Color.LightYellow;
 
         [DisplayName("Debug")]
         [Description("Do not press this!!!")]

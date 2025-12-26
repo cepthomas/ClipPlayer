@@ -84,10 +84,10 @@ namespace ClipPlayer
             _player = _nullPlayer;
 
             // Cosmetics.
-            progress.DrawColor = Common.Settings.ControlColor;
-            sldVolume.DrawColor = Common.Settings.ControlColor;
-            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
-            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.ControlColor;
+            progress.DrawColor = Common.Settings.DrawColor;
+            sldVolume.DrawColor = Common.Settings.DrawColor;
+            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
+            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
 
             // Hook up UI handlers.
             chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
@@ -98,7 +98,7 @@ namespace ClipPlayer
             progress!.MouseMove += Progress_MouseMove;
 
             // Drum channel selection.
-            cmbDrumChannel.BackColor = Common.Settings.ControlColor;
+            cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
             for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
             {
                 cmbDrumChannel.Items.Add($"{i + 1}");
@@ -363,7 +363,8 @@ namespace ClipPlayer
                     case "Latency":
                     case "InputDevice":
                     case "OutputDevice":
-                    case "ControlColor":
+                    case "DrawColor":
+                    case "SelectedColor":
                         restart = true;
                         break;
                 }
