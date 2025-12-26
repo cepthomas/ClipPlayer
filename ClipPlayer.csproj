@@ -29,24 +29,22 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Ephemera.AudioLib">
-            <HintPath>lib\Ephemera.AudioLib.dll</HintPath>
-        </Reference>
-        <!-- <Reference Include="Ephemera.MidiLib">
-            <HintPath>lib\Ephemera.MidiLib.dll</HintPath>
-        </Reference>
-        <Reference Include="Ephemera.MidiLibEx">
-            <HintPath>lib\Ephemera.MidiLibEx.dll</HintPath>
-        </Reference> -->
         <Reference Include="Ephemera.NBagOfTricks">
             <HintPath>lib\Ephemera.NBagOfTricks.dll</HintPath>
         </Reference>
         <Reference Include="Ephemera.NBagOfUis">
             <HintPath>lib\Ephemera.NBagOfUis.dll</HintPath>
         </Reference>
+        <Reference Include="Ephemera.AudioLib">
+            <HintPath>lib\Ephemera.AudioLib.dll</HintPath>
+        </Reference>
+        <Reference Include="Ephemera.MidiLib">
+            <HintPath>lib\Ephemera.MidiLib.dll</HintPath>
+        </Reference>
+        <Reference Include="Ephemera.MidiLibEx">
+            <HintPath>lib\Ephemera.MidiLibEx.dll</HintPath>
+        </Reference>
     </ItemGroup>
-
-
 
     <ItemGroup>
         <Compile Update="Properties\Resources.Designer.cs">
@@ -71,11 +69,6 @@
 
     <ItemGroup>
         <Folder Include="Resources\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\Libs\MidiLibEx\MidiLibEx.csproj" />
-      <ProjectReference Include="..\..\Libs\MidiLib\MidiLib.csproj" />
     </ItemGroup>
 
 </Project>
