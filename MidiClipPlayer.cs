@@ -42,7 +42,7 @@ namespace ClipPlayer
         int _currentSubdiv;
 
         /// <summary>Current tempo. Initialize to default in case the file doesn't supply one.</summary>
-        int _tempo = 100;// Common.Settings.MidiSettings.DefaultTempo;
+        int _tempo = 100;
         #endregion
 
         #region Properties - interface implementation
