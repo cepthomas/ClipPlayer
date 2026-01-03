@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using NAudio.Midi;
+//using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.MidiLib;
 using Ephemera.MidiLibEx;
