@@ -63,7 +63,7 @@
             <summary>Standard formatting.</summary>
         </member>
         <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_CLIP_SIZE">
-            <summary>Max clip size in minutes. Can be overriden in settings.</summary>
+            <summary>Max clip size in minutes. Has a direct effect on memory usage.</summary>
         </member>
         <member name="T:Ephemera.AudioLib.AudioFileInfo">
             <summary>Borrowed from NAudio.</summary>
@@ -158,9 +158,6 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
-        </member>
-        <member name="P:Ephemera.AudioLib.AudioSettings.LibSettings">
-            <summary>Current audio settings. Client must set this before accessing!</summary>
         </member>
         <member name="T:Ephemera.AudioLib.AudioSettingsConverter">
             <summary>Converter for selecting property value from known lists.</summary>

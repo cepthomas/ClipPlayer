@@ -66,7 +66,7 @@ namespace ClipPlayer
         {
             // Create output device.
             _waveOutSwapper = new();
-            _player = new(Common.Settings.AudioSettings.WavOutDevice, int.Parse(Common.Settings.AudioSettings.Latency), _waveOutSwapper);
+            _player = new(Common.Settings.WavOutDevice, int.Parse(Common.Settings.Latency), _waveOutSwapper);
             _player.PlaybackStopped += Player_PlaybackStopped;
         }
 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-//using NAudio.Midi;
+using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.MidiLib;
-using Ephemera.MidiLibEx;
 
 
 namespace ClipPlayer
@@ -17,9 +16,6 @@ namespace ClipPlayer
     sealed class MidiClipPlayer : IPlayer
     {
         #region Fields
-        /// <summary>The boss.</summary>
-        readonly Manager _mgr = new();
-
         /// <summary>Midi output device.</summary>
         IOutputDevice? _outputDevice = null;
 
@@ -30,10 +26,10 @@ namespace ClipPlayer
         double _msecPerSubdiv = 0;
 
         /// <summary>Midi events from the input file.</summary>
-        MidiEventCollection? _sourceEvents = null;
+        MidiEventCollection? _sourceEvents = null; // TODO convert to EventBase+Collection
 
         ///<summary>The internal collection of events. The key is the subdiv/time to send the list.</summary>
-        readonly Dictionary<int, List<MidiEvent>> _playEvents = new();
+        readonly Dictionary<int, List<MidiEvent>> _playEvents = [];
 
         /// <summary>Total length in subdivs.</summary>
         int _totalTicks;
@@ -82,7 +78,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _outputDevice = _mgr.GetOutputDevice(Common.Settings.MidiDeviceName);
+            _outputDevice = MidiManager.Instance.GetOutputDevice(Common.Settings.MidiDeviceName);
         }
 
         /// <summary> 
@@ -94,7 +90,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            _mgr.DestroyDevices();
+            MidiManager.Instance.DestroyDevices();
             _outputDevice = null;
 
             _mmTimer.Stop();
@@ -144,12 +140,13 @@ namespace ClipPlayer
                         }
 
                         // Add to our collection.
-                        if (!_playEvents.ContainsKey(subdiv))
+                        if (!_playEvents.TryGetValue(subdiv, out List<MidiEvent>? value))
                         {
-                            _playEvents.Add(subdiv, []);
+                            value = [];
+                            _playEvents.Add(subdiv, value);
                         }
 
-                        _playEvents[subdiv].Add(te);
+                        value.Add(te);
                         _totalTicks = Math.Max(_totalTicks, subdiv);
                     }
                 };
@@ -177,8 +174,8 @@ namespace ClipPlayer
         public string GetInfo()
         {
             MusicTime bt = new(_totalTicks);
-            var parts = bt.Parts;
-            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({parts.bar}:{parts.beat}:{parts.tick:00})";
+            var (bar, beat, tick) = bt.Parts;
+            string s = $"{_tempo} bpm {Length:mm\\:ss\\.fff} ({bar}:{beat}:{tick:00})";
             return s;
         }
 
@@ -192,11 +189,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
-            {
-                Kill(i + 1);
-            }
-
+            MidiManager.Instance.Kill();
             State = RunState.Stopped;
             return State;
         }
@@ -221,14 +214,13 @@ namespace ClipPlayer
         {
             if (State == RunState.Playing)
             {
-                if (_playEvents.ContainsKey(_currentSubdiv))
+                if (_playEvents.TryGetValue(_currentSubdiv, out List<MidiEvent>? value))
                 {
                     // Process any sequence steps.
-                    foreach (var mevt in _playEvents[_currentSubdiv])
+                    foreach (var mevt in value)
                     {
                         switch (mevt)
                         {
-                            // Adjust volume.
                             case NoteOnEvent evt:
                                 if (evt.Channel == DrumChannel && evt.Velocity == 0)
                                 {
@@ -237,13 +229,8 @@ namespace ClipPlayer
                                 else
                                 {
                                     // Adjust volume and maybe drum channel. Also NAudio NoteLength bug.
-                                    NoteOnEvent ne = new(
-                                        evt.AbsoluteTime,
-                                        evt.Channel == DrumChannel ? MidiDefs.DEFAULT_DRUM_CHANNEL : evt.Channel,
-                                        evt.NoteNumber,
-                                        (int)(evt.Velocity * Volume),
-                                        evt.OffEvent is null ? 0 : evt.NoteLength);
-                                    SendMidi(ne);
+                                    NoteOn non = new(evt.Channel = evt.Channel, evt.NoteNumber, (int)(evt.Velocity * Volume), new(evt.AbsoluteTime));
+                                    SendMidi(non);
                                 }
                                 break;
 
@@ -254,13 +241,26 @@ namespace ClipPlayer
                                 }
                                 else
                                 {
-                                    SendMidi(evt);
+                                    NoteOff noff = new(evt.Channel = evt.Channel, evt.NoteNumber, new(evt.AbsoluteTime));
+                                    SendMidi(noff);
                                 }
                                 break;
 
-                            // No change.
+                            case PatchChangeEvent evt:
+                                Patch pt = new(evt.Channel, evt.Patch, new(evt.AbsoluteTime));
+                                SendMidi(pt);
+                                break;
+
+                            case ControlChangeEvent evt:
+                                Controller ctrl = new(evt.Channel, (int)evt.Controller, evt.ControllerValue, new(evt.AbsoluteTime));
+                                SendMidi(ctrl);
+                                break;
+
+                            // All others ignore.
                             default:
-                                SendMidi(mevt);
+                                //var smmmm = mevt.GetAsShortMessage();
+                                //Other other = new(mevt.Channel, mevt.GetAsShortMessage(), new(mevt.AbsoluteTime));
+                                //SendMidi(other);
                                 break;
                         }
                     }
@@ -285,19 +285,9 @@ namespace ClipPlayer
         /// Send it.
         /// </summary>
         /// <param name="evt"></param>
-        void SendMidi(MidiEvent evt)
+        void SendMidi(BaseEvent evt)
         {
             _outputDevice?.Send(evt);
-        }
-
-        /// <summary>
-        /// Send all notes off.
-        /// </summary>
-        /// <param name="channel">1-based channel</param>
-        void Kill(int channel)
-        {
-            ControlChangeEvent nevt = new(0, channel, MidiController.AllNotesOff, 0);
-            SendMidi(nevt);
         }
         #endregion
     }

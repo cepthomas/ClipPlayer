@@ -24,10 +24,10 @@ namespace ClipPlayer
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        readonly AudioClipPlayer _audioPlayer;
+        readonly AudioClipPlayer? _audioPlayer;
 
         /// <summary>Midi device.</summary>
-        readonly MidiClipPlayer _midiPlayer;
+        readonly MidiClipPlayer? _midiPlayer;
 
         /// <summary>Default device.</summary>
         readonly NullPlayer _nullPlayer;
@@ -51,63 +51,76 @@ namespace ClipPlayer
         /// </summary>
         public Transport(string fn)
         {
-            _fn = fn;
-
-            // Must do this first before initializing.
-            string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-            Common.Settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
-            // Tell the libs about their settings.
-            AudioSettings.LibSettings = Common.Settings.AudioSettings;
-
-            InitializeComponent();
-
-            Icon = Properties.Resources.croco;
-
-            sldVolume.Value = Common.Settings.Volume;
-            var pos = Common.Settings.FormGeometry;
-            Location = new(pos.X, pos.Y);
-
-            // Init logging.
-            LogManager.MinLevelFile = Common.Settings.FileLogLevel;
-            LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
-            LogManager.LogMessage += LogManager_LogMessage;
-            LogManager.Run();
-
-            // Create the playback devices.
-            _midiPlayer = new();
-            _midiPlayer.StatusChange += Player_StatusChange;
-            _audioPlayer = new();
-            _audioPlayer.StatusChange += Player_StatusChange;
-            _nullPlayer = new();
-            _nullPlayer.StatusChange += Player_StatusChange;
-            _player = _nullPlayer;
-
-            // Cosmetics.
-            progress.DrawColor = Common.Settings.DrawColor;
-            sldVolume.DrawColor = Common.Settings.DrawColor;
-            chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
-            chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
-
-            // Hook up UI handlers.
-            chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
-            btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
-            sldVolume.ValueChanged += (_, __) => { _player.Volume = sldVolume.Value; };
-            btnSettings.Click += Settings_Click;
-            progress!.MouseDown += Progress_MouseDown;
-            progress!.MouseMove += Progress_MouseMove;
-
-            // Drum channel selection.
-            cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
-            for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
+            try
             {
-                cmbDrumChannel.Items.Add($"{i + 1}");
+                _fn = fn;
+
+                // Load settings first before initializing.
+                string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
+                Common.Settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
+
+                InitializeComponent();
+
+                Icon = Properties.Resources.croco;
+
+                sldVolume.Value = Common.Settings.Volume;
+                var pos = Common.Settings.FormGeometry;
+                Location = new(pos.X, pos.Y);
+
+                // Init logging.
+                LogManager.MinLevelFile = Common.Settings.FileLogLevel;
+                LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
+                LogManager.LogMessage += LogManager_LogMessage;
+                LogManager.Run();
+
+                // Create the playback devices.
+                _midiPlayer = new();
+                if (_midiPlayer is not null)
+                {
+                    _midiPlayer.StatusChange += Player_StatusChange;
+                }
+                _audioPlayer = new();
+                if (_audioPlayer is not null)
+                {
+                    _audioPlayer.StatusChange += Player_StatusChange;
+                }
+
+                _nullPlayer = new();
+                _nullPlayer.StatusChange += Player_StatusChange;
+                _player = _nullPlayer;
+
+                // Cosmetics.
+                progress.DrawColor = Common.Settings.DrawColor;
+                sldVolume.DrawColor = Common.Settings.DrawColor;
+                chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
+                chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
+
+                // Hook up UI handlers.
+                chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
+                btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
+                sldVolume.ValueChanged += (_, __) => { _player.Volume = sldVolume.Value; };
+                btnSettings.Click += Settings_Click;
+                progress!.MouseDown += Progress_MouseDown;
+                progress!.MouseMove += Progress_MouseMove;
+
+                // Drum channel selection.
+                cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
+                for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
+                {
+                    cmbDrumChannel.Items.Add($"{i + 1}");
+                }
+                cmbDrumChannel.SelectedIndexChanged += (_, __) => { if (_midiPlayer is not null) _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
+                cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
+
+                if (!Common.Settings.Debug)
+                {
+                    ClientSize = new(ClientSize.Width, rtbLog.Top);
+                }
             }
-            cmbDrumChannel.SelectedIndexChanged += (_, __) => _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1;
-            cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
-
-            if(!Common.Settings.Debug)
+            catch (Exception ex)
             {
-                ClientSize = new(ClientSize.Width, rtbLog.Top);
+                MessageBox.Show($"ClipPlayer failed: {ex}");
+                Environment.Exit(1);
             }
         }
 
@@ -167,11 +180,11 @@ namespace ClipPlayer
                 components.Dispose();
             }
 
-            _midiPlayer.Stop();
-            _midiPlayer.Dispose();
+            _midiPlayer?.Stop();
+            _midiPlayer?.Dispose();
 
-            _audioPlayer.Stop();
-            _audioPlayer.Dispose();
+            _audioPlayer?.Stop();
+            _audioPlayer?.Dispose();
 
             _server?.Stop();
             _server?.Dispose();
@@ -196,7 +209,7 @@ namespace ClipPlayer
                 switch (Path.GetExtension(_fn).ToLower())
                 {
                     case ".mid":
-                        if (!_midiPlayer.Valid)
+                        if (_midiPlayer is null || !_midiPlayer.Valid)
                         {
                             _logger.Error("Invalid midi output device");
                             MessageBox.Show("Invalid midi output device");
@@ -212,7 +225,7 @@ namespace ClipPlayer
                     case ".mp3":
                     case ".m4a":
                     case ".flac":
-                        if (!_audioPlayer.Valid)
+                        if (_audioPlayer is null || !_audioPlayer.Valid)
                         {
                             _logger.Error("Invalid audio output device");
                             MessageBox.Show("Invalid audio output device");
