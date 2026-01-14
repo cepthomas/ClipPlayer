@@ -6,8 +6,6 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-// using NAudio.Wave;
-// using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.NBagOfUis;
 using Ephemera.MidiLib;
