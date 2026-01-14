@@ -22,6 +22,11 @@ namespace ClipPlayer
 
         public string GetInfo() { return "Big dummy"; }
 
+        public NullPlayer()
+        {
+            StatusChange?.Invoke(this, new() { Progress = 0 });
+        }
+
         public RunState Play()
         {
             State = RunState.Playing;

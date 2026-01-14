@@ -85,6 +85,7 @@ namespace ClipPlayer
                     _audioPlayer.StatusChange += Player_StatusChange;
                 }
 
+                // Default.
                 _nullPlayer = new();
                 _nullPlayer.StatusChange += Player_StatusChange;
                 _player = _nullPlayer;
