@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -61,7 +62,7 @@ namespace ClipPlayer
 
                 InitializeComponent();
 
-                Icon = Properties.Resources.croco;
+                Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
 
                 sldVolume.Value = Common.Settings.Volume;
                 var pos = Common.Settings.FormGeometry;

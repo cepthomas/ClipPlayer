@@ -14,7 +14,7 @@
         <Description>ClipPlayer application</Description>
         <Copyright>MIT License</Copyright>
         <Nullable>enable</Nullable>
-        <ApplicationIcon>Resources\croco.ico</ApplicationIcon>
+        <ApplicationIcon>croco.ico</ApplicationIcon>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
         <!-- <DefineConstants>DEBUG;TRACE</DefineConstants> -->
