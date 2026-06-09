@@ -72,7 +72,9 @@ namespace ClipPlayer
                 LogManager.MinLevelFile = Common.Settings.FileLogLevel;
                 LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
                 LogManager.LogMessage += LogManager_LogMessage;
-                LogManager.Run();
+                LogManager.Run(Path.Join(appDir, "log.txt"), 100000);
+
+                _logger.Info("Transport started");
 
                 // Create the playback devices.
                 _midiPlayer = new();
@@ -132,17 +134,15 @@ namespace ClipPlayer
         /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
-            _logger.Info($"OK to log now!!");
-
             bool ok = true;
 
-            if(ok)
+            if (ok)
             {
                 // Go!
                 ok = OpenFile();
             }
 
-            if(ok)
+            if (ok)
             {
                 // Start listening for new app instances.
                 _server = new Ipc.Server(Common.PipeName, Common.LogFileName);
@@ -151,9 +151,9 @@ namespace ClipPlayer
             }
             else
             {
-                //// Bail out?
-                //Environment.ExitCode = 1;
-                //Close();
+                // Bail out
+                Environment.ExitCode = 1;
+                Close();
             }
             base.OnLoad(e);
         }
@@ -247,7 +247,7 @@ namespace ClipPlayer
                         break;
                 }
 
-                if(ok)
+                if (ok)
                 {
                     if (_player.OpenFile(_fn))
                     {
@@ -268,7 +268,7 @@ namespace ClipPlayer
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Fail open file: {ex.Message}");
+                MessageBox.Show($"Failed to open file: {ex.Message}");
                 _fn = "";
                 ok = false;
             }
@@ -342,14 +342,20 @@ namespace ClipPlayer
         {
             this.InvokeIfRequired(_ =>
             {
-                if(e.Error)
+                if (e.Error)
                 {
                     _logger.Warn($"Server error:{e.Message}");
                 }
                 else
                 {
                     _fn = e.Message;
-                    OpenFile();
+                    bool ok = OpenFile();
+                    if (!ok)
+                    {
+                        // Bail out
+                        Environment.ExitCode = 1;
+                        Close();
+                    }
                 }
             });
         }

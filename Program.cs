@@ -16,6 +16,11 @@ namespace ClipPlayer
         [STAThread]
         static void Main(string[] args)
         {
+            // Handle unexpected esceptions.
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += (sender, e) => { HandleException(e.Exception, "UI Thread Exception"); };
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => { HandleException((Exception)e.ExceptionObject, "Background Thread Exception"); };
+
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -34,8 +39,7 @@ namespace ClipPlayer
                 // Ensure only one playing at a time.
                 if (procs.Length == 1)
                 {
-                    _log.Write($"================================== {DateTime.Now} =============================================");
-                    _log.Write($"main thread enter");
+                    _log.Write($"===== main thread enter {DateTime.Now}");
 
                     // I'm the first, start normally by passing the file name.
                     Application.EnableVisualStyles();
@@ -71,6 +75,12 @@ namespace ClipPlayer
             {
                 MessageBox.Show("Missing file name argument");
             }
+        }
+
+        static void HandleException(Exception ex, string type)
+        {
+            MessageBox.Show(ex.ToString(), type);
+            Environment.Exit(1);
         }
     }
 }

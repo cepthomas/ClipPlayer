@@ -352,7 +352,6 @@ namespace ClipPlayer.Ipc
 
             // Good time to check file size.
             using var mutex = new Mutex(false, MUTEX_GUID);
-
             mutex.WaitOne();
             FileInfo fi = new(_filename);
             if (fi.Exists && fi.Length > _maxSize)
@@ -367,17 +366,22 @@ namespace ClipPlayer.Ipc
         /// <summary>
         /// Add a line.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="msg"></param>
         /// <param name="error">T/F</param>
-        public void Write(string s, bool error = false)
+        public void Write(string msg, bool error = false)
         {
-            var se = error ? "!!! ERROR !!!" : "";
-            s = $"{DateTime.Now:mm\\:ss\\.fff} {_category} {Environment.ProcessId, 5} {Thread.CurrentThread.ManagedThreadId, 2} {se} {s}{Environment.NewLine}";
+            var slevel = error ? "ERR" : "INF";
+            msg = $"{DateTime.Now:yyyy'-'MM'-'dd HH':'mm':'ss.fff} : {slevel} {_category} {msg}{Environment.NewLine}";
+
+            // 12:50.477 MAIN   22916  1  num-procs:1 pid:22916 arg-fn:C:\Dev\Misc\TestAudioFiles\25jazz.mid
+            // 2026-06-09 15:35:35.857 : INF Transport Transport.cs(135) OK to log now!!
+
+            //var se = error ? "!!! ERROR !!!" : "";
+            //s = $"{DateTime.Now:mm\\:ss\\.fff} {_category} {Environment.ProcessId, 5} {Thread.CurrentThread.ManagedThreadId, 2} {se} {s}{Environment.NewLine}";
 
             using var mutex = new Mutex(false, MUTEX_GUID);
-
             mutex.WaitOne();
-            File.AppendAllText(_filename, s);
+            File.AppendAllText(_filename, msg);
             mutex.ReleaseMutex();
         }
 
