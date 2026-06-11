@@ -189,7 +189,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            MidiManager.Instance.Kill();
+            MidiManager.Instance.Kill(); //TODO1 this doesn't kill!
             State = RunState.Stopped;
             return State;
         }
