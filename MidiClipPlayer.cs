@@ -126,7 +126,7 @@ namespace ClipPlayer
                         // Do some miscellaneous fixups.
 
                         // Scale to internal.
-                        int subdiv = mt.MidiToInternal(te.AbsoluteTime);
+                        int subdiv = mt.MidiToInternal(te.AbsoluteTime, true);
 
                         // Other ops.
                         switch (te)
