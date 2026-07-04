@@ -38,6 +38,7 @@ namespace ClipPlayer
 
         /// <summary>Listen for new instances.</summary>
         Ipc.Server? _server;
+//TODO use service? https://learn.microsoft.com/en-us/dotnet/core/extensions/windows-service
 
         // /// <summary>My multiprocess logger for debug.</summary>
         // readonly NBagOfTricks.SimpleIpc.MpLog _log = new(Common.LogFileName, "TRNS");
