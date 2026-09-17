@@ -293,7 +293,7 @@ namespace ClipPlayer.Ipc
             try
             {
                 using var pipeClient = new NamedPipeClientStream(".", _pipeName, PipeDirection.Out);
-                _log?.Write($"rcv:{s}");
+                _log?.Write($"recv:{s}");
                 pipeClient.Connect(timeout);
                 byte[] outBuffer = new UTF8Encoding().GetBytes(s + "\n");
                 pipeClient.Write(outBuffer, 0, outBuffer.Length);
