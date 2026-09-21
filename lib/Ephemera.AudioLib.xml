@@ -266,15 +266,13 @@
             <param name="fn">File to use.</param>
             <param name="mode">How to handle stereo files.</param>
         </member>
-        <member name="M:Ephemera.AudioLib.ClipSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.ClipSampleProvider.Read(System.Span{System.Single})">
             <summary>
             Reads samples from this sample provider with adjustments for gain.
             Honors user selection if specified.
             ISampleProvider implementation.
             </summary>
             <param name="buffer">Sample buffer.</param>
-            <param name="offset">Offset into buffer.</param>
-            <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
         </member>
         <member name="M:Ephemera.AudioLib.ClipSampleProvider.ReadSource(NAudio.Wave.ISampleProvider,Ephemera.AudioLib.StereoCoercion)">
@@ -349,7 +347,7 @@
         <member name="P:Ephemera.AudioLib.NullSampleProvider.WaveFormat">
             <inheritdoc />
         </member>
-        <member name="M:Ephemera.AudioLib.NullSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.NullSampleProvider.Read(System.Span{System.Single})">
             <inheritdoc />
         </member>
         <member name="T:Ephemera.AudioLib.PeakProvider">
@@ -492,14 +490,12 @@
             </summary>
             <param name="input">New input or null to disable.</param>
         </member>
-        <member name="M:Ephemera.AudioLib.SwappableSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+        <member name="M:Ephemera.AudioLib.SwappableSampleProvider.Read(System.Span{System.Single})">
             <summary>
             Reads samples from this sample provider.
             ISampleProvider implementation.
             </summary>
             <param name="buffer">Sample buffer.</param>
-            <param name="offset">Offset into buffer.</param>
-            <param name="count">Number of samples requested.</param>
             <returns>Number of samples read.</returns>
         </member>
         <member name="T:Ephemera.AudioLib.TimeOps">

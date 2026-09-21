@@ -19,7 +19,7 @@ namespace ClipPlayer
     {
         #region Fields
         /// <summary>My logger.</summary>
-        readonly Logger _logger = LogManager.CreateLogger("Transport");
+        readonly Logger _logger = LogManager.CreateLogger("Main");
 
         /// <summary>Current file.</summary>
         string _fn = "";
