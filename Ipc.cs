@@ -372,11 +372,6 @@ namespace ClipPlayer.Ipc
         {
             var slevel = error ? "ERR" : "INF";
             msg = $"{DateTime.Now:yyyy'-'MM'-'dd HH':'mm':'ss.fff} : {slevel} {_category} {msg}{Environment.NewLine}";
-
-            // 12:50.477 MAIN   22916  1  num-procs:1 pid:22916 arg-fn:C:\Dev\Misc\TestAudioFiles\25jazz.mid
-            // 2026-06-09 15:35:35.857 : INF Transport Transport.cs(135) OK to log now!!
-
-            //var se = error ? "!!! ERROR !!!" : "";
             //s = $"{DateTime.Now:mm\\:ss\\.fff} {_category} {Environment.ProcessId, 5} {Thread.CurrentThread.ManagedThreadId, 2} {se} {s}{Environment.NewLine}";
 
             using var mutex = new Mutex(false, MUTEX_GUID);
