@@ -109,7 +109,7 @@ namespace ClipPlayer
 
                 // Drum channel selection.
                 cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
-                for (int i = 0; i < MidiDefs.NUM_CHANNELS; i++)
+                for (int i = 0; i < MidiDefs.MAX_CHANNEL; i++)
                 {
                     cmbDrumChannel.Items.Add($"{i + 1}");
                 }

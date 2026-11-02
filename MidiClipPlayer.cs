@@ -75,7 +75,7 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _outputDevice = MidiManager.Instance.GetOutputDevice(Common.Settings.MidiDeviceName);
+            _outputDevice = ChannelManager.Instance.GetOutputDevice(Common.Settings.MidiDeviceName);
         }
 
         /// <summary> 
@@ -87,7 +87,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            MidiManager.Instance.DestroyDevices();
+            ChannelManager.Instance.DestroyDevices();
             _outputDevice = null;
 
             _mmTimer.Stop();
@@ -170,7 +170,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            MidiManager.Instance.Kill();
+            ChannelManager.Instance.KillAll();
             State = RunState.Stopped;
             return State;
         }
