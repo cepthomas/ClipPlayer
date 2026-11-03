@@ -280,11 +280,17 @@
             Die die die.
             </summary>
         </member>
-        <member name="M:Ephemera.MidiLib.ChannelManager.GetOutputChannels(System.Boolean)">
+        <member name="M:Ephemera.MidiLib.ChannelManager.GetChannelControls(System.Boolean)">
             <summary>
             Readonly collection access.
             </summary>
-            <param name="selected"></param>
+            <param name="selected">Only selected items</param>
+        </member>
+        <member name="M:Ephemera.MidiLib.ChannelManager.GetChannels(System.Boolean)">
+            <summary>
+            Readonly collection access.
+            </summary>
+            <param name="selected">Only selected items</param>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.GetChannel(Ephemera.MidiLib.ChannelControl)">
             <summary>

@@ -78,15 +78,9 @@ namespace ClipPlayer
 
                 // Create the playback devices.
                 _midiPlayer = new();
-                if (_midiPlayer is not null)
-                {
-                    _midiPlayer.StatusChange += Player_StatusChange;
-                }
+                _midiPlayer?.StatusChange += Player_StatusChange;
                 _audioPlayer = new();
-                if (_audioPlayer is not null)
-                {
-                    _audioPlayer.StatusChange += Player_StatusChange;
-                }
+                _audioPlayer?.StatusChange += Player_StatusChange;
 
                 // Default.
                 _nullPlayer = new();
@@ -113,7 +107,7 @@ namespace ClipPlayer
                 {
                     cmbDrumChannel.Items.Add($"{i + 1}");
                 }
-                cmbDrumChannel.SelectedIndexChanged += (_, __) => { if (_midiPlayer is not null) _midiPlayer.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
+                cmbDrumChannel.SelectedIndexChanged += (_, __) => { _midiPlayer?.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
                 cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
 
                 if (!Common.Settings.Debug)
