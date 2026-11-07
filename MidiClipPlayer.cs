@@ -16,6 +16,9 @@ namespace ClipPlayer
     sealed class MidiClipPlayer : IPlayer
     {
         #region Fields
+        /// <summary>Midi boss.</summary>
+        readonly ChannelManager CM;
+
         /// <summary>Midi output device.</summary>
         IOutputDevice? _outputDevice = null;
 
@@ -75,7 +78,8 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            _outputDevice = ChannelManager.Instance.GetOutputDevice(Common.Settings.MidiDeviceName);
+            CM = new();
+            _outputDevice = CM.GetOutputDevice(Common.Settings.MidiDeviceName);
         }
 
         /// <summary> 
@@ -87,7 +91,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            ChannelManager.Instance.DestroyDevices();
+            CM.Dispose();
             _outputDevice = null;
 
             _mmTimer.Stop();
@@ -170,7 +174,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            ChannelManager.Instance.KillAll();
+            CM.KillAll();
             State = RunState.Stopped;
             return State;
         }

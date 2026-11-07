@@ -68,7 +68,7 @@ namespace ClipPlayer
         /// <summary>Return to beginning.</summary>
         void Rewind();
 
-        /// <summary>Return to beginning.</summary>
+        /// <summary>Update settings.</summary>
         void UpdateSettings();
     }
 }
