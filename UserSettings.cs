@@ -6,11 +6,11 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Drawing.Design;
 using Ephemera.NBagOfTricks;
 using Ephemera.NBagOfUis;
 using Ephemera.MidiLib;
 using Ephemera.AudioLib;
-using System.Drawing.Design;
 
 
 namespace ClipPlayer

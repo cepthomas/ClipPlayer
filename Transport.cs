@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Ephemera.AudioLib;
+//using Ephemera.AudioLib;
 using Ephemera.MidiLib;
 using Ephemera.NBagOfTricks;
 using Ephemera.NBagOfUis;
