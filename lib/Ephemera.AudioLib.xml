@@ -5,7 +5,7 @@
     </assembly>
     <members>
         <member name="T:Ephemera.AudioLib.AudioFileInfo">
-            <summary>Borrowed from NAudio.</summary>
+            <summary>Borrowed from NAudio. TODO2??</summary>
         </member>
         <member name="M:Ephemera.AudioLib.AudioFileInfo.GetFileInfo(System.String,System.Boolean)">
             <summary>
@@ -251,6 +251,63 @@
         <member name="F:Ephemera.AudioLib.AudioLibDefs.MAX_CLIP_SIZE">
             <summary>Max clip size in minutes. Has a direct effect on memory usage.</summary>
         </member>
+        <member name="T:Ephemera.AudioLib.Extensions">
+            <summary>
+            Extensions to enhance core NAudio for this application.
+            </summary>
+        </member>
+        <member name="M:Ephemera.AudioLib.Extensions.ReadAll(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Make a buffer from the provider contents. Mono only.
+            </summary>
+            <param name="prov">The provider.</param>
+            <returns>Values.</returns>
+        </member>
+        <member name="M:Ephemera.AudioLib.Extensions.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
+            <summary>
+            Sanity check for only 32bit fp, 44100Hz, mono.
+            </summary>
+            <param name="prov">Format to check.</param>
+            <param name="mono">Must be mono.</param>
+        </member>
+        <member name="M:Ephemera.AudioLib.Extensions.Export(NAudio.Wave.ISampleProvider,System.String)">
+            <summary>
+            Export wave data to csv file.
+            </summary>
+            <param name="prov">Data source.</param>
+            <param name="exportFileName"></param>
+        </member>
+        <member name="M:Ephemera.AudioLib.Extensions.Rewind(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Agnostic stream position setter.
+            </summary>
+            <param name="prov"></param>
+        </member>
+        <member name="M:Ephemera.AudioLib.Extensions.GetInfoString(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Get provider info. Mainly for UI display.
+            </summary>
+            <param name="prov"></param>
+            <returns>Info chunks.</returns>
+        </member>
+        <member name="T:Ephemera.AudioLib.Conversion">
+            <summary>Conversion options.</summary>
+        </member>
+        <member name="M:Ephemera.AudioLib.Hold.Convert(Ephemera.AudioLib.Conversion,System.String)">
+            <summary>
+            Process a file.
+            </summary>
+            <param name="conv">Specific operation.</param>
+            <param name="fn">The input filename. Output file is the same with option appended.</param>
+            <returns>Succesful conversion.</returns>
+        </member>
+        <member name="M:Ephemera.AudioLib.Hold.Resample(System.String,System.String)">
+            <summary>
+            For client convenience.
+            </summary>
+            <param name="fn"></param>
+            <param name="newfn"></param>
+        </member>
         <member name="T:Ephemera.AudioLib.IConverter">
             <summary>Abstraction of selection mode. Does text parsing, formatting, snap.</summary>
         </member>
@@ -274,69 +331,12 @@
             <returns>The string.</returns>
         </member>
         <member name="T:Ephemera.AudioLib.Converter">
-            <summary>Helpers.</summary>
+            <summary>Helper.</summary>
         </member>
         <member name="M:Ephemera.AudioLib.Converter.Create(Ephemera.AudioLib.WaveSelectionMode)">
             <summary>Make me a converter.</summary>
             <param name="mode">Which flavor.</param>
             <returns>New converter.</returns>
-        </member>
-        <member name="T:Ephemera.AudioLib.Conversion">
-            <summary>Conversion options.</summary>
-        </member>
-        <member name="T:Ephemera.AudioLib.NAudioEx">
-            <summary>
-            Extensions to enhance core NAudio for this application.
-            </summary>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.ReadAll(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Make a buffer from the provider contents. Mono only.
-            </summary>
-            <param name="prov">The provider.</param>
-            <returns>Values.</returns>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.Validate(NAudio.Wave.ISampleProvider,System.Boolean)">
-            <summary>
-            Sanity check for only 32bit fp, 44100Hz, mono.
-            </summary>
-            <param name="prov">Format to check.</param>
-            <param name="mono">Must be mono.</param>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.Convert(Ephemera.AudioLib.Conversion,System.String)">
-            <summary>
-            Process a file.
-            </summary>
-            <param name="conv">Specific operation.</param>
-            <param name="fn">The input filename. Output file is the same with option appended.</param>
-            <returns>Succesful conversion.</returns>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.Resample(System.String,System.String)">
-            <summary>
-            For client convenience.
-            </summary>
-            <param name="fn"></param>
-            <param name="newfn"></param>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.Export(NAudio.Wave.ISampleProvider,System.String)">
-            <summary>
-            Export wave data to csv file.
-            </summary>
-            <param name="prov">Data source.</param>
-            <param name="exportFileName"></param>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.Rewind(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Agnostic stream position setter.
-            </summary>
-            <param name="prov"></param>
-        </member>
-        <member name="M:Ephemera.AudioLib.NAudioEx.GetInfoString(NAudio.Wave.ISampleProvider)">
-            <summary>
-            Get provider info. Mainly for UI display.
-            </summary>
-            <param name="prov"></param>
-            <returns>Info chunks.</returns>
         </member>
         <member name="T:Ephemera.AudioLib.NullSampleProvider">
             <summary>
@@ -378,6 +378,12 @@
         </member>
         <member name="M:Ephemera.AudioLib.SampleConverter.Format(System.Int32)">
             <inheritdoc />
+        </member>
+        <member name="T:Ephemera.AudioLib.SavingWaveProvider">
+            <summary>From NAudio I think?</summary>
+        </member>
+        <member name="M:Ephemera.AudioLib.SavingWaveProvider.#ctor(NAudio.Wave.IWaveProvider,System.String)">
+            <summary>From NAudio I think?</summary>
         </member>
         <member name="T:Ephemera.AudioLib.SwappableSampleProvider">
             <summary>
@@ -555,6 +561,9 @@
         </member>
         <member name="T:Ephemera.AudioLib.WaveOutputDeviceTypeEditor">
             <summary>Select one from available output devices.</summary>
+        </member>
+        <member name="T:Ephemera.AudioLib.LatencyTypeEditor">
+            <summary>Select one from available values.</summary>
         </member>
         <member name="T:Ephemera.AudioLib.WaveViewer">
             <summary>Simple mono wave display.</summary>

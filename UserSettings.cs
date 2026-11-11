@@ -62,13 +62,13 @@ namespace ClipPlayer
         [DisplayName("Wave Output Device")]
         [Description("How to play the audio files.")]
         [Browsable(true)]
-        [TypeConverter(typeof(AudioSettingsConverter))]
+        [Editor(typeof(WaveOutputDeviceTypeEditor), typeof(UITypeEditor))]
         public string WavOutDevice { get; set; } = "Microsoft Sound Mapper";
 
         [DisplayName("Latency")]
         [Description("What's the hurry?")]
         [Browsable(true)]
-        [TypeConverter(typeof(AudioSettingsConverter))]
+        [Editor(typeof(LatencyTypeEditor), typeof(UITypeEditor))]
         public string Latency { get; set; } = "200";
         #endregion
 
