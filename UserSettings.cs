@@ -56,7 +56,7 @@ namespace ClipPlayer
         [DisplayName("Midi Device")]
         [Description("Midi Device.")]
         [Browsable(true)]
-        [Editor(typeof(GenericListTypeEditor), typeof(UITypeEditor))]
+        [Editor(typeof(MidiOutputDeviceTypeEditor), typeof(UITypeEditor))]
         public string MidiDeviceName { get; set; } = "";
 
         [DisplayName("Wave Output Device")]

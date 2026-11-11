@@ -361,8 +361,6 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
-            GenericListTypeEditor.SetOptions("MidiDeviceName", MidiOutputDevice.GetAvailableDevices());
-
             var changes = SettingsEditor.Edit(Common.Settings, "User Settings", 450);
 
             // Detect changes of interest.
