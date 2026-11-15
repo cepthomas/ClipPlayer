@@ -79,7 +79,8 @@ namespace ClipPlayer
         public MidiClipPlayer()
         {
             CM = new();
-            _outputDevice = CM.GetOutputDevice(Common.Settings.MidiDeviceName);
+
+            _outputDevice = new MidiOutputDevice(Common.Settings.MidiDeviceName) { Id = 1 };
         }
 
         /// <summary> 
@@ -232,13 +233,21 @@ namespace ClipPlayer
                                 break;
 
                             case PatchChangeEvent evt:
-                                Patch pt = new(evt.Channel, evt.Patch, new(evt.AbsoluteTime));
+                                MidiDefs.InstrumentId patchId =
+                                    Enum.IsDefined(typeof(MidiDefs.InstrumentId), evt.Patch) ?
+                                    (MidiDefs.InstrumentId)Enum.ToObject(typeof(MidiDefs.InstrumentId), evt.Patch) :
+                                    MidiDefs.InstrumentId.AcousticGrandPiano;
+                                Patch pt = new(evt.Channel, patchId, new(evt.AbsoluteTime));
                                 SendMidi(pt);
                                 break;
 
                             case ControlChangeEvent evt:
-                                Controller ctrl = new(evt.Channel, (int)evt.Controller, evt.ControllerValue, new(evt.AbsoluteTime));
-                                SendMidi(ctrl);
+                                if (Enum.IsDefined(typeof(MidiDefs.ControllerId), (int)evt.Controller))
+                                {
+                                    var ctlrId = (MidiDefs.ControllerId)Enum.ToObject(typeof(MidiDefs.ControllerId), evt.Controller);
+                                    Controller ctrl = new(evt.Channel, ctlrId, evt.ControllerValue, new(evt.AbsoluteTime));
+                                    SendMidi(ctrl);
+                                }
                                 break;
 
                             // All others ignore.
