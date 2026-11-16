@@ -187,6 +187,9 @@
         <member name="M:Ephemera.MidiLib.ChannelHandle.ToString">
             <summary>Human readable.</summary>
         </member>
+        <member name="T:Ephemera.MidiLib.ChannelManager">
+            <summary>Hides all the messy logic with midi devices and channels, and the NAudio versions of each.</summary>
+        </member>
         <member name="F:Ephemera.MidiLib.ChannelManager._outputDevices">
             <summary>All midi devices to use for send. Index is the IOutputDevice.Id.</summary>
         </member>
@@ -218,21 +221,21 @@
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.ChannelControl_StateChange(System.Object,Ephemera.MidiLib.ChannelControl.StateChangeEventArgs)">
             <summary>
-            User clicked solo/mute.
+            User clicked solo/mute. Slow-time.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.ChannelControl_SelectionChange(System.Object,Ephemera.MidiLib.ChannelControl.SelectionChangeEventArgs)">
             <summary>
-            User clicked something.
+            User clicked something. Slow-time.
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.OpenMidiOutput(System.String,System.Int32,System.String)">
             <summary>
-            Open a normal output channel. Lazy inits the device. Throws if anything is invalid.
+            Open a normal output channel. Lazy inits the device. Throws if anything is invalid. Slow-time.
             </summary>
             <param name="deviceName"></param>
             <param name="channelNumber"></param>
@@ -241,23 +244,30 @@
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.OpenMidiInput(System.String,System.Int32,System.String)">
             <summary>
-            Open a midi input. Lazy inits the device. Throws if anything is invalid.
+            Open a midi input. Lazy inits the device. Throws if anything is invalid. Slow-time.
             </summary>
             <param name="deviceName"></param>
             <param name="channelNumber"></param>
             <param name="channelName"></param>
             <returns></returns>
         </member>
+        <member name="M:Ephemera.MidiLib.ChannelManager.Dev_MessageReceived(System.Object,Ephemera.MidiLib.BaseEvent)">
+            <summary>
+            Something arrived from a midi device. Filter and maybe pass on.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.GetOutputDevice(System.String)">
             <summary>
-            Get output device. Lazy creation.
+            Get output device. Lazy creation. Slow-time.
             </summary>
             <param name="deviceName"></param>
             <returns>The device or null if invalid.</returns>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.GetInputDevice(System.String)">
             <summary>
-            Get input device. Lazy creation.
+            Get input device. Lazy creation. Slow-time.
             </summary>
             <param name="deviceName"></param>
             <returns>The device or null if invalid.</returns>
@@ -272,14 +282,14 @@
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.Bind(Ephemera.MidiLib.MidiOutput,Ephemera.MidiLib.ChannelControl)">
             <summary>
-            Bind a control to a midi output.
+            Bind a UI control to a midi output.
             </summary>
             <param name="mout"></param>
             <param name="ctrl"></param>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.UpdateState">
             <summary>
-            Handles solo/mute.
+            Handles solo/mute across all channels.
             </summary>
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.KillAll">
@@ -289,26 +299,12 @@
         </member>
         <member name="M:Ephemera.MidiLib.ChannelManager.Reset">
             <summary>
-            Remove current channels and controls. Not devices
+            Remove current channels and controls - but not devices.
             </summary>
         </member>
-        <member name="M:Ephemera.MidiLib.ChannelManager.GetMidiOutput(Ephemera.MidiLib.ChannelControl)">
+        <member name="M:Ephemera.MidiLib.ChannelManager.GetOutputs">
             <summary>
-            Get channel object from control object.
-            </summary>
-            <param name="chCtrl"></param>
-            <returns>The channel or null if invalid control.</returns>
-        </member>
-        <member name="M:Ephemera.MidiLib.ChannelManager.GetMidiOutput(System.Int32)">
-            <summary>
-            Get channel object from channel number.
-            </summary>
-            <param name="channelNum"></param>
-            <returns>The channel or null if invalid number.</returns>
-        </member>
-        <member name="M:Ephemera.MidiLib.ChannelManager.DumpState">
-            <summary>
-            
+            Iterate through the contents.
             </summary>
             <returns></returns>
         </member>
@@ -354,11 +350,17 @@
         <member name="P:Ephemera.MidiLib.NoteOn.Velocity">
             <summary>Note velocity, 0 to 127.</summary>
         </member>
+        <member name="M:Ephemera.MidiLib.NoteOn.#ctor(System.Int32,System.Int32,System.Int32,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
+        </member>
         <member name="M:Ephemera.MidiLib.NoteOn.ToString">
             <summary>Read me.</summary>
         </member>
         <member name="P:Ephemera.MidiLib.NoteOff.Note">
             <summary>The note number to stop.</summary>
+        </member>
+        <member name="M:Ephemera.MidiLib.NoteOff.#ctor(System.Int32,System.Int32,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
         </member>
         <member name="M:Ephemera.MidiLib.NoteOff.ToString">
             <summary>Read me.</summary>
@@ -369,11 +371,23 @@
         <member name="P:Ephemera.MidiLib.Controller.Value">
             <summary>Payload.</summary>
         </member>
+        <member name="M:Ephemera.MidiLib.Controller.#ctor(System.Int32,System.Enum,System.Int32,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
+        </member>
+        <member name="M:Ephemera.MidiLib.Controller.#ctor(NAudio.Midi.ControlChangeEvent)">
+            <summary>Constructor from NAudio type.</summary>
+        </member>
         <member name="M:Ephemera.MidiLib.Controller.ToString">
             <summary>Read me.</summary>
         </member>
         <member name="P:Ephemera.MidiLib.Patch.Id">
             <summary>Payload.</summary>
+        </member>
+        <member name="M:Ephemera.MidiLib.Patch.#ctor(System.Int32,System.Enum,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
+        </member>
+        <member name="M:Ephemera.MidiLib.Patch.#ctor(NAudio.Midi.PatchChangeEvent)">
+            <summary>Constructor from NAudio type.</summary>
         </member>
         <member name="M:Ephemera.MidiLib.Patch.ToString">
             <summary>Read me.</summary>
@@ -384,6 +398,9 @@
         <member name="P:Ephemera.MidiLib.Other.RawMessage">
             <summary>Payload.</summary>
         </member>
+        <member name="M:Ephemera.MidiLib.Other.#ctor(System.Int32,System.Int32,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
+        </member>
         <member name="M:Ephemera.MidiLib.Other.ToString">
             <summary>Read me.</summary>
         </member>
@@ -392,6 +409,9 @@
         </member>
         <member name="P:Ephemera.MidiLib.Function.ScriptFunction">
             <summary>The function to call.</summary>
+        </member>
+        <member name="M:Ephemera.MidiLib.Function.#ctor(System.Int32,System.Action,Ephemera.MidiLib.MusicTime)">
+            <summary>Normal constructor.</summary>
         </member>
         <member name="M:Ephemera.MidiLib.Function.ToString">
             <summary>For viewing pleasure.</summary>
@@ -438,6 +458,9 @@
         </member>
         <member name="F:Ephemera.MidiLib.MidiDefs.MIN_CHANNEL">
             <summary>Per device.</summary>
+        </member>
+        <member name="F:Ephemera.MidiLib.MidiDefs.ALL_CHANNEL">
+            <summary>Doesn't have a specific channel.</summary>
         </member>
         <member name="F:Ephemera.MidiLib.MidiDefs.DEFAULT_DRUM_CHANNEL">
             <summary>The normal drum channel.</summary>

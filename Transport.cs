@@ -25,10 +25,10 @@ namespace ClipPlayer
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        readonly AudioClipPlayer? _audioPlayer;
+        readonly AudioClipPlayer _audioPlayer;
 
         /// <summary>Midi device.</summary>
-        readonly MidiClipPlayer? _midiPlayer;
+        readonly MidiClipPlayer _midiPlayer;
 
         /// <summary>Default device.</summary>
         readonly NullPlayer _nullPlayer;
@@ -44,6 +44,9 @@ namespace ClipPlayer
 
         /// <summary>For tracking mouse moves.</summary>
         int _lastXPos = 0;
+
+        /// <summary>Ready or not.</summary>
+        bool _valid = true;
         #endregion
 
         #region Lifecycle
@@ -93,22 +96,48 @@ namespace ClipPlayer
                 chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
                 chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
 
-                // Hook up UI handlers.
-                chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
-                btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
-                sldVolume.ValueChanged += (_, __) => { _player.Volume = sldVolume.Value; };
-                btnSettings.Click += Settings_Click;
-                progress!.MouseDown += Progress_MouseDown;
-                progress!.MouseMove += Progress_MouseMove;
-
-                // Drum channel selection.
-                cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
-                for (int i = 0; i < MidiDefs.MAX_CHANNEL; i++)
+                if (_midiPlayer is null || !_midiPlayer.Valid)
                 {
-                    cmbDrumChannel.Items.Add($"{i + 1}");
+                    MessageBox.Show($"Invalid midi output device: {Common.Settings.MidiDeviceName}");
+                    _valid = false;
                 }
-                cmbDrumChannel.SelectedIndexChanged += (_, __) => { _midiPlayer?.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
-                cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
+
+                if (_audioPlayer is null || !_audioPlayer.Valid)
+                {
+                    MessageBox.Show($"Invalid audio output device: {Common.Settings.WavOutDevice}");
+                    _valid = false;
+                }
+
+                if (!_valid)
+                {
+                    // Disable everything except settings button.
+                    sldVolume.Enabled = false;
+                    chkPlay.Enabled = false;
+                    chkLoop.Enabled = false;
+                    btnRewind.Enabled = false;
+                    cmbDrumChannel.Enabled = false;
+
+                    btnSettings.Click += Settings_Click;
+                }
+                else
+                {
+                    // Hook up UI handlers.
+                    chkPlay.CheckedChanged += (_, __) => { _ = chkPlay.Checked ? _player.Play() : _player.Stop(); };
+                    btnRewind.Click += (_, __) => { _player.Rewind(); progress.AddValue(0); };
+                    sldVolume.ValueChanged += (_, __) => { _player.Volume = sldVolume.Value; };
+                    btnSettings.Click += Settings_Click;
+                    progress!.MouseDown += Progress_MouseDown;
+                    progress!.MouseMove += Progress_MouseMove;
+
+                    // Drum channel selection.
+                    cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
+                    for (int i = 0; i < MidiDefs.MAX_CHANNEL; i++)
+                    {
+                        cmbDrumChannel.Items.Add($"{i + 1}");
+                    }
+                    cmbDrumChannel.SelectedIndexChanged += (_, __) => { _midiPlayer?.DrumChannel = cmbDrumChannel.SelectedIndex + 1; };
+                    cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
+                }
 
                 if (!Common.Settings.Debug)
                 {
@@ -130,7 +159,7 @@ namespace ClipPlayer
         {
             bool ok = true;
 
-            if (ok)
+            if (_valid)
             {
                 // Go!
                 ok = OpenFile();

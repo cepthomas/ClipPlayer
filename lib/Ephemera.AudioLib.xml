@@ -98,6 +98,27 @@
             <param name="sender"></param>
             <param name="e"></param>
         </member>
+        <member name="T:Ephemera.AudioLib.Conversion">
+            <summary>Conversion options.</summary>
+        </member>
+        <member name="T:Ephemera.AudioLib.AudioUtils">
+            <summary>NAudio expansion. TODO2??</summary>
+        </member>
+        <member name="M:Ephemera.AudioLib.AudioUtils.Convert(Ephemera.AudioLib.Conversion,System.String)">
+            <summary>
+            Convert a file.
+            </summary>
+            <param name="conv">Specific operation.</param>
+            <param name="fn">The input filename. Output file is the same with option appended.</param>
+            <returns>Succesful conversion.</returns>
+        </member>
+        <member name="M:Ephemera.AudioLib.AudioUtils.Resample(System.String,System.String)">
+            <summary>
+            For client convenience.
+            </summary>
+            <param name="fn"></param>
+            <param name="newfn"></param>
+        </member>
         <member name="T:Ephemera.AudioLib.BarConverter">
             <summary>Converter for music time. 0-based - not traditional 1-based.</summary>
         </member>
@@ -289,24 +310,6 @@
             </summary>
             <param name="prov"></param>
             <returns>Info chunks.</returns>
-        </member>
-        <member name="T:Ephemera.AudioLib.Conversion">
-            <summary>Conversion options.</summary>
-        </member>
-        <member name="M:Ephemera.AudioLib.Hold.Convert(Ephemera.AudioLib.Conversion,System.String)">
-            <summary>
-            Process a file.
-            </summary>
-            <param name="conv">Specific operation.</param>
-            <param name="fn">The input filename. Output file is the same with option appended.</param>
-            <returns>Succesful conversion.</returns>
-        </member>
-        <member name="M:Ephemera.AudioLib.Hold.Resample(System.String,System.String)">
-            <summary>
-            For client convenience.
-            </summary>
-            <param name="fn"></param>
-            <param name="newfn"></param>
         </member>
         <member name="T:Ephemera.AudioLib.IConverter">
             <summary>Abstraction of selection mode. Does text parsing, formatting, snap.</summary>

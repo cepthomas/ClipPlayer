@@ -4,6 +4,7 @@ using System.IO;
 using NAudio.Midi;
 using Ephemera.NBagOfTricks;
 using Ephemera.MidiLib;
+using System.Windows.Forms;
 
 
 namespace ClipPlayer
@@ -19,8 +20,8 @@ namespace ClipPlayer
         /// <summary>Midi boss.</summary>
         readonly ChannelManager CM;
 
-        /// <summary>Midi output device.</summary>
-        IOutputDevice? _outputDevice = null;
+        /// <summary>Midi output.</summary>
+        MidiOutput? _mout;
 
         /// <summary>The fast timer.</summary>
         readonly MmTimerEx _mmTimer = new();
@@ -52,7 +53,7 @@ namespace ClipPlayer
         public double Volume { get; set; }
 
         /// <inheritdoc />
-        public bool Valid { get { return _outputDevice is not null; } }
+        public bool Valid { get { return _mout is not null; } }
 
         /// <inheritdoc />
         public TimeSpan Current
@@ -79,8 +80,8 @@ namespace ClipPlayer
         public MidiClipPlayer()
         {
             CM = new();
-
-            _outputDevice = new MidiOutputDevice(Common.Settings.MidiDeviceName) { Id = 1 };
+            try { _mout = CM.OpenMidiOutput(Common.Settings.MidiDeviceName, MidiDefs.ALL_CHANNEL, "ALL"); }
+            catch { }
         }
 
         /// <summary> 
@@ -93,7 +94,6 @@ namespace ClipPlayer
 
             // Resources.
             CM.Dispose();
-            _outputDevice = null;
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -125,7 +125,7 @@ namespace ClipPlayer
                     // Scale to internal.
                     int subbeat = (int)te.AbsoluteTime * MusicTime.SubbeatsPerBeat / sourceEvents.DeltaTicksPerQuarterNote;
 
-                    // Other ops.
+                    // Other ops of interest.
                     switch (te)
                     {
                         case TempoEvent evt:
@@ -233,21 +233,13 @@ namespace ClipPlayer
                                 break;
 
                             case PatchChangeEvent evt:
-                                MidiDefs.InstrumentId patchId =
-                                    Enum.IsDefined(typeof(MidiDefs.InstrumentId), evt.Patch) ?
-                                    (MidiDefs.InstrumentId)Enum.ToObject(typeof(MidiDefs.InstrumentId), evt.Patch) :
-                                    MidiDefs.InstrumentId.AcousticGrandPiano;
-                                Patch pt = new(evt.Channel, patchId, new(evt.AbsoluteTime));
+                                Patch pt = new(evt);
                                 SendMidi(pt);
                                 break;
 
                             case ControlChangeEvent evt:
-                                if (Enum.IsDefined(typeof(MidiDefs.ControllerId), (int)evt.Controller))
-                                {
-                                    var ctlrId = (MidiDefs.ControllerId)Enum.ToObject(typeof(MidiDefs.ControllerId), evt.Controller);
-                                    Controller ctrl = new(evt.Channel, ctlrId, evt.ControllerValue, new(evt.AbsoluteTime));
-                                    SendMidi(ctrl);
-                                }
+                                Controller ctrl = new(evt);
+                                SendMidi(ctrl);
                                 break;
 
                             // All others ignore.
@@ -281,7 +273,7 @@ namespace ClipPlayer
         /// <param name="evt"></param>
         void SendMidi(BaseEvent evt)
         {
-            _outputDevice?.Send(evt);
+            _mout!.Send(evt);
         }
         #endregion
     }

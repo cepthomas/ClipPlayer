@@ -98,7 +98,7 @@ namespace ClipPlayer
             if (_audioFileReader.WaveFormat.SampleRate != AudioLibDefs.SAMPLE_RATE)
             {
                 _audioFileReader.Dispose();
-                Hold.Resample(fn, RESAMPLE_FILE);
+                AudioUtils.Resample(fn, RESAMPLE_FILE);
                 _audioFileReader = new AudioFileReader(RESAMPLE_FILE);
             }
             Length = _audioFileReader.TotalTime;
