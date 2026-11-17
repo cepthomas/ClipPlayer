@@ -25,13 +25,13 @@ namespace ClipPlayer
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        readonly AudioClipPlayer _audioPlayer;
+        readonly AudioClipPlayer _audioPlayer = new();
 
         /// <summary>Midi device.</summary>
-        readonly MidiClipPlayer _midiPlayer;
+        readonly MidiClipPlayer _midiPlayer = new();
 
         /// <summary>Default device.</summary>
-        readonly NullPlayer _nullPlayer;
+        readonly NullPlayer _nullPlayer = new();
 
         /// <summary>Current play device.</summary>
         IPlayer _player;
@@ -79,11 +79,9 @@ namespace ClipPlayer
 
                 _logger.Info("Transport started");
 
-                // Create the playback devices.
-                _midiPlayer = new();
-                _midiPlayer?.StatusChange += Player_StatusChange;
-                _audioPlayer = new();
-                _audioPlayer?.StatusChange += Player_StatusChange;
+                // Init the playback devices.
+                _midiPlayer.StatusChange += Player_StatusChange;
+                _audioPlayer.StatusChange += Player_StatusChange;
 
                 // Default.
                 _nullPlayer = new();
@@ -96,13 +94,13 @@ namespace ClipPlayer
                 chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
                 chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
 
-                if (_midiPlayer is null || !_midiPlayer.Valid)
+                if (!_midiPlayer.Valid)
                 {
                     MessageBox.Show($"Invalid midi output device: {Common.Settings.MidiDeviceName}");
                     _valid = false;
                 }
 
-                if (_audioPlayer is null || !_audioPlayer.Valid)
+                if (!_audioPlayer.Valid)
                 {
                     MessageBox.Show($"Invalid audio output device: {Common.Settings.WavOutDevice}");
                     _valid = false;
