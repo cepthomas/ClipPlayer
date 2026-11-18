@@ -18,7 +18,7 @@ namespace ClipPlayer
     {
         #region Fields
         /// <summary>Midi boss.</summary>
-        readonly ChannelManager CM;
+        readonly MidiManager MM;
 
         /// <summary>Midi output.</summary>
         MidiOutput? _mout;
@@ -79,8 +79,8 @@ namespace ClipPlayer
         /// </summary>
         public MidiClipPlayer()
         {
-            CM = new();
-            try { _mout = CM.OpenMidiOutput(Common.Settings.MidiDeviceName, MidiDefs.ALL_CHANNEL, "ALL"); }
+            MM = new();
+            try { _mout = MM.OpenMidiOutput(Common.Settings.MidiDeviceName, MidiDefs.ALL_CHANNEL, "ALL"); }
             catch { }
         }
 
@@ -93,7 +93,7 @@ namespace ClipPlayer
             State = RunState.Stopped;
 
             // Resources.
-            CM.Dispose();
+            MM.Dispose();
 
             _mmTimer.Stop();
             _mmTimer.Dispose();
@@ -175,7 +175,7 @@ namespace ClipPlayer
         /// <inheritdoc />
         public RunState Stop()
         {
-            CM.KillAll();
+            MM.KillAll();
             State = RunState.Stopped;
             return State;
         }
