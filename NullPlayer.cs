@@ -16,7 +16,7 @@ namespace ClipPlayer
 
         public TimeSpan Current { get; set; } = new TimeSpan();
 
-        public event EventHandler<StatusChangeEventArgs>? StatusChange;
+        public event EventHandler<ProgressChangeEventArgs>? ProgressChange;
 
         public bool OpenFile(string fn) { return true; }
 
@@ -24,7 +24,7 @@ namespace ClipPlayer
 
         public NullPlayer()
         {
-            StatusChange?.Invoke(this, new() { Progress = 0 });
+            ProgressChange?.Invoke(this, new() { Progress = 0 });
         }
 
         public RunState Play()

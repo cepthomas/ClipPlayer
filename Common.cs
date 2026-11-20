@@ -13,9 +13,6 @@ namespace ClipPlayer
 
     public class Common
     {
-        /// <summary>Current global user settings.</summary>
-        public static UserSettings Settings { get; set; } = new UserSettings();
-
         /// <summary>Client/server comm id.</summary>
         public static string PipeName { get { return "5826C396-B847-4F86-87A0-52475EDC0082"; } }
 
@@ -24,9 +21,9 @@ namespace ClipPlayer
     }
 
     /// <summary>Player has something to say or show.</summary>
-    public class StatusChangeEventArgs : EventArgs
+    public class ProgressChangeEventArgs : EventArgs
     {
-        /// <summary>0 -> 100</summary>
+        /// <summary>0 -> 100 percent</summary>
         public int Progress { get; set; } = 0;
 
         /// <summary>Where we at.</summary>
@@ -51,7 +48,7 @@ namespace ClipPlayer
         bool Valid { get; }
 
         /// <summary>Something changed event.</summary>
-        event EventHandler<StatusChangeEventArgs> StatusChange;
+        event EventHandler<ProgressChangeEventArgs> ProgressChange;
 
         /// <summary>Open playback file in player.</summary>
         bool OpenFile(string fn);

@@ -21,14 +21,17 @@ namespace ClipPlayer
         /// <summary>My logger.</summary>
         readonly Logger _logger = LogManager.CreateLogger("Main");
 
+        /// <summary>Settings.</summary>
+        UserSettings _settings;
+
         /// <summary>Current file.</summary>
         string _fn = "";
 
         /// <summary>Audio device.</summary>
-        readonly AudioClipPlayer _audioPlayer = new();
+        readonly AudioClipPlayer _audioPlayer;// = new();
 
         /// <summary>Midi device.</summary>
-        readonly MidiClipPlayer _midiPlayer = new();
+        readonly MidiClipPlayer _midiPlayer;// = new();
 
         /// <summary>Default device.</summary>
         readonly NullPlayer _nullPlayer = new();
@@ -61,48 +64,50 @@ namespace ClipPlayer
 
                 // Load settings first before initializing.
                 string appDir = MiscUtils.GetAppDataDir("ClipPlayer", "Ephemera");
-                Common.Settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
+                _settings = (UserSettings)SettingsCore.Load(appDir, typeof(UserSettings));
 
                 InitializeComponent();
 
                 Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
 
-                sldVolume.Value = Common.Settings.Volume;
-                var pos = Common.Settings.FormGeometry;
+                sldVolume.Value = _settings.Volume;
+                var pos = _settings.FormGeometry;
                 Location = new(pos.X, pos.Y);
 
                 // Init logging.
-                LogManager.MinLevelFile = Common.Settings.FileLogLevel;
-                LogManager.MinLevelNotif = Common.Settings.NotifLogLevel;
+                LogManager.MinLevelFile = _settings.FileLogLevel;
+                LogManager.MinLevelNotif = _settings.NotifLogLevel;
                 LogManager.LogMessage += LogManager_LogMessage;
                 LogManager.Run(Path.Join(appDir, "log.txt"), 100000);
 
                 _logger.Info("Transport started");
 
                 // Init the playback devices.
-                _midiPlayer.StatusChange += Player_StatusChange;
-                _audioPlayer.StatusChange += Player_StatusChange;
+                _midiPlayer = new(_settings);
+                _midiPlayer.ProgressChange += Player_ProgressChange;
+                _audioPlayer = new(_settings);
+                _audioPlayer.ProgressChange += Player_ProgressChange;
 
                 // Default.
                 _nullPlayer = new();
-                _nullPlayer.StatusChange += Player_StatusChange;
+                _nullPlayer.ProgressChange += Player_ProgressChange;
                 _player = _nullPlayer;
 
                 // Cosmetics.
-                progress.DrawColor = Common.Settings.DrawColor;
-                sldVolume.DrawColor = Common.Settings.DrawColor;
-                chkPlay.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
-                chkLoop.FlatAppearance.CheckedBackColor = Common.Settings.SelectedColor;
+                progress.DrawColor = _settings.DrawColor;
+                sldVolume.DrawColor = _settings.DrawColor;
+                chkPlay.FlatAppearance.CheckedBackColor = _settings.SelectedColor;
+                chkLoop.FlatAppearance.CheckedBackColor = _settings.SelectedColor;
 
                 if (!_midiPlayer.Valid)
                 {
-                    MessageBox.Show($"Invalid midi output device: {Common.Settings.MidiDeviceName}");
+                    MessageBox.Show($"Invalid midi output device: {_settings.MidiDeviceName}");
                     _valid = false;
                 }
 
                 if (!_audioPlayer.Valid)
                 {
-                    MessageBox.Show($"Invalid audio output device: {Common.Settings.WavOutDevice}");
+                    MessageBox.Show($"Invalid audio output device: {_settings.WavOutDevice}");
                     _valid = false;
                 }
 
@@ -128,7 +133,7 @@ namespace ClipPlayer
                     progress!.MouseMove += Progress_MouseMove;
 
                     // Drum channel selection.
-                    cmbDrumChannel.BackColor = Common.Settings.SelectedColor;
+                    cmbDrumChannel.BackColor = _settings.SelectedColor;
                     for (int i = 0; i < MidiDefs.MAX_CHANNEL; i++)
                     {
                         cmbDrumChannel.Items.Add($"{i + 1}");
@@ -137,7 +142,7 @@ namespace ClipPlayer
                     cmbDrumChannel.SelectedIndex = MidiDefs.DEFAULT_DRUM_CHANNEL - 1;
                 }
 
-                if (!Common.Settings.Debug)
+                if (!_settings.Debug)
                 {
                     ClientSize = new(ClientSize.Width, rtbLog.Top);
                 }
@@ -185,8 +190,8 @@ namespace ClipPlayer
         /// <param name="e"></param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            Common.Settings.FormGeometry = new(Location, Size);
-            Common.Settings.Save();
+            _settings.FormGeometry = new(Location, Size);
+            _settings.Save();
             LogManager.Stop();
 
             base.OnFormClosing(e);
@@ -307,7 +312,7 @@ namespace ClipPlayer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void Player_StatusChange(object? sender, StatusChangeEventArgs e)
+        void Player_ProgressChange(object? sender, ProgressChangeEventArgs e)
         {
             this.InvokeIfRequired(_ =>
             {
@@ -330,7 +335,7 @@ namespace ClipPlayer
                         break;
 
                     case RunState.Complete:
-                        if (Common.Settings.AutoClose)
+                        if (_settings.AutoClose)
                         {
                             Environment.Exit(Environment.ExitCode);
                         }
@@ -388,7 +393,7 @@ namespace ClipPlayer
         /// </summary>
         void Settings_Click(object? sender, EventArgs e)
         {
-            var changes = SettingsEditor.Edit(Common.Settings, "User Settings", 450);
+            var changes = SettingsEditor.Edit(_settings, "User Settings", 450);
 
             // Detect changes of interest.
             bool restart = false;
@@ -412,7 +417,7 @@ namespace ClipPlayer
                 MessageBox.Show("Restart required for device changes to take effect");
             }
 
-            Common.Settings.Save();
+            _settings.Save();
         }
         #endregion
 

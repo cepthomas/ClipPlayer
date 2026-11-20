@@ -4,9 +4,6 @@
         <name>Ephemera.AudioLib</name>
     </assembly>
     <members>
-        <member name="T:Ephemera.AudioLib.AudioFileInfo">
-            <summary>Borrowed from NAudio. TODO2??</summary>
-        </member>
         <member name="M:Ephemera.AudioLib.AudioFileInfo.GetFileInfo(System.String,System.Boolean)">
             <summary>
             Top level function to get file info.
@@ -102,7 +99,7 @@
             <summary>Conversion options.</summary>
         </member>
         <member name="T:Ephemera.AudioLib.AudioUtils">
-            <summary>NAudio expansion. TODO2??</summary>
+            <summary>NAudio extensions.</summary>
         </member>
         <member name="M:Ephemera.AudioLib.AudioUtils.Convert(Ephemera.AudioLib.Conversion,System.String)">
             <summary>
@@ -649,7 +646,7 @@
         <member name="P:Ephemera.AudioLib.WaveViewer.VisibleLength">
             <summary>Visible length in samples. Always positive.</summary>
         </member>
-        <member name="E:Ephemera.AudioLib.WaveViewer.StateChange">
+        <member name="T:Ephemera.AudioLib.WaveViewer.UiChange">
             <summary>Value changed by user. Notify owner for display.</summary>
         </member>
         <member name="M:Ephemera.AudioLib.WaveViewer.#ctor">

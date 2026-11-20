@@ -70,17 +70,17 @@ namespace ClipPlayer
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusChangeEventArgs>? StatusChange;
+        public event EventHandler<ProgressChangeEventArgs>? ProgressChange;
         #endregion
 
         #region Lifecycle
         /// <summary>
         /// Normal constructor.
         /// </summary>
-        public MidiClipPlayer()
+        public MidiClipPlayer(UserSettings settings)
         {
             MM = new();
-            try { _mout = MM.OpenMidiOutput(Common.Settings.MidiDeviceName, MidiDefs.ALL_CHANNEL, "ALL"); }
+            try { _mout = MM.OpenMidiOutput(settings.MidiDeviceName, MidiDefs.ALL_CHANNEL, "ALL"); }
             catch { }
         }
 
@@ -260,7 +260,7 @@ namespace ClipPlayer
                     _currentPosition = 0;
                 }
 
-                StatusChange?.Invoke(this, new StatusChangeEventArgs()
+                ProgressChange?.Invoke(this, new ProgressChangeEventArgs()
                 {
                     Progress = _currentPosition < _length ? 100 * _currentPosition / _length : 100
                 });

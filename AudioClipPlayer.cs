@@ -55,19 +55,20 @@ namespace ClipPlayer
 
         #region Events - interface implementation
         /// <inheritdoc />
-        public event EventHandler<StatusChangeEventArgs>? StatusChange;
+        public event EventHandler<ProgressChangeEventArgs>? ProgressChange;
         #endregion
 
         #region Lifecycle
         /// <summary>
         /// Constructor.
         /// </summary>
-        public AudioClipPlayer()
+        public AudioClipPlayer(UserSettings settings)
         {
             // Create output device.
             _waveOutSwapper = new();
-            _player = new(Common.Settings.WavOutDevice, int.Parse(Common.Settings.Latency), _waveOutSwapper);
+            _player = new(settings.WavOutDevice, int.Parse(settings.Latency), _waveOutSwapper);
             _player.PlaybackStopped += Player_PlaybackStopped;
+            _player.Volume = (float)settings.Volume;
         }
 
         /// <summary>
@@ -112,7 +113,6 @@ namespace ClipPlayer
 
             _waveOutSwapper.SetInput(postVolumeMeter);
             _audioFileReader.Position = 0; // rewind
-            _player.Volume = (float)Common.Settings.Volume;
 
             return ok;
         }
@@ -169,7 +169,7 @@ namespace ClipPlayer
         /// <param name="e"></param>
         void Player_PlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            var evt = new StatusChangeEventArgs() { Progress = 100 };
+            var evt = new ProgressChangeEventArgs() { Progress = 100 };
             State = RunState.Complete;
 
             if (e.Exception is not null)
@@ -178,7 +178,7 @@ namespace ClipPlayer
                 evt.Progress = 0;
             }
 
-            StatusChange?.Invoke(this, evt);
+            ProgressChange?.Invoke(this, evt);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace ClipPlayer
         void SampleChannel_PreVolumeMeter(object? sender, StreamVolumeEventArgs e)
         {
             int prog = 100 * (int)Current.TotalMilliseconds / (int)Length.TotalMilliseconds;
-            StatusChange?.Invoke(this, new StatusChangeEventArgs()
+            ProgressChange?.Invoke(this, new ProgressChangeEventArgs()
             {
                 Progress = prog
             });
